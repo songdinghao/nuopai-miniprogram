@@ -83,6 +83,12 @@
       </view>
     </view>
 
+    <!-- 社会证明：销量 + 浏览人数 -->
+    <view class="social-proof-row">
+      <text wx:if="{{salesCount > 0}}" class="sales-count">已售 {{salesCountText}}</text>
+      <text class="view-count">{{viewCount}}人正在看</text>
+    </view>
+
     <!-- 拼团价格 -->
     <view wx:if="{{groupBuyEnabled && groupBuyInfo && groupBuyInfo.length > 0}}" class="group-buy-section">
       <view class="group-buy-header">
@@ -200,6 +206,20 @@
       <text class="info-label">已选：</text>
       <text class="info-value">{{selectedSkuAttrsText}}</text>
       <text class="info-price">¥{{selectedSku.price}}</text>
+    </view>
+
+    <!-- 库存紧迫感提示 -->
+    <view wx:if="{{stockWarningLevel > 0}}" class="stock-warning">
+      <text class="stock-warning-icon">🔥</text>
+      <text class="stock-warning-text">{{stockWarningText}}</text>
+    </view>
+
+    <!-- 在线浏览热度条 -->
+    <view class="hot-bar-wrapper">
+      <view class="hot-bar">
+        <view class="hot-bar-fill" style="width: {{hotPercent}}%;"></view>
+      </view>
+      <text class="hot-bar-label">{{viewCount}}人关注中</text>
     </view>
   </view>
 
@@ -507,14 +527,14 @@
   </view>
 
   <view class="action-right">
-    <view class="add-to-cart-btn" bindtap="onAddToCart" data-aria-label="加购物车">
-      <text>加购物车</text>
+    <view class="add-to-cart-btn {{isSoldOut ? 'disabled' : ''}}" bindtap="{{isSoldOut ? '' : 'onAddToCart'}}" data-aria-label="加购物车">
+      <text>{{isSoldOut ? '已售罄' : '加购物车'}}</text>
     </view>
     <view wx:if="{{groupBuyEnabled && groupBuyInfo && groupBuyInfo.length > 0}}" class="group-buy-btn" bindtap="onStartGroupBuy">
       <text>发起拼团</text>
     </view>
-    <view class="buy-now-btn" bindtap="onBuyNow" data-aria-label="立即购买">
-      <text>立即购买</text>
+    <view class="buy-now-btn {{isSoldOut ? 'disabled' : ''}}" bindtap="{{isSoldOut ? '' : 'onBuyNow'}}" data-aria-label="立即购买">
+      <text>{{isSoldOut ? '已售罄' : '立即购买'}}</text>
     </view>
   </view>
 

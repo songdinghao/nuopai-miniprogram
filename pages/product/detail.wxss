@@ -1375,6 +1375,79 @@
   font-weight: 500;
 }
 
+/* ===== 社会证明 ===== */
+.social-proof-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.sales-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.view-count {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 20rpx;
+}
+
+.stock-warning {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+  padding: 14rpx 20rpx;
+  background: #FFF5F5;
+  border-radius: 10rpx;
+}
+
+.stock-warning-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.stock-warning-text {
+  font-size: 24rpx;
+  color: #FF4444;
+  font-weight: 600;
+}
+
+.hot-bar-wrapper {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.hot-bar {
+  flex: 1;
+  height: 6rpx;
+  background: #f0f0f0;
+  border-radius: 3rpx;
+  overflow: hidden;
+}
+
+.hot-bar-fill {
+  height: 100%;
+  border-radius: 3rpx;
+  background: linear-gradient(90deg, #4CAF50, #FF9800, #FF4444);
+  transition: width 0.6s ease;
+}
+
+.hot-bar-label {
+  font-size: 20rpx;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.add-to-cart-btn.disabled,
+.buy-now-btn.disabled {
+  background: #ccc !important;
+  box-shadow: none !important;
+  opacity: 0.7;
+}
+
 /* ===== 字体大小适配 ===== */
 .product-detail-page.font-large .product-name { font-size: 38rpx; }
 .product-detail-page.font-large .product-description { font-size: 32rpx; }

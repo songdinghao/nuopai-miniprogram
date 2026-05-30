@@ -74,6 +74,15 @@ Page({
   selectedSkuAttrsText: '',
   discountPercent: 0,
 
+  // 社会证明
+  salesCount: 0,
+  salesCountText: '',
+  viewCount: 0,
+  hotPercent: 0,
+  stockWarningLevel: 0, // 0=正常, 1=低库存(<=10), 2=即将售罄(<=3), 3=售罄(0)
+  stockWarningText: '',
+  isSoldOut: false,
+
   // 用户信息
   userInfo: null
   },
@@ -106,6 +115,9 @@ Page({
 
   // 检查收藏状态
   this.checkCollectionStatus()
+
+  // 初始化浏览人数
+  this.initViewCount(productId)
   },
 
   // 页面显示
@@ -260,6 +272,10 @@ Page({
           selectedSkuAttrsText, discountPercent
         })
 
+        // 初始化社会证明
+        this.initSalesCount(productInfo)
+        this.updateStockWarning(defaultSku)
+
         app.trackEvent('product_detail_loaded', {
           product_id: productId,
           product_name: productInfo.name,
@@ -367,7 +383,11 @@ Page({
         groupBuyActiveGroups, groupBuySocialProof,
         selectedSkuAttrsText, discountPercent
       })
-      
+
+      // 初始化社会证明
+      this.initSalesCount(productInfo)
+      this.updateStockWarning(defaultSku)
+
       app.trackEvent('product_detail_loaded', {
         product_id: productId,
         product_name: productInfo.name,
@@ -466,6 +486,10 @@ Page({
           selectedSkuAttrsText,
           discountPercent
     })
+
+    // 初始化社会证明
+    this.initSalesCount(productInfo)
+    this.updateStockWarning(defaultSku)
 
     // 追踪商品加载完成
     app.trackEvent('product_detail_loaded', {
@@ -923,6 +947,9 @@ Page({
       discountPercent,
       quantity: 1 // 重置数量
   })
+
+  // 更新库存紧迫感
+  this.updateStockWarning(matchedSku)
 
   // 如果SKU有变化，更新价格显示
   if (matchedSku) {
@@ -1583,5 +1610,62 @@ Page({
   // 重新加载（错误页点击重试）
   onReloadTap() {
     this.loadProductData(this.data.productId)
+  },
+
+  // ========== 社会证明 ==========
+
+  // 初始化浏览人数（本地缓存模拟）
+  initViewCount(productId) {
+    const cacheKey = `product_view_${productId}`
+    let viewCount = wx.getStorageSync(cacheKey) || 0
+    viewCount += 1
+    wx.setStorageSync(cacheKey, viewCount)
+    const hotPercent = Math.min(viewCount / 100 * 100, 100)
+    this.setData({ viewCount, hotPercent })
+  },
+
+  // 格式化销量数字
+  formatSalesCount(count) {
+    if (!count || count <= 0) return '0件'
+    if (count >= 10000) {
+      return (count / 10000).toFixed(1) + '万件'
+    }
+    if (count >= 1000) {
+      return (count / 1000).toFixed(1) + '千件'
+    }
+    return count + '件'
+  },
+
+  // 初始化销量数据
+  initSalesCount(productInfo) {
+    const salesCount = productInfo.sales || 0
+    const salesCountText = this.formatSalesCount(salesCount)
+    this.setData({ salesCount, salesCountText })
+  },
+
+  // 更新库存紧迫感提示
+  updateStockWarning(sku) {
+    if (!sku) {
+      this.setData({ stockWarningLevel: 0, stockWarningText: '', isSoldOut: false })
+      return
+    }
+    const stock = sku.stock
+    let stockWarningLevel = 0
+    let stockWarningText = ''
+    let isSoldOut = false
+
+    if (stock <= 0) {
+      stockWarningLevel = 3
+      stockWarningText = '已售罄'
+      isSoldOut = true
+    } else if (stock <= 3) {
+      stockWarningLevel = 2
+      stockWarningText = '即将售罄'
+    } else if (stock <= 10) {
+      stockWarningLevel = 1
+      stockWarningText = `仅剩 ${stock} 件`
+    }
+
+    this.setData({ stockWarningLevel, stockWarningText, isSoldOut })
   }
 })
