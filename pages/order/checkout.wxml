@@ -110,6 +110,18 @@
       </view>
     </view>
 
+    <!-- 积分抵扣 -->
+    <view class="points-section" wx:if="{{pointsBalance > 0}}">
+      <view class="points-header">
+        <text>积分抵扣</text>
+        <text class="points-balance">可用 {{pointsBalance}} 积分</text>
+      </view>
+      <view class="points-row">
+        <text class="points-deduct">-¥{{pointsDeductAmount}}</text>
+        <switch checked="{{usePoints}}" bindchange="onTogglePoints" color="#2D8C7A"/>
+      </view>
+    </view>
+
     <!-- 订单备注 -->
     <view class="section remark-section">
       <view class="section-header">
@@ -142,6 +154,11 @@
       <view wx:if="{{couponDiscount > 0}}" class="discount price-item">
         <text class="price-label">优惠券</text>
         <text class="price-value">-¥{{couponDiscount}}</text>
+      </view>
+
+      <view wx:if="{{pointsDeductAmount > 0}}" class="discount price-item">
+        <text class="price-label">积分抵扣</text>
+        <text class="price-value price-deduct">-¥{{pointsDeductAmount}}</text>
       </view>
     </view>
   </view>

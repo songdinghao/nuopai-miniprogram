@@ -3,6 +3,7 @@ const app = getApp()
 const storeConfig = require('../../config/store-config.js')
 const groupBuy = require('../../utils/group-buy.js')
 const couponManager = require('../../utils/coupon-manager.js')
+const pointsManager = require('../../utils/points-manager.js')
 
 Page({
   data: {
@@ -30,6 +31,12 @@ Page({
   shippingFee: '0.00',
   couponDiscount: '0.00',
   totalPrice: '0.00',
+
+  // 积分抵扣
+  pointsBalance: 0,       // 可用积分
+  pointsDeductAmount: 0,  // 积分抵扣金额
+  usePoints: true,        // 是否使用积分
+  maxPointsDeduct: 0,     // 最大可抵扣金额
 
   // 用户偏好
   fontSize: 'normal',
@@ -172,6 +179,9 @@ Page({
       // 计算价格 - 拼团使用拼团价
       const shippingFee = goodsPriceNum >=99 ? 0 : 8 // 满99包邮
 
+      // 加载积分余额
+      const pointsBalance = pointsManager.getPoints()
+
       this.setData({
     orderItems: orderItems,
     selectedAddress: defaultAddress || null,
@@ -182,6 +192,7 @@ Page({
     isGroupBuyOrder,
     groupBuyId,
     groupBuyInfo,
+    pointsBalance,
     loading: false,
     loadError: false
       })
@@ -237,11 +248,27 @@ Page({
       couponDiscount = this.data.selectedCoupon.value || 0
   }
 
-  const totalPrice = Math.max(0, goodsPrice + shippingFee - couponDiscount)
+  // 积分抵扣计算：原价 → 优惠券 → 积分抵扣 → 实付
+  const afterCoupon = goodsPrice + shippingFee - couponDiscount
+  let pointsDeductAmount = 0
+  let maxPointsDeduct = 0
+
+  if (this.data.usePoints && this.data.pointsBalance > 0) {
+      // 调用 points-manager 的 calculateDeductible，传入优惠后金额
+      const result = pointsManager.calculateDeductible(0.2, afterCoupon)
+      maxPointsDeduct = result.deductAmount
+      // 积分抵扣不能使实付低于 0.01 元
+      pointsDeductAmount = Math.min(maxPointsDeduct, Math.max(0, afterCoupon - 0.01))
+      pointsDeductAmount = Math.round(pointsDeductAmount * 100) / 100
+  }
+
+  const totalPrice = Math.max(0.01, afterCoupon - pointsDeductAmount)
 
   this.setData({
       couponDiscount: couponDiscount.toFixed(2),
-      totalPrice: totalPrice.toFixed(2)
+      pointsDeductAmount: pointsDeductAmount,
+      maxPointsDeduct: maxPointsDeduct,
+      totalPrice: (afterCoupon - pointsDeductAmount <= 0 ? 0.01 : totalPrice).toFixed(2)
   })
   },
 
@@ -306,6 +333,15 @@ Page({
 
   // 追踪事件
   app.trackEvent('checkout_select_coupon')
+  },
+
+  // 切换积分抵扣开关
+  onTogglePoints(e) {
+  const usePoints = e.detail.value
+  this.setData({ usePoints })
+  this.calculateTotalPrice()
+
+  app.trackEvent('checkout_toggle_points', { use: usePoints })
   },
 
   // 订单备注输入
@@ -409,6 +445,8 @@ Page({
     freightPrice: this.data.shippingFee,
     couponDiscount: this.data.couponDiscount,
     couponPrice: this.data.couponDiscount,
+    pointsDeductAmount: this.data.pointsDeductAmount,
+    usePoints: this.data.usePoints,
     totalPrice: this.data.totalPrice,
     totalCount: this.data.orderItems.reduce((sum, item) => sum + (item.quantity || 1), 0),
     payMethod: this.data.payMethod,
@@ -427,6 +465,20 @@ Page({
           leaderPrice: this.data.groupBuyInfo.leaderPrice,
           members: this.data.groupBuyInfo.members
     } : null
+      }
+
+      // 扣减积分（降级处理：失败不影响下单）
+      // TODO 上线后积分扣减应在服务端完成
+      if (this.data.usePoints && this.data.pointsDeductAmount > 0) {
+        try {
+          const pointsToDeduct = this.data.pointsDeductAmount * 100 // 1元=100积分
+          const deductResult = pointsManager.redeemPoints(pointsToDeduct, '积分抵扣现金', orderId)
+          if (!deductResult.success) {
+            console.warn('[checkout] 积分扣减失败（不影响下单）:', deductResult.message)
+          }
+        } catch (e) {
+          console.warn('[checkout] 积分扣减异常（不影响下单）:', e)
+        }
       }
 
       // 保存订单到本地（持久化存储）
