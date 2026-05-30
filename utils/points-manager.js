@@ -168,6 +168,7 @@ function getAllHistory() {
   return data.history
 }
 
+// TODO: 上线前必须迁移到服务端 API，当前实现可被客户端任意调用
 /**
   * 增加积分
   * @param {number} amount - 增加数量
@@ -176,6 +177,7 @@ function getAllHistory() {
   * @returns {{success: boolean, total: number, record: PointsRecord}}
   */
 function addPoints(amount, source, orderNo) {
+  console.warn('[points-manager] addPoints 当前为本地实现，上线前必须迁移到服务端 API，当前实现可被客户端任意调用')
   const data = initPointsData()
   const now = new Date()
 

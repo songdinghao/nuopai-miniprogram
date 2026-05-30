@@ -1440,9 +1440,13 @@ Page({
   // 点击客服
   onServiceTap() {
   // 打开客服对话
+  const csConfig = storeConfig.customerService || {}
+  const corpId = csConfig.corpId || app.globalData.corpId || ''
+  const kfidUrl = csConfig.kfidUrl || app.globalData.kfidUrl || ''
+
   wx.openCustomerServiceChat({
-      extInfo: { url: 'https://work.weixin.qq.com/kfid/kfc5f5f5f5f5f5f5f5f' },
-      corpId: 'corp_id',
+      extInfo: { url: kfidUrl },
+      corpId: corpId,
       success: (res) =>{
       },
       fail: (error) =>{

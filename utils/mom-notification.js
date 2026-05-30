@@ -142,10 +142,9 @@ function requestSubscribe(tmplId) {
     }
       },
       fail: (err) =>{
-    // 降级处理：当API调用失败时，视为同意（避免阻塞操作）
-    console.warn('[mom - notification] 订阅请求失败，降级处理: ', err)
-    wx.setStorageSync(STORAGE_KEY_SUBSCRIBED, true)
-    resolve(true)
+    // 订阅失败，不自动标记为已订阅
+    console.warn('[mom - notification] 订阅请求失败: ', err)
+    resolve(false)
       }
   })
   })

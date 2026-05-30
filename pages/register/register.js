@@ -107,13 +107,23 @@ Page({
   let countdown = 60
   this.setData({ countdown })
 
-  const timer = setInterval(() =>{
+  // 保存定时器引用，防止页面卸载后泄漏
+  this._countdownTimer = setInterval(() =>{
       countdown--
       this.setData({ countdown })
       if (countdown <=0) {
-    clearInterval(timer)
+    clearInterval(this._countdownTimer)
+    this._countdownTimer = null
       }
   }, 1000)
+  },
+
+  // 页面卸载时清除定时器，防止内存泄漏
+  onUnload() {
+  if (this._countdownTimer) {
+      clearInterval(this._countdownTimer)
+      this._countdownTimer = null
+  }
   },
 
   // 注册

@@ -574,7 +574,8 @@ Page({
   doLogout() {
   // 清除全局状态
   app.globalData.isLogin = false
-  app.globalData.userInfo = {}
+  app.globalData.userInfo = null
+  app.globalData.token = ''
 
   // 选择性清除用户相关数据，保留购物车和用户偏好
   const keysToRemove = [
@@ -590,7 +591,8 @@ Page({
       'tempOrder_direct',
       'tempOrder_cart',
       'hasGivenNewUserCoupon',
-      'lastWelcomeDate'
+      'lastWelcomeDate',
+      'mom_user_data'
   ]
   keysToRemove.forEach(key =>{
       try {

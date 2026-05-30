@@ -400,8 +400,14 @@ function canUseCoupon(coupon, cartAmount, category) {
   * @returns {number} 优惠金额（元）
   */
 function calculateDiscount(coupon, cartAmount) {
+  // 校验使用门槛：未达到满减条件时返回0
+  if (coupon.condition > 0 && cartAmount < coupon.condition) {
+    return 0
+  }
+
   if (coupon.type ==='full - reduction' || coupon.type ==='no - threshold') {
-  return coupon.value
+  // 优惠金额不应超过购物车金额
+  return Math.min(coupon.value, cartAmount)
   }
 
   if (coupon.type ==='discount') {

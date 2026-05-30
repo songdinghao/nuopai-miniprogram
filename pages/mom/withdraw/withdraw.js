@@ -138,35 +138,11 @@ Page({
       fail: (err) => {
         console.error('提现请求失败：', err)
         this.setData({ submitting: false })
-        
-        // 如果后端不可用，使用本地模拟提现
-        wx.showModal({
-          title: '提示',
-          content: '后端服务不可用，是否使用本地模拟提现？',
-          success: (modalRes) => {
-            if (modalRes.confirm) {
-              this.localWithdraw(amountInYuan)
-            }
-          }
-        })
+        wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' })
       }
     })
   },
 
-  // 本地模拟提现（备用）
-  localWithdraw(amount) {
-    const momEarnings = require('../../../utils/mom-earnings.js')
-    const result = momEarnings.performWithdrawal(amount)
-
-    if (result.success) {
-      wx.showToast({ title: '提现申请已提交（本地模拟）', icon: 'success' })
-      this.setData({ withdrawAmount: '' })
-      this.loadLocalData()
-    } else {
-      wx.showToast({ title: result.reason, icon: 'none' })
-      this.setData({ submitting: false })
-    }
-  },
 
   // 格式化余额显示 - 避免在WXML中使用.toFixed()等方法
   formatBalance() {
