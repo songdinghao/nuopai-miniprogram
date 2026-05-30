@@ -1,0 +1,68 @@
+<!-- pages/notification/notification.wxml - 消息通知页面 -->
+<view class="page-container notification-page">
+
+  <!-- 顶部操作栏 -->
+  <view class="top-bar">
+    <scroll-view class="tab-scroll" scroll-x show-scrollbar="{{false}}">
+      <view class="tab-list">
+        <block wx:for="{{tabs}}" wx:key="id">
+          <view class="tab-item {{currentTab === item.id ? 'active' : ''}}" bindtap="onTabTap" data-tab="{{item.id}}">
+            <text class="tab-text">{{item.name}}</text>
+            <view wx:if="{{currentTab === 'all' && unreadCount > 0}}" class="tab-badge">
+              <text>{{unreadCount > 99 ? '99+' : unreadCount}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+    <view class="mark-all-btn" bindtap="onMarkAllRead">
+      <text class="mark-all-text">全部已读</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading && !refreshing}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view wx:if="{{!loading && isEmpty}}" class="empty-container">
+    <image class="empty-icon" src="/assets/icons/empty-notification.png" />
+<text class="empty-title">暂无消息</text>
+<text class="empty-desc">当有新的订单或活动通知时，会在这里显示</text>
+<view class="empty-btn" bindtap="onBackToHome">
+  <text>去首页逛逛</text>
+</view>
+</view>
+
+<scroll-view wx:if="{{!loading && !isEmpty}}" refresher-enabled="{{false}}" scroll-y class="notification-scroll">
+  <view class="notification-list">
+    <block wx:for="{{filteredNotifications}}" wx:key="id">
+      <view class="notification-item {{!item.isRead ? 'unread' : ''}}" bindtap="onNotificationTap" data-index="{{index}}">
+        <!-- 未读标记 -->
+        <view wx:if="{{!item.isRead}}" class="unread-dot"></view>
+
+        <!-- 头像 -->
+        <image class="notification-avatar" src="{{item.avatar}}" />
+
+    <!-- 内容区 -->
+    <view class="notification-content">
+      <view class="notification-header">
+        <text class="notification-title">{{item.title}}</text>
+        <text class="notification-time">{{item.time}}</text>
+      </view>
+      <view class="notification-type">
+        <text>{{item.typeName}}</text>
+      </view>
+      <text class="notification-summary">{{item.summary}}</text>
+    </view>
+
+    <view class="delete-btn" catchtap="onDeleteNotification" data-index="{{index}}">
+      <image class="delete-icon" src="/assets/icons/close-small.png" />
+</view>
+</view>
+</block>
+</view>
+
+<view class="safe-area-bottom"></view>
+</scroll-view>
+</view>

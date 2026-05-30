@@ -1,0 +1,197 @@
+.address-page {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  padding-bottom: 140rpx;
+}
+
+.address-list {
+  padding: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.address-item {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.address-content {
+  flex: 1;
+  margin-right: 24rpx;
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.receiver-name {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-right: 16rpx;
+}
+
+.receiver-phone {
+  font-size: 28rpx;
+  color: #666666;
+  margin-right: 16rpx;
+}
+
+.default-tag {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.address-detail {
+  line-height: 1.5;
+}
+
+.address-text {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.address-actions {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8rpx;
+}
+
+.action-icon {
+  font-size: 28rpx;
+  margin-bottom: 4rpx;
+}
+
+.action-text {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 40rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: #666666;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.bottom-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 24rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background-color: #ffffff;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.add-btn {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-pink-deep));
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 500;
+  border-radius: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.add-btn::after {
+  border: none;
+}
+
+.add-icon {
+  font-size: 36rpx;
+  margin-right: 8rpx;
+  line-height: 1;
+}
+
+.add-text {
+  font-size: 30rpx;
+}
+
+.safe-area-bottom {
+  height: env(safe-area-inset-bottom);
+}
+
+.address-page.font-large .receiver-name {
+  font-size: 34rpx;
+}
+
+.address-page.font-large .receiver-phone, .address-page.font-large .address-text {
+  font-size: 30rpx;
+}
+
+.address-page.font-large .empty-text {
+  font-size: 34rpx;
+}
+
+.address-page.font-large .empty-desc {
+  font-size: 28rpx;
+}
+
+.address-page.font-large .add-text {
+  font-size: 34rpx;
+}
+
+.address-page.font-xlarge .receiver-name {
+  font-size: 38rpx;
+}
+
+.address-page.font-xlarge .receiver-phone, .address-page.font-xlarge .address-text {
+  font-size: 34rpx;
+}
+
+.address-page.font-xlarge .empty-text {
+  font-size: 38rpx;
+}
+
+.address-page.font-xlarge .empty-desc {
+  font-size: 32rpx;
+}
+
+.address-page.font-xlarge .add-text {
+  font-size: 38rpx;
+}
+
+.address-page.font-xlarge .add-btn {
+  height: 96rpx;
+}

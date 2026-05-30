@@ -1,0 +1,176 @@
+<!-- pages/mom/rules/rules.wxml - 规则说明页（大字版） -->
+<view class="page {{fontSizeClass}}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-icon">&lt;</text>
+      <text class="back-text">返回</text>
+    </view>
+    <text class="page-title">规则说明</text>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" bindconfirm="doSearch" bindinput="onSearchInput" confirm-type="search" placeholder="搜索规则关键词" value="{{searchKeyword}}" />
+  <text class="search-icon">🔍</text>
+  <text wx:if="{{searchKeyword}}" class="search-clear" bindtap="clearSearch">✕</text>
+</view>
+
+<!-- 搜索结果 -->
+<view wx:if="{{searchKeyword && searchResults.length > 0}}" class="search-results">
+  <view wx:for="{{searchResults}}" wx:for-item="result" wx:key="index" class="search-result-item" bindtap="scrollToSection" data-section="{{result.section}}">
+    <text class="result-section">{{result.sectionName}}</text>
+    <text class="result-text" decode="true">{{result.matchText}}</text>
+  </view>
+</view>
+
+<view wx:if="{{searchKeyword && searchResults.length === 0}}" class="search-empty">
+  <text class="empty-hint">未找到相关内容，试试其他关键词</text>
+</view>
+
+<scroll-view wx:else class="rules-content" scroll-into-view="{{scrollTarget}}" scroll-y enhanced show-scrollbar="{{false}}">
+
+  <!-- 快速导航 -->
+  <view class="quick-nav">
+    <view class="nav-item" bindtap="scrollToSection" data-section="section-access">
+      <text class="nav-dot">●</text>
+      <text class="nav-text">准入规则</text>
+    </view>
+    <view class="nav-item" bindtap="scrollToSection" data-section="section-income">
+      <text class="nav-dot">●</text>
+      <text class="nav-text">分享津贴规则</text>
+    </view>
+    <view class="nav-item" bindtap="scrollToSection" data-section="section-withdraw">
+      <text class="nav-dot">●</text>
+      <text class="nav-text">提现规则</text>
+    </view>
+    <view class="nav-item" bindtap="scrollToSection" data-section="section-exchange">
+      <text class="nav-dot">●</text>
+      <text class="nav-text">权益兑换规则</text>
+    </view>
+  </view>
+
+  <!-- 一、准入规则 -->
+  <view class="rule-section" id="section-access">
+    <view class="rule-title">一、准入规则</view>
+    <view class="rule-card">
+      <view class="rule-item">
+        <text class="rule-point">· 参与资格</text>
+        <text class="rule-desc">诺派永生花商城注册用户均可参与分享奖励计划。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 参与方式</text>
+        <text class="rule-desc">在商品详情页点击"分享"按钮，将商品通过微信分享给好友，好友通过您的分享链接下单后，您即可获得分享津贴。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 新手期</text>
+        <text class="rule-desc">新加入用户享有30天新手引导期，期间可享受加倍分享奖励。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 适用范围</text>
+        <text class="rule-desc">除部分特殊活动商品外，商城在售商品均参与分享奖励计划（特殊商品会有标注说明）。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 二、分享津贴规则 -->
+  <view class="rule-section" id="section-income">
+    <view class="rule-title">二、分享津贴规则</view>
+    <view class="rule-card">
+      <view class="rule-item">
+        <text class="rule-point">· 津贴计算</text>
+        <text class="rule-desc">分享津贴 = 订单实付金额 × 分享奖励比例。不同商品的分享奖励比例有所不同，具体比例在商品分享页面标注。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 奖励比例</text>
+        <text class="rule-desc">分享奖励比例分为3%、5%、8%三档，根据商品品类和活动方案设定。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 奖励发放</text>
+        <text class="rule-desc">好友确认收货后，分享津贴在7个工作日内结算到您的账户。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 额外奖励</text>
+        <text class="rule-desc">新手期内分享，额外获得2%加成奖励。参与平台定期活动，可获得额外分享奖励加成。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 特殊情况</text>
+        <text class="rule-desc">如好友发起退款或取消订单，该笔订单对应的分享奖励将不予结算。已结算的奖励如发生退款，将在后续收益中扣除相应金额。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 三、提现规则 -->
+  <view class="rule-section" id="section-withdraw">
+    <view class="rule-title">三、提现规则</view>
+    <view class="rule-card">
+      <view class="rule-item">
+        <text class="rule-point">· 提现门槛</text>
+        <text class="rule-desc">累计分享津贴满10元即可申请提现。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 提现方式</text>
+        <text class="rule-desc">通过微信零钱提现，实时到账。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 提现限额</text>
+        <text class="rule-desc">单笔提现上限500元，单日提现上限1000元。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 提现手续费</text>
+        <text class="rule-desc">分享津贴提现免收手续费。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 提现时间</text>
+        <text class="rule-desc">每日9:00-22:00可申请提现，提现申请实时处理。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 注意事项</text>
+        <text class="rule-desc">请确保您的微信账号已进行实名认证，否则可能影响提现功能。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 四、权益兑换规则 -->
+  <view class="rule-section" id="section-exchange">
+    <view class="rule-title">四、权益兑换规则</view>
+    <view class="rule-card">
+      <view class="rule-item">
+        <text class="rule-point">· 兑换方式</text>
+        <text class="rule-desc">分享津贴可在商城兑换商品，1元津贴=1元等值权益。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 兑换范围</text>
+        <text class="rule-desc">津贴可兑换商城指定商品，部分商品支持"津贴+现金"混合支付方式。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 兑换流程</text>
+        <text class="rule-desc">在商品结算页选择"使用津贴"支付方式即可。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-point">· 有效期</text>
+        <text class="rule-desc">分享津贴自到账之日起180天内有效，逾期未使用将自动清零，请及时使用。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 补充说明 -->
+  <view class="rule-section" id="section-notes">
+    <view class="rule-title">补充说明</view>
+    <view class="rule-card">
+      <view class="rule-item">
+        <text class="rule-desc">1. 分享奖励计划旨在鼓励用户分享优质商品，请勿使用非正常手段获取奖励，一经发现将取消参与资格并追回已发放奖励。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-desc">2. 诺派永生花有权根据运营需要调整分享奖励规则，调整后的规则将在页面公示。</text>
+      </view>
+      <view class="rule-item">
+        <text class="rule-desc">3. 如对本规则有疑问，可联系在线客服或查看常见问题页面。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部留白 -->
+  <view class="bottom-space"></view>
+</scroll-view>
+</view>

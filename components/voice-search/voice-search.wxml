@@ -1,0 +1,65 @@
+<!-- components/voice-search/voice-search.wxml - 语音搜索 -->
+<view wx:if="{{visible}}" class="voice-mask" catchtouchmove="noop">
+  <view class="voice-panel">
+    <view class="voice-close" bindtap="onClose">
+      <text class="close-icon">✕</text>
+    </view>
+
+    <!-- 状态图标 -->
+    <view class="voice-status-area">
+      <view wx:if="{{status === 'idle'}}" class="voice-icon-wrap">
+        <view class="voice-icon idle">
+          <text class="icon-mic">🎤</text>
+        </view>
+      </view>
+
+      <!-- 录音中 -->
+      <view wx:elif="{{status === 'recording'}}" class="voice-icon-wrap">
+        <view class="voice-icon recording">
+          <view class="voice-ripple" style="transform: scale({{1 + volumeLevel / 200}}); opacity: {{0.3 + volumeLevel / 500}};"></view>
+          <view class="voice-ripple" style="transform: scale({{1 + volumeLevel / 150}}); opacity: {{0.2 + volumeLevel / 300}};"></view>
+          <text class="icon-mic">🎤</text>
+        </view>
+      </view>
+
+      <!-- 处理中 -->
+      <view wx:elif="{{status === 'processing'}}" class="voice-icon-wrap">
+        <view class="voice-icon processing">
+          <text class="icon-mic">⏳</text>
+        </view>
+      </view>
+
+      <!-- 成功 -->
+      <view wx:elif="{{status === 'success'}}" class="voice-icon-wrap">
+        <view class="voice-icon success">
+          <text class="icon-mic">✓</text>
+        </view>
+      </view>
+
+      <!-- 错误 -->
+      <view wx:elif="{{status === 'error'}}" class="voice-icon-wrap">
+        <view class="voice-icon error">
+          <text class="icon-mic">!</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 状态文字 -->
+    <text class="voice-status-text">{{statusText || placeholder}}</text>
+
+    <view class="voice-actions">
+      <view wx:if="{{status === 'error'}}" class="voice-btn retry-btn" bindtap="onRetry">
+        <text>重新录音</text>
+      </view>
+      <view wx:elif="{{status === 'success'}}" class="voice-btn confirm-btn" bindtap="onConfirmSearch">
+        <text>搜索</text>
+      </view>
+      <view wx:elif="{{status === 'recording'}}" class="voice-btn stop-btn" bindtap="stopRecording">
+        <text>完成</text>
+      </view>
+    </view>
+
+    <!-- 提示文字 -->
+    <text class="voice-hint">说话时请靠近麦克风，清晰说出您想搜索的商品</text>
+  </view>
+</view>

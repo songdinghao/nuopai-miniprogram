@@ -1,0 +1,133 @@
+<!-- pages/mom/materials/materials.wxml - 素材库页面 -->
+<view class="page-container materials-page {{fontSizeClass}}">
+  <!-- Tab切换栏 -->
+  <view class="tab-bar">
+    <view wx:for="{{categories}}" wx:key="id" class="tab-item {{currentTab === index ? 'active' : ''}}" bindtap="switchMaterialTab" data-index="{{index}}">
+      <text class="tab-text">{{item.name}}</text>
+      <view wx:if="{{currentTab === index}}" class="tab-indicator"></view>
+    </view>
+  </view>
+
+  <!-- 海报Tab -->
+  <view wx:if="{{currentTab === 0}}" class="tab-content">
+    <view class="section-header">
+      <text class="section-title">选择商品生成海报</text>
+      <text class="section-desc">点击商品，自动生成精美分享海报</text>
+    </view>
+
+    <view class="product-grid">
+      <view wx:for="{{products}}" wx:key="id" class="product-card {{selectedProductId === item.id ? 'selected' : ''}}" bindtap="selectProduct" data-product-id="{{item.id}}">
+        <view class="product-thumb">
+          <image class="product-img" mode="aspectFill" src="{{item.image}}" />
+        <view wx:if="{{selectedProductId === item.id}}" class="selected-badge">✓</view>
+      </view>
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <text class="product-price">¥{{item.price}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 文案Tab -->
+<view wx:if="{{currentTab === 1}}" class="tab-content">
+  <view class="section-header">
+    <text class="section-title">选择商品生成文案</text>
+    <text class="section-desc">社群暖心文案，一键复制分享</text>
+  </view>
+
+  <view class="product-list">
+    <view wx:for="{{products}}" wx:key="id" class="product-row {{selectedProductId === item.id ? 'selected' : ''}}" bindtap="selectProduct" data-product-id="{{item.id}}">
+      <image class="product-row-img" mode="aspectFill" src="{{item.image}}" />
+    <view class="product-row-info">
+      <text class="product-row-name">{{item.name}}</text>
+      <text class="product-row-price">¥{{item.price}}</text>
+    </view>
+    <view wx:if="{{selectedProductId === item.id}}" class="product-row-checked">
+      <text class="checked-icon">✓</text>
+    </view>
+  </view>
+</view>
+
+<!-- 文案展示 -->
+<view wx:if="{{copyList.length > 0}}" class="copy-section">
+  <view class="copy-header">
+    <text class="copy-title">推荐文案</text>
+    <button class="copy-all-btn" bindtap="copyAllCopy">一键复制全部</button>
+  </view>
+
+  <view class="copy-list">
+    <view wx:for="{{copyList}}" wx:key="id" class="copy-item" bindtap="copyCopy" data-text="{{item.text}}">
+      <text class="copy-text">{{item.text}}</text>
+      <view class="copy-action">
+        <text class="copy-btn-text">复制</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 未选择商品或文案生成中的提示 -->
+<view wx:if="{{selectedProductId && copyList.length === 0}}" class="loading-hint">
+  <text class="loading-text">文案生成中，请稍候...</text>
+</view>
+<view wx:if="{{!selectedProductId}}" class="empty-hint">
+  <text class="empty-icon-text">✏️</text>
+  <text class="empty-hint-text">请选择上方商品生成文案</text>
+</view>
+</view>
+
+<!-- 店铺码Tab -->
+<view wx:if="{{currentTab === 2}}" class="tab-content">
+  <view class="section-header">
+    <text class="section-title">我的店铺推广码</text>
+    <text class="section-desc">分享店铺码，好友扫码即可进入店铺</text>
+  </view>
+
+  <view wx:if="{{storeQR}}" class="qrcode-card">
+    <view class="qrcode-header">
+      <text class="qrcode-shop-name">{{storeQR.shopName}}</text>
+      <text class="qrcode-user-info">{{storeQR.userInfo.nickName}} · {{storeQR.userInfo.level}}</text>
+    </view>
+    <view class="qrcode-image-wrapper">
+      <image class="qrcode-image" mode="aspectFit" src="{{storeQR.qrUrl}}" />
+  </view>
+  <view class="qrcode-footer">
+    <text class="qrcode-invite-code">邀请码：{{storeQR.inviteCode}}</text>
+    <text class="qrcode-hint">扫码进入诺派永生花小店</text>
+  </view>
+</view>
+
+<button class="save-qrcode-btn" bindtap="saveStoreQR">保存到相册</button>
+</view>
+
+<view class="safe-area-bottom"></view>
+
+<view wx:if="{{showPosterModal}}" class="poster-modal-overlay" bindtap="closePosterModal">
+  <view class="poster-modal" catchtap="">
+    <view class="poster-modal-header">
+      <text class="poster-modal-title">海报预览</text>
+    </view>
+
+    <view wx:if="{{posterPreview}}" class="poster-preview">
+      <view class="poster-canvas">
+        <image class="poster-product-image" mode="aspectFill" src="{{posterPreview.imageUrl}}" />
+      <view class="poster-overlay">
+        <text class="poster-brand">诺派永生花</text>
+        <text class="poster-product-name">{{posterPreview.title}}</text>
+        <text class="poster-product-desc">{{posterPreview.desc}}</text>
+        <text class="poster-product-price">{{posterPreview.price}}</text>
+      </view>
+      <view class="poster-qr-area">
+        <image class="poster-qr-image" mode="aspectFit" src="{{posterPreview.qrUrl}}" />
+      <text class="poster-qr-hint">扫码进店购买</text>
+    </view>
+  </view>
+</view>
+
+<view class="poster-modal-actions">
+  <button class="btn-save-poster" bindtap="savePoster">保存到相册</button>
+  <button class="btn-close-poster" bindtap="closePosterModal">关闭</button>
+</view>
+</view>
+</view>
+</view>

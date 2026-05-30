@@ -1,0 +1,169 @@
+<!-- pages/group/group.wxml - 拼团页面 -->
+<view class="group-page">
+
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 拼团详情（有指定groupId） -->
+  <block wx:if="{{!loading && group}}">
+
+    <view class="product-section">
+      <view class="product-card" bindtap="onGoProduct">
+        <image class="product-image" mode="aspectFill" src="{{group.mainImage}}" />
+      <view class="product-info">
+        <text class="product-name">{{group.productName}}</text>
+        <view class="product-price-row">
+          <text class="product-price">¥{{group.groupPrice}}</text>
+          <text class="product-original">¥{{group.originalPrice}}</text>
+          <text class="product-discount">省{{group.discountText}}</text>
+        </view>
+        <text wx:if="{{group.skuAttrs}}" class="product-specs">规格：{{group.skuAttrs.vaseType || ''}} {{group.skuAttrs.flowerMatch || ''}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="status-section">
+    <!-- 待成团 -->
+    <view wx:if="{{group.status === 'pending'}}" class="status-card pending">
+      <view class="status-title">
+        <text class="status-icon">⏳</text>
+        <text class="status-text">等待成团</text>
+      </view>
+      <view class="progress-section">
+        <!-- 成员头像 -->
+        <view class="members-avatars">
+          <view wx:for="{{group.members}}" wx:for-item="m" wx:key="id" class="member-avatar">
+            <image class="avatar-img" mode="aspectFill" src="{{m.avatar}}" />
+          <text wx:if="{{m.role === 'leader'}}" class="member-role">团长</text>
+        </view>
+        <!-- 空缺位置 -->
+        <view wx:for="{{group.needCount}}" wx:key="*this" class="member-avatar empty">
+          <text class="avatar-placeholder">?</text>
+        </view>
+      </view>
+      <!-- 进度条 -->
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{(group.currentCount / group.typeConfig.maxPeople) * 100}}%"></view>
+      </view>
+      <text class="progress-text">{{group.currentCount}}/{{group.typeConfig.maxPeople}} 人已参团</text>
+    </view>
+    <!-- 倒计时 -->
+    <view class="countdown-section">
+      <text class="countdown-label">剩余时间</text>
+      <text wx:if="{{countdown !== '00:00:00'}}" class="countdown-time">{{countdown}}</text>
+      <text wx:else class="countdown-time expired">已过期</text>
+    </view>
+    <view class="action-section">
+      <view wx:if="{{isLeader || isMember}}" class="invite-btn" bindtap="onShareTap">
+        <text>邀请好友参团</text>
+      </view>
+      <view wx:elif="{{!isMember && group.currentCount < group.typeConfig.maxPeople}}" class="join-btn" bindtap="onJoinGroup">
+        <text>我要参团</text>
+      </view>
+      <view wx:else bindtap="onGoProduct" class="full-btn">
+        <text>去看看</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已成团 -->
+  <view wx:if="{{group.status === 'success'}}" class="status-card success">
+    <view class="status-title">
+      <text class="status-icon">🎉</text>
+      <text class="status-text success-text">拼团成功</text>
+    </view>
+    <view class="members-avatars">
+      <view wx:for="{{group.members}}" wx:for-item="m" wx:key="id" class="member-avatar">
+        <image class="avatar-img" mode="aspectFill" src="{{m.avatar}}" />
+      <text wx:if="{{m.role === 'leader'}}" class="member-role">团长</text>
+    </view>
+  </view>
+  <text class="success-info">恭喜！拼团成功，可以前往结算了</text>
+  <view class="action-section">
+    <view class="checkout-btn" bindtap="onGoCheckout">
+      <text>去结算</text>
+    </view>
+  </view>
+</view>
+
+<!-- 已过期 -->
+<view wx:else class="status-card expired">
+  <view class="status-title">
+    <text class="status-icon">😢</text>
+    <text class="status-text expired-text">拼团已过期</text>
+  </view>
+  <text class="expired-info">很遗憾，本次拼团未能在有效期内成团</text>
+  <view class="action-section">
+    <view class="restart-btn" bindtap="onGoProduct">
+      <text>再开一团</text>
+    </view>
+  </view>
+</view>
+</view>
+
+<view class="info-section">
+  <view class="info-item">
+    <text class="info-label">拼团类型</text>
+    <text class="info-value">{{group.typeConfig.label}}</text>
+  </view>
+  <view class="info-item">
+    <text class="info-label">团长优惠</text>
+    <text class="info-value">{{group.typeConfig.leaderGift || '额外折扣'}}</text>
+  </view>
+  <view class="info-item">
+    <text class="info-label">有效期</text>
+    <text class="info-value">{{group.typeConfig.defaultDuration}}小时</text>
+  </view>
+</view>
+
+<!-- 拼团规则 -->
+<view class="rules-section" bindtap="onViewRules">
+  <text class="rules-title">拼团规则</text>
+  <text class="rules-arrow">›</text>
+</view>
+
+<view wx:if="{{isLeader && group.status === 'pending'}}" class="share-bar">
+  <view class="share-btn" bindtap="onShareTap">
+    <text class="share-icon">↗️</text>
+    <text>分享给好友</text>
+  </view>
+  <view class="copy-btn" bindtap="onCopyInviteLink">
+    <text class="share-icon">📋</text>
+    <text>复制链接</text>
+  </view>
+</view>
+
+</block>
+
+<block wx:if="{{!loading && !group && productId}}">
+  <view class="groups-list-section">
+    <view class="list-header">
+      <text class="list-title">该商品的所有拼团</text>
+    </view>
+    <view wx:if="{{groupsByProduct.length > 0}}" class="groups-list">
+      <view wx:for="{{groupsByProduct}}" wx:key="id" class="groups-item" bindtap="onSelectGroup" data-index="{{index}}">
+        <view class="groups-top">
+          <view class="groups-members">
+            <image class="groups-avatar" mode="aspectFill" src="{{item.leader.avatar}}" />
+          <text class="groups-count">{{item.currentCount}}/{{item.typeConfig.maxPeople}}人</text>
+        </view>
+        <text class="groups-type">{{item.typeConfig.label}}</text>
+      </view>
+      <view class="groups-bottom">
+        <text class="groups-creator">{{item.leader.name}} 发起</text>
+        <text class="groups-status {{item.statusClass}}">{{item.statusText}}</text>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="groups-empty">
+    <text>暂无活跃拼团</text>
+    <view class="start-group-btn" bindtap="onGoProduct">
+      <text>去发起拼团</text>
+    </view>
+  </view>
+</view>
+</block>
+
+</view>

@@ -1,0 +1,201 @@
+.page {
+  padding: 0;
+  background: var(--bg-color);
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.summary-card {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-pink-mid));
+  padding: 40rpx 32rpx;
+  margin: 0;
+  color: #ffffff;
+}
+
+.summary-header {
+  font-size: 28rpx;
+  opacity: 0.9;
+}
+
+.summary-total {
+  font-size: 80rpx;
+  font-weight: 600;
+  margin: 16rpx 0;
+}
+
+.summary-row {
+  display: flex;
+  gap: 40rpx;
+  margin-top: 24rpx;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-item .label {
+  font-size: 24rpx;
+  opacity: 0.85;
+}
+
+.summary-item .value {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-top: 8rpx;
+}
+
+.monthly-card {
+  background: #ffffff;
+  margin: 24rpx 32rpx;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 20rpx;
+}
+
+.monthly-row {
+  display: flex;
+  gap: 60rpx;
+}
+
+.monthly-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.monthly-item .num {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.monthly-item .lbl {
+  font-size: 24rpx;
+  color: #999999;
+  margin-top: 8rpx;
+}
+
+.filter-bar {
+  display: flex;
+  margin: 16rpx 32rpx;
+  gap: 16rpx;
+  overflow-x: auto;
+}
+
+.filter-tab {
+  padding: 12rpx 24rpx;
+  font-size: 26rpx;
+  color: #666666;
+  background: #ffffff;
+  border-radius: 40rpx;
+  white-space: nowrap;
+}
+
+.filter-tab.active {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.earnings-list {
+  margin: 16rpx 32rpx;
+}
+
+.earnings-item {
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 28rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+
+.earn-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.earn-type {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333333;
+}
+
+.earn-order {
+  font-size: 24rpx;
+  color: #999999;
+  margin-top: 6rpx;
+}
+
+.earn-time {
+  font-size: 22rpx;
+  color: #bbbbbb;
+  margin-top: 6rpx;
+}
+
+.earn-amount {
+  text-align: right;
+}
+
+.amount-num {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+  display: block;
+}
+
+.status-tag {
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  display: inline-block;
+  margin-top: 8rpx;
+}
+
+.status-tag.pending {
+  background: #fff3e0;
+  color: var(--color-orange);
+}
+
+.status-tag.settled {
+  background: #e8f5e9;
+  color: var(--color-success);
+}
+
+.status-tag.cancelled {
+  background: #ffebee;
+  color: #f44336;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80rpx 0;
+}
+
+.empty-icon {
+  font-size: 64rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+  margin-top: 16rpx;
+  display: block;
+}
+
+.empty-hint {
+  font-size: 24rpx;
+  color: #bbbbbb;
+  margin-top: 8rpx;
+  display: block;
+}

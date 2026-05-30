@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "product-card": "/components/product-card/product-card",
+    "privacy-popup": "/components/privacy-popup/privacy-popup"
+  },
+  "navigationStyle": "custom"
+}

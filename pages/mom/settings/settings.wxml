@@ -1,0 +1,83 @@
+<!-- pages/mom/settings/settings.wxml - 通知设置页 -->
+<view class="page {{fontSizeClass}}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-icon">&lt;</text>
+      <text class="back-text">返回</text>
+    </view>
+    <text class="page-title">通知设置</text>
+  </view>
+
+  <!-- 通知开关 -->
+  <view class="setting-section">
+    <view class="section-label">通知设置</view>
+
+    <view class="setting-item">
+      <view class="setting-info">
+        <text class="setting-label">收益提醒</text>
+        <text class="setting-desc">分享津贴到账时通知您</text>
+      </view>
+      <switch class="setting-switch" bindchange="toggleNotification" checked="{{notificationEnabled}}" color="#2D8C7A" />
+  </view>
+
+  <view class="setting-item">
+    <view class="setting-info">
+      <text class="setting-label">订阅通知</text>
+      <text class="setting-desc">{{subscribed ? '已订阅，将收到通知' : '未订阅，点击开启微信通知'}}</text>
+    </view>
+    <button class="subscribe-btn {{subscribed ? 'active' : ''}}" bindtap="handleSubscribe">
+      <text>{{subscribed ? '已订阅' : '去订阅'}}</text>
+    </button>
+  </view>
+</view>
+
+<!-- 辅助功能 -->
+<view class="setting-section">
+  <view class="section-label">辅助功能</view>
+
+  <view class="setting-item">
+    <view class="setting-info">
+      <text class="setting-label">大字版</text>
+      <text class="setting-desc">放大页面字体，阅读更轻松</text>
+    </view>
+    <switch class="setting-switch" bindchange="toggleLargeFont" checked="{{largeFontEnabled}}" color="#2D8C7A" />
+</view>
+
+<view class="setting-item">
+  <view class="setting-info">
+    <text class="setting-label">当前字体</text>
+    <text class="setting-desc">{{fontSizeText}}</text>
+  </view>
+  <view class="font-size-selector">
+    <view class="font-option {{fontSizeLevel === 'normal' ? 'active' : ''}}" bindtap="setFontSize" data-size="normal">标准</view>
+    <view class="font-option {{fontSizeLevel === 'large' ? 'active' : ''}}" bindtap="setFontSize" data-size="large">大</view>
+    <view class="font-option {{fontSizeLevel === 'extra-large' ? 'active' : ''}}" bindtap="setFontSize" data-size="extra-large">超大</view>
+  </view>
+</view>
+</view>
+
+<!-- 新手期 -->
+<view class="setting-section">
+  <view class="section-label">新手引导</view>
+
+  <view class="setting-item">
+    <view class="setting-info">
+      <text class="setting-label">新手期倒计时</text>
+      <text class="setting-desc">显示剩余新手引导天数</text>
+    </view>
+    <switch class="setting-switch" bindchange="toggleGuideCountdown" checked="{{showGuideCountdown}}" color="#2D8C7A" />
+</view>
+
+<view class="setting-item">
+  <view class="setting-info">
+    <text class="setting-label">新手期剩余</text>
+    <text class="setting-desc">{{guideDaysLeft}}天</text>
+  </view>
+</view>
+</view>
+
+<view class="setting-tip">
+  <text class="tip-text">开启收益提醒后，您将通过微信服务通知收到分享津贴到账提醒。每日最多发送1条通知。</text>
+</view>
+</view>

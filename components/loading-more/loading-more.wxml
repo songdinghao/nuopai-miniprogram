@@ -1,0 +1,26 @@
+<!-- components/loading-more/loading-more.wxml - 加载更多 -->
+<view class="loading-more">
+  <!-- 加载中 -->
+  <view wx:if="{{status === 'loading'}}" class="loading-state">
+    <view class="loading-spinner">
+      <view wx:for="{{4}}" wx:key="*this" class="spinner-dot" style="animation-delay: {{item * 0.15}}s;"></view>
+    </view>
+    <text class="loading-text">{{loadingText}}</text>
+  </view>
+
+  <!-- 加载错误 -->
+  <view wx:elif="{{status === 'error'}}" class="error-state" bindtap="onRetry">
+    <text class="error-icon">!</text>
+    <text class="error-text">{{errorText}}</text>
+  </view>
+
+  <!-- 加载完成（没有更多） -->
+  <view wx:elif="{{status === 'no-more'}}" class="no-more-state">
+    <view class="no-more-line"></view>
+    <text class="no-more-text">{{noMoreText}}</text>
+    <view class="no-more-line"></view>
+  </view>
+
+  <!-- 兜底 -->
+  <view wx:else></view>
+</view>

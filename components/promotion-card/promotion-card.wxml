@@ -1,0 +1,31 @@
+<!-- components/promotion-card/promotion-card.wxml - 促销卡片 -->
+<!-- 卡片模式 -->
+<view wx:if="{{layout === 'card'}}" class="promotion-card" bindtap="onTap" data-aria-label="{{promotion.title}}, {{promotion.subtitle}}" hover-class="promotion-card-hover">
+  <view class="card-content" style="background: linear-gradient(135deg, {{promotion.bgColor}}, {{promotion.bgColor}}88);">
+    <view class="card-info">
+      <text class="card-title">{{promotion.title}}</text>
+      <text class="card-subtitle">{{promotion.subtitle}}</text>
+      <view class="card-actions">
+        <text class="card-badge">{{promotion.discount}}</text>
+        <view class="card-btn" data-aria-label="立即查看{{promotion.title}}">立即查看</view>
+      </view>
+    </view>
+    <image class="card-image" binderror="onImageError" data-aria-label="{{promotion.title}}促销图片" lazy-load="{{true}}" mode="aspectFit" src="{{promotion.image}}" />
+</view>
+</view>
+
+<!-- 横幅模式 -->
+<view wx:elif="{{layout === 'banner'}}" class="promotion-banner" bindtap="onTap" data-aria-label="{{promotion.title}}" hover-class="promotion-banner-hover">
+  <image class="banner-image" binderror="onImageError" data-aria-label="{{promotion.title}}横幅" lazy-load="{{true}}" mode="scaleToFill" src="{{promotion.image}}" />
+<view class="banner-overlay" style="background: linear-gradient(90deg, {{promotion.bgColor}}CC, transparent);">
+  <text class="banner-title">{{promotion.title}}</text>
+  <text class="banner-subtitle">{{promotion.subtitle}}</text>
+  <view class="banner-right">
+    <text wx:if="{{countdown}}" class="banner-countdown">剩余 {{countdown}}</text>
+    <text class="banner-arrow">›</text>
+  </view>
+</view>
+</view>
+
+<!-- 兜底：未知布局 -->
+<view wx:else></view>

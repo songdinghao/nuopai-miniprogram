@@ -1,0 +1,101 @@
+.help-page {
+  background-color: #F8F8F8;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.help-header {
+  background-color: #FFFFFF;
+  padding: 40rpx 32rpx 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.help-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.help-desc {
+  font-size: 24rpx;
+  color: #999999;
+  display: block;
+}
+
+.faq-list {
+  margin: 0 24rpx;
+}
+
+.faq-item {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 24rpx;
+}
+
+.faq-q-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.faq-arrow {
+  font-size: 32rpx;
+  color: #CCCCCC;
+  transition: transform 0.3s;
+  margin-left: 16rpx;
+}
+
+.faq-arrow.rotated {
+  transform: rotate(90deg);
+}
+
+.faq-answer {
+  padding: 0 24rpx 32rpx;
+  border-top: 1rpx solid #F0F0F0;
+  padding-top: 24rpx;
+}
+
+.faq-a-text {
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.contact-section {
+  margin: 48rpx 24rpx;
+}
+
+.contact-btn {
+  width: 100%;
+  height: 96rpx;
+  background-color: #2D8C7A;
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.contact-btn::after {
+  border: none;
+}
+
+.safe-area-bottom {
+  height: env(safe-area-inset-bottom);
+}

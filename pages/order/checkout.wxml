@@ -1,0 +1,192 @@
+<!-- pages/order/checkout.wxml - 订单结算页面模板 -->
+<view class="checkout-page font-{{fontSize}}" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <view class="header">
+    <view class="nav-bar">
+      <view class="nav-left">
+        <view class="back-btn" bindtap="onBack">
+          <text class="icon">←</text>
+        </view>
+      </view>
+
+      <view class="nav-title">
+        <text class="title-text">确认订单</text>
+      </view>
+
+      <view class="nav-right"></view>
+    </view>
+  </view>
+
+  <scroll-view class="page-content" scroll-y>
+    <view wx:if="{{loading}}" class="loading-container">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 加载失败 -->
+    <empty-state wx:if="{{!loading && loadError}}" title="加载失败" description="请检查网络后重试" type="network" buttonText="重新加载" bindaction="retryLoadOrderData"></empty-state>
+
+    <view wx:if="{{!loading && !loadError}}" class="order-content">
+      <!-- 收货地址 -->
+      <view class="section address-section">
+        <view class="section-header">
+          <text class="section-title">收货地址</text>
+        </view>
+
+        <view class="address-card" bindtap="onSelectAddress">
+          <view wx:if="{{selectedAddress}}" class="address-info">
+            <view class="address-top">
+              <text class="address-name">{{selectedAddress.name}}</text>
+              <text class="address-phone">{{selectedAddress.phone}}</text>
+            </view>
+            <text class="address-detail">{{selectedAddress.detail}}</text>
+          </view>
+
+          <view wx:else class="address-empty">
+            <text>请选择收货地址</text>
+            <text class="arrow">›</text>
+          </view>
+
+          <view wx:if="{{selectedAddress}}" class="address-arrow">
+            <text>›</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="section products-section">
+        <view class="section-header">
+          <text class="section-title">商品信息</text>
+          <view wx:if="{{isGroupBuyOrder}}" class="group-buy-badge">
+            <text>拼团单</text>
+          </view>
+        </view>
+
+        <view class="products-list">
+          <view wx:for="{{orderItems}}" wx:key="id" class="product-item">
+            <image class="product-image" mode="aspectFill" src="{{item.image}}" />
+          <view class="product-info">
+            <text class="product-name">{{item.name}}</text>
+            <text wx:if="{{item.specsText}}" class="product-specs">{{item.specsText}}</text>
+            <view class="product-bottom">
+              <text class="product-price">¥{{item.price}}</text>
+              <text class="product-quantity">x{{item.quantity}}</text>
+            </view>
+            <text wx:if="{{isGroupBuyOrder}}" class="product-group-tag">拼团价</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{isGroupBuyOrder && groupBuyInfo}}" class="group-buy-info">
+        <view class="group-buy-info-row">
+          <text class="group-buy-info-label">拼团类型</text>
+          <text class="group-buy-info-value">{{groupBuyInfo.typeConfig.label || groupBuyInfo.typeId}}</text>
+        </view>
+        <view class="group-buy-info-row">
+          <text class="group-buy-info-label">参团人数</text>
+          <text class="group-buy-info-value">{{groupBuyInfo.currentCount}}/{{groupBuyInfo.typeConfig.maxPeople || groupBuyInfo.typeConfig.minPeople}}人</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 优惠券 -->
+    <view class="section coupon-section" bindtap="onSelectCoupon">
+      <view class="section-header">
+        <text class="section-title">优惠券</text>
+      </view>
+
+      <view class="coupon-card">
+        <view wx:if="{{selectedCoupon}}" class="coupon-info">
+          <text class="coupon-value">-¥{{selectedCoupon.value}}</text>
+          <text class="coupon-name">{{selectedCoupon.name}}</text>
+          <text class="coupon-condition">{{selectedCoupon.conditionText}}</text>
+        </view>
+
+        <view wx:else class="coupon-empty">
+          <text>选择优惠券</text>
+          <text wx:if="{{availableCoupons.length > 0}}" class="coupon-count">({{availableCoupons.length}}张可用)</text>
+        </view>
+
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 订单备注 -->
+    <view class="section remark-section">
+      <view class="section-header">
+        <text class="section-title">订单备注</text>
+      </view>
+
+      <view class="remark-box">
+        <input class="remark-input" bindinput="onRemarkInput" maxlength="100" placeholder="选填，可以告诉卖家您的特殊需求" value="{{remark}}" />
+      <text class="remark-count">{{remark.length}}/100</text>
+    </view>
+  </view>
+
+  <!-- 价格明细 -->
+  <view class="section price-section">
+    <view class="section-header">
+      <text class="section-title">价格明细</text>
+    </view>
+
+    <view class="price-list">
+      <view class="price-item">
+        <text class="price-label">商品金额</text>
+        <text class="price-value">¥{{goodsPrice}}</text>
+      </view>
+
+      <view wx:if="{{shippingFee > 0}}" class="price-item">
+        <text class="price-label">运费</text>
+        <text class="price-value">¥{{shippingFee}}</text>
+      </view>
+
+      <view wx:if="{{couponDiscount > 0}}" class="discount price-item">
+        <text class="price-label">优惠券</text>
+        <text class="price-value">-¥{{couponDiscount}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+</scroll-view>
+
+<!-- 底部操作栏 -->
+<view wx:if="{{!loading && !loadError}}" class="bottom-bar">
+  <view class="total-section">
+    <text class="total-label">合计：</text>
+    <text class="total-price">¥{{totalPrice}}</text>
+  </view>
+
+  <view class="submit-btn" bindtap="onSubmitOrder">
+    <text>提交订单</text>
+  </view>
+</view>
+
+<view wx:if="{{showPayModal}}" class="pay-modal">
+  <view class="modal-mask" bindtap="onHidePayModal"></view>
+
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="modal-title">选择支付方式</text>
+      <text class="modal-close" bindtap="onHidePayModal">×</text>
+    </view>
+
+    <view class="pay-methods">
+      <view class="pay-method {{payMethod === 'wechat' ? 'selected' : ''}}" bindtap="onSelectPayMethod" data-method="wechat">
+        <text class="pay-icon">💳</text>
+        <text class="pay-name">微信支付</text>
+        <view class="pay-check"></view>
+      </view>
+    </view>
+
+    <view class="modal-bottom">
+      <view class="pay-total">
+        <text class="pay-label">应付：</text>
+        <text class="pay-price">¥{{totalPrice}}</text>
+      </view>
+
+      <view class="pay-btn" bindtap="onPay">
+        <text>确认支付</text>
+      </view>
+    </view>
+  </view>
+</view>
+</view>

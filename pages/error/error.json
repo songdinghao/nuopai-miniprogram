@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "页面异常",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#F8F8F8",
+  "navigationStyle": "default",
+  "usingComponents": {}
+}

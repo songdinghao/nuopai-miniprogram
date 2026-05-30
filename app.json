@@ -1,0 +1,159 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/category/category",
+    "pages/product/detail",
+    "pages/group/group",
+    "pages/search/search",
+    "pages/cart/cart",
+    "pages/order/checkout",
+    "pages/order/list",
+    "pages/order/detail",
+    "pages/user/user",
+    "pages/mom/activate/activate",
+    "pages/mom/home/home",
+    "pages/login/login",
+    "pages/register/register",
+    "pages/scene/scene",
+    "pages/error/error",
+    "pages/invite/invite",
+    "pages/anniversary/anniversary",
+    "pages/mom/rules/rules",
+    "pages/mom/settings/settings",
+    "pages/mom/faq/faq",
+    "pages/mom/materials/materials",
+    "pages/mom/earnings/earnings",
+    "pages/mom/withdraw/withdraw",
+    "pages/mom/exchange/exchange",
+    "pages/user/address/address",
+    "pages/feedback/feedback",
+    "pages/help/help"
+  ],
+  "window": {
+    "navigationBarTitleText": "诺派永生花商城",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F8F8F8",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": true,
+    "onReachBottomDistance": 50
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#2D8C7A",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/tab-home.png",
+        "selectedIconPath": "assets/icons/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/category/category",
+        "text": "分类",
+        "iconPath": "assets/icons/tab-category.png",
+        "selectedIconPath": "assets/icons/tab-category-active.png"
+      },
+      {
+        "pagePath": "pages/cart/cart",
+        "text": "购物车",
+        "iconPath": "assets/icons/tab-cart.png",
+        "selectedIconPath": "assets/icons/tab-cart-active.png"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "我的",
+        "iconPath": "assets/icons/tab-user.png",
+        "selectedIconPath": "assets/icons/tab-user-active.png"
+      }
+    ],
+    "position": "bottom"
+  },
+  "networkTimeout": {
+    "request": 15000,
+    "connectSocket": 10000,
+    "uploadFile": 30000,
+    "downloadFile": 30000
+  },
+  "debug": false,
+  "subpackages": [
+    {
+      "root": "pages/ar",
+      "pages": [
+        "ar"
+      ]
+    },
+    {
+      "root": "subpackages/user",
+      "pages": [
+        "coupon/coupon",
+        "points/points"
+      ]
+    },
+    {
+      "root": "pages/promotion",
+      "pages": [
+        "promotion"
+      ]
+    },
+    {
+      "root": "pages/notification",
+      "pages": [
+        "notification"
+      ]
+    },
+    {
+      "root": "subpackages/search",
+      "pages": [
+        "result/result"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "all",
+      "packages": [
+        "pages/ar"
+      ]
+    },
+    "pages/category/category": {
+      "network": "all",
+      "packages": [
+        "subpackages/search"
+      ]
+    },
+    "pages/user/user": {
+      "network": "all",
+      "packages": [
+        "subpackages/user",
+        "pages/promotion",
+        "pages/notification"
+      ]
+    }
+  },
+  "requiredBackgroundModes": [
+    "audio",
+    "location"
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将用于推荐附近门店和配送服务"
+    }
+  },
+  "workers": "workers",
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseAddress",
+    "chooseLocation"
+  ],
+  "usingComponents": {
+    "empty-state": "/components/empty-state/empty-state"
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "entryPagePath": "pages/index/index",
+  "resizable": false
+}

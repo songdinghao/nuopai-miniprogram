@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "AR预览",
+  "navigationStyle": "custom",
+  "backgroundColor": "#000000",
+  "enablePullDownRefresh": false,
+  "disableScroll": true,
+  "usingComponents": {}
+}

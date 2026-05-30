@@ -1,0 +1,144 @@
+<!-- pages/anniversary/anniversary.wxml - 纪念日管理页面 -->
+<view class="anni-page" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 未登录 -->
+  <view wx:elif="{{!isLogin}}" class="login-prompt">
+    <view class="login-icon">📅</view>
+    <text class="login-title">纪念日提醒</text>
+    <text class="login-desc">设置重要纪念日，不再错过每一个特别的日子</text>
+    <button class="login-btn" bindtap="onLoginTap">立即登录</button>
+  </view>
+
+  <!-- 主页 -->
+  <view wx:else class="anni-content">
+
+    <view wx:if="{{anniversaries.length > 0}}" class="anni-list">
+      <block wx:for="{{anniversaries}}" wx:key="id">
+        <view class="anni-card">
+          <!-- 倒计时 -->
+          <view class="countdown-section">
+            <view class="countdown-bg" style="{{item.isToday ? 'background: linear-gradient(135deg, #2D8C7A, #1A6B5C);' : 'background: linear-gradient(135deg, #2D8C7A, #C9A96E);'}}">
+              <text class="countdown-number">{{item.isPast ? '已过' : item.daysUntil}}</text>
+              <text class="countdown-unit">{{item.isPast ? '' : '天'}}</text>
+            </view>
+          </view>
+
+          <!-- 信息 -->
+          <view class="anni-info">
+            <view class="anni-header">
+              <text class="anni-type-icon">{{item.typeIcon || '📅'}}</text>
+              <text class="anni-name">{{item.name}}</text>
+            </view>
+            <text class="anni-type">{{item.typeName || item.type}}</text>
+            <text class="anni-date">日期：{{item.date}}</text>
+            <text wx:if="{{item.isUpcoming && !item.isToday}}" class="anni-hint">还有 {{item.daysUntil}} 天</text>
+            <text wx:if="{{item.isToday}}" class="anni-hint today">就是今天！🎉</text>
+            <text wx:if="{{item.isPast}}" class="anni-hint past">已过 {{item.daysDisplay}} 天</text>
+          </view>
+
+          <!-- 操作 -->
+          <view class="anni-actions">
+            <view class="anni-action-btn" bindtap="onRecommendGift" data-type="{{item.type}}">
+              <text class="action-icon">🎁</text>
+              <text class="action-text">推荐礼物</text>
+            </view>
+            <view class="anni-action-btn" bindtap="onEdit" data-id="{{item.id}}">
+              <text class="action-icon">✏️</text>
+              <text class="action-text">编辑</text>
+            </view>
+            <view class="anni-action-btn" bindtap="onDelete" data-id="{{item.id}}">
+              <text class="action-icon">🗑️</text>
+              <text class="action-text">删除</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view wx:if="{{anniversaries.length === 0}}" class="empty-section">
+      <text class="empty-icon">📅</text>
+      <text class="empty-title">还没有设置纪念日</text>
+      <text class="empty-desc">添加纪念日，不错过每一个重要日子</text>
+    </view>
+
+    <view class="add-btn-container">
+      <view class="add-btn" bindtap="onShowAddForm">
+        <text class="add-icon">+</text>
+        <text class="add-text">添加纪念日</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showForm}}" class="form-overlay">
+    <view class="form-modal">
+      <view class="form-header">
+        <text class="form-title">{{formMode === 'create' ? '新增纪念日' : '编辑纪念日'}}</text>
+        <view class="form-close" bindtap="onCloseForm">
+          <text class="close-icon">✕</text>
+        </view>
+      </view>
+
+      <view class="form-body">
+        <!-- 名称 -->
+        <view class="form-group">
+          <text class="form-label">纪念日名称</text>
+          <input class="form-input" bindinput="onNameInput" placeholder="例：结婚纪念日" type="text" value="{{formData.name}}" />
+      </view>
+
+      <!-- 类型 -->
+      <view class="form-group">
+        <text class="form-label">纪念日类型</text>
+        <picker class="form-picker" bindchange="onTypeChange" mode="selector" range="{{types}}" range-key="name" value="{{selectedTypeIndex}}">
+      <view class="picker-display">
+        <text class="picker-icon">{{selectedTypeIcon}}</text>
+        <text class="picker-text">{{selectedTypeName || '请选择'}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 日期 -->
+  <view class="form-group">
+    <text class="form-label">日期</text>
+    <picker class="form-picker" bindchange="onDateChange" mode="date" value="{{'2024-' + formData.date}}">
+  <view class="picker-display">
+    <text class="picker-icon">📅</text>
+    <text class="picker-text">{{formData.date || '请选择日期'}}</text>
+    <text class="picker-arrow">▼</text>
+  </view>
+</picker>
+</view>
+
+<!-- 提醒设置 -->
+<view class="form-group">
+  <text class="form-label">提前提醒</text>
+  <view class="reminder-options">
+    <block wx:for="{{reminderOptions}}" wx:key="index">
+      <view class="reminder-option {{item.checked ? 'active' : ''}}" bindtap="onToggleReminder" data-index="{{index}}">
+        <text class="option-text">{{item.label}}</text>
+      </view>
+    </block>
+  </view>
+</view>
+
+<!-- 备注 -->
+<view class="form-group">
+  <text class="form-label">备注</text>
+  <input class="form-input" bindinput="onNoteInput" placeholder="可选" type="text" value="{{formData.note}}" />
+</view>
+</view>
+
+<view class="form-footer">
+  <view class="form-btn cancel" bindtap="onCloseForm">取消</view>
+  <view class="form-btn save" bindtap="onSave">保存</view>
+</view>
+</view>
+</view>
+
+<view class="safe-area-bottom"></view>
+</view>

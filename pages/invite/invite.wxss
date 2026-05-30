@@ -1,0 +1,507 @@
+.invite-page {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid var(--color-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.login-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 200rpx 40rpx;
+}
+
+.login-icon {
+  font-size: 100rpx;
+  margin-bottom: 30rpx;
+}
+
+.login-title {
+  font-size: 36rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+}
+
+.login-desc {
+  font-size: 26rpx;
+  color: #999999;
+  text-align: center;
+  margin-bottom: 40rpx;
+  line-height: 1.6;
+}
+
+.login-btn {
+  width: 300rpx;
+  height: 80rpx;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-warm));
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 500;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-btn::after {
+  border: none;
+}
+
+.invite-content {
+  padding-bottom: 40rpx;
+}
+
+/* Hero区域优化 */
+.invite-hero {
+  position: relative;
+  height: 320rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2D8C7A 0%, #E8734A 50%, #2D8C7A 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-radius: 0 0 60rpx 60rpx;
+}
+
+.hero-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 40rpx;
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 48rpx;
+  color: #ffffff;
+  font-weight: 700;
+  margin-bottom: 16rpx;
+  text-shadow: 0 4rpx 16rpx rgba(0,0,0,0.2);
+  letter-spacing: 4rpx;
+}
+
+.hero-subtitle {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
+}
+
+/* 统计卡片优化 */
+.stats-card {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  margin: -50rpx 30rpx 24rpx;
+  padding: 40rpx 20rpx;
+  box-shadow: 0 8rpx 40rpx rgba(45, 140, 122, 0.18);
+  position: relative;
+  z-index: 3;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 56rpx;
+  color: #2D8C7A;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+  line-height: 1.2;
+}
+
+.stat-value.highlight {
+  color: #E8734A;
+  font-size: 60rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999999;
+  font-weight: 500;
+}
+
+.stat-divider {
+  width: 2rpx;
+  height: 70rpx;
+  background: linear-gradient(to bottom, transparent, var(--border-light), transparent);
+}
+
+.invite-code-section {
+  margin: 24rpx 30rpx;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
+}
+
+.section-title {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: 600;
+  margin-bottom: 24rpx;
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6rpx;
+  height: 32rpx;
+  background: linear-gradient(135deg, #2D8C7A, #3AA99E);
+  border-radius: 3rpx;
+}
+
+/* 邀请码展示优化 */
+.code-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffffff 100%);
+  border: 3rpx solid #2D8C7A;
+  border-radius: 20rpx;
+  padding: 28rpx 32rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(45, 140, 122, 0.1);
+  transition: all 0.3s ease;
+}
+
+.code-display:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(45, 140, 122, 0.15);
+}
+
+.code-text {
+  font-size: 44rpx;
+  color: #2D8C7A;
+  font-weight: 600;
+  letter-spacing: 8rpx;
+  font-family: 'Courier New', monospace;
+}
+
+.code-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.code-btn {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #2D8C7A, #3AA99E);
+  padding: 14rpx 28rpx;
+  border-radius: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(45, 140, 122, 0.3);
+  transition: all 0.3s ease;
+}
+
+.code-btn:active {
+  transform: scale(0.95);
+}
+
+.code-btn-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.code-btn-text {
+  font-size: 24rpx;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.invite-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28rpx;
+  border-radius: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.96);
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #2D8C7A, #3AA99E);
+  color: #ffffff;
+  box-shadow: 0 6rpx 20rpx rgba(45, 140, 122, 0.35);
+}
+
+.action-btn.secondary {
+  background-color: #fff5f7;
+  border: 3rpx solid #2D8C7A;
+  color: #2D8C7A;
+}
+
+.action-icon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+}
+
+.action-text {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 奖励说明优化 */
+.reward-section {
+  margin: 24rpx 30rpx;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+
+.section-more {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  background: var(--bg-secondary);
+  border-radius: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.section-more:active {
+  background: #e8f5e9;
+}
+
+.more-text {
+  font-size: 24rpx;
+  color: #999999;
+  margin-right: 4rpx;
+}
+
+.more-icon {
+  font-size: 28rpx;
+  color: #cccccc;
+}
+
+.reward-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.reward-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  padding: 20rpx;
+  background: var(--bg-secondary);
+  border-radius: 16rpx;
+  transition: all 0.3s ease;
+}
+
+.reward-item:active {
+  background: #e8f5e9;
+  transform: translateX(8rpx);
+}
+
+.reward-icon {
+  font-size: 44rpx;
+  width: 56rpx;
+  height: 56rpx;
+  text-align: center;
+  margin-top: 4rpx;
+  background: #ffffff;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
+}
+
+.reward-info {
+  flex: 1;
+}
+
+.reward-title {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.reward-desc {
+  font-size: 24rpx;
+  color: #999999;
+  line-height: 1.6;
+  display: block;
+}
+
+/* 邀请记录优化 */
+.records-section {
+  margin: 24rpx 30rpx;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
+}
+
+.records-section .section-title {
+  margin-bottom: 24rpx;
+}
+
+.record-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid var(--bg-secondary);
+  transition: all 0.3s ease;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-item:active {
+  background: var(--bg-secondary);
+  margin: 0 -16rpx;
+  padding: 24rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.record-icon {
+  width: 68rpx;
+  height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  margin-right: 20rpx;
+  background: var(--bg-secondary);
+  border-radius: 16rpx;
+}
+
+.record-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.record-user {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 6rpx;
+}
+
+.record-time {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.record-status {
+  text-align: right;
+}
+
+.status-converted {
+  font-size: 22rpx;
+  color: #2D8C7A;
+  background-color: #e8f5e9;
+  padding: 8rpx 20rpx;
+  border-radius: 16rpx;
+  font-weight: 500;
+}
+
+.status-pending {
+  font-size: 22rpx;
+  color: #E8734A;
+  background-color: #fff3e0;
+  padding: 8rpx 20rpx;
+  border-radius: 16rpx;
+  font-weight: 500;
+}
+
+.empty-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 30rpx;
+}
+
+.empty-icon {
+  font-size: 100rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.safe-area-bottom {
+  height: env(safe-area-inset-bottom);
+}

@@ -1,0 +1,89 @@
+<!-- pages/register/register.wxml - 注册页面 -->
+<view class="register-page" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <!-- 注册表单 -->
+  <view wx:if="{{step === 'form'}}" class="register-content">
+    <!-- Logo 和标题 -->
+    <view class="brand-section">
+      <view class="brand-logo">
+        <text>💐</text>
+      </view>
+      <text class="brand-title">创建账号</text>
+      <text class="brand-subtitle">注册即享新人优惠</text>
+    </view>
+
+    <!-- 手机号 -->
+    <view class="input-group">
+      <text class="input-label">手机号</text>
+      <view class="input-box">
+        <text class="input-prefix">+86</text>
+        <input class="input-field" bindinput="onPhoneInput" maxlength="11" placeholder="请输入手机号" type="number" value="{{phone}}" />
+    </view>
+  </view>
+
+  <!-- 验证码 -->
+  <view class="input-group">
+    <text class="input-label">验证码</text>
+    <view class="input-box code-box">
+      <input class="input-field code-input" bindinput="onCodeInput" maxlength="6" placeholder="请输入验证码" type="number" value="{{code}}" />
+    <button class="code-btn {{countdown > 0 ? 'disabled' : ''}}"
+    bindtap="onSendCode"
+    disabled="{{countdown > 0}}"
+    >
+    <text wx:if="{{countdown > 0}}">{{countdown}}s</text>
+    <text wx:else>获取验证码</text>
+  </button>
+</view>
+</view>
+
+<!-- 密码 -->
+<view class="input-group">
+  <text class="input-label">设置密码</text>
+  <view class="input-box">
+    <input class="input-field" bindinput="onPasswordInput" maxlength="20" password="{{true}}" placeholder="请设置密码（至少6位）" type="text" value="{{password}}" />
+</view>
+</view>
+
+<!-- 确认密码 -->
+<view class="input-group">
+  <text class="input-label">确认密码</text>
+  <view class="input-box">
+    <input class="input-field" bindinput="onConfirmPasswordInput" maxlength="20" password="{{true}}" placeholder="请再次输入密码" type="text" value="{{confirmPassword}}" />
+</view>
+</view>
+
+<!-- 协议勾选 -->
+<view class="agree-section">
+  <view class="agree-checkbox {{agreed ? 'checked' : ''}}" bindtap="onToggleAgree">
+    <text wx:if="{{agreed}}">✓</text>
+  </view>
+  <text class="agree-text">我已阅读并同意</text>
+  <text class="agree-link" bindtap="onShowAgreement">《用户协议》</text>
+  <text class="agree-text">和</text>
+  <text class="agree-link" bindtap="onShowPrivacy">《隐私政策》</text>
+</view>
+
+<button class="register-btn {{canRegister && !loading ? '' : 'disabled'}}" bindtap="onRegister" disabled="{{!canRegister || loading}}">
+  <text wx:if="{{loading}}">注册中...</text>
+  <text wx:else>注册</text>
+</button>
+
+<!-- 已有账号 -->
+<view class="login-link">
+  <text class="login-link-text">已有账号？</text>
+  <text class="login-link-btn" bindtap="onGoLogin">去登录</text>
+</view>
+</view>
+
+<!-- 注册成功 -->
+<view wx:if="{{step === 'success'}}" class="success-content">
+  <view class="success-icon-wrapper">
+    <text class="success-icon">✓</text>
+  </view>
+  <text class="success-title">注册成功</text>
+  <text class="success-desc">欢迎加入诺派永生花，开始美好购物之旅</text>
+  <view class="success-btn" bindtap="onGoHome">
+    <text>去首页逛逛</text>
+  </view>
+</view>
+</view>

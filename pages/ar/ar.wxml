@@ -1,0 +1,173 @@
+<!-- pages/ar/ar.wxml - AR预览页面（针对30-55岁家庭主妇优化） -->
+<view class="page-container ar-page" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">
+      <image class="back-icon" src="/assets/icons/arrow-left.png" />
+</view>
+<view class="nav-title">
+  <text class="title-text">AR预览</text>
+</view>
+<view class="nav-help" bindtap="showHelp">
+  <text class="help-icon">?</text>
+</view>
+</view>
+
+<view class="page-content">
+  <view wx:if="{{loading}}" class="loading-state">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">初始化AR功能...</text>
+  </view>
+
+  <view wx:elif="{{error}}" class="error-state">
+    <image class="error-icon" src="/assets/icons/error-ar.png" />
+<text class="error-title">{{errorTitle}}</text>
+<text class="error-desc">{{errorDesc}}</text>
+<view class="error-actions">
+  <view class="btn-secondary" bindtap="retry">
+    <text>重试</text>
+  </view>
+  <view class="btn-primary" bindtap="goBack">
+    <text>返回</text>
+  </view>
+</view>
+</view>
+
+<!-- 正常状态 - 相机预览区域 -->
+<view wx:else class="ar-container">
+  <!-- 相机预览 -->
+  <camera class="ar-camera" binderror="onCameraError" bindready="onCameraReady" device-position="{{cameraPosition}}" flash="off">
+    <!-- AR提示框 -->
+    <view wx:if="{{showPlacementHint}}" class="ar-hint">
+      <image class="hint-icon" src="/assets/icons/ar-placement.png" />
+  <text class="hint-text">{{placementHint}}</text>
+</view>
+
+<!-- 商品3D模型占位区 -->
+<view wx:if="{{productPlaced}}" class="ar-product">
+  <image class="ar-product-image" src="{{productInfo.image}}" />
+<view class="ar-product-shadow"></view>
+</view>
+</camera>
+
+<!-- 底部操作栏 -->
+<view class="ar-controls">
+  <!-- 商品选择器 -->
+  <scroll-view class="product-selector" scroll-x show-scrollbar="{{false}}">
+    <view class="product-list">
+      <view wx:for="{{productList}}" wx:key="id" class="product-item {{item.id === selectedProductId ? 'selected' : ''}}" bindtap="selectProduct" data-id="{{item.id}}">
+        <image class="product-thumb" binderror="onImageError" lazy-load mode="aspectFill" src="{{item.image}}" />
+    <text class="product-name">{{item.name}}</text>
+  </view>
+</view>
+</scroll-view>
+
+<!-- 操作按钮组 -->
+<view class="control-buttons">
+  <view wx:if="{{!productPlaced && productSelected}}" class="control-btn place-btn" bindtap="placeProduct">
+    <image class="btn-icon" src="/assets/icons/ar-place.png" />
+<text class="btn-text">放置</text>
+</view>
+
+<view wx:if="{{productPlaced}}" class="control-btn reset-btn" bindtap="resetPlacement">
+  <image class="btn-icon" src="/assets/icons/ar-reset.png" />
+<text class="btn-text">重置</text>
+</view>
+
+<view wx:if="{{productPlaced}}" class="control-btn photo-btn" bindtap="takePhoto">
+  <image class="btn-icon" src="/assets/icons/ar-photo.png" />
+<text class="btn-text">拍照</text>
+</view>
+
+<view class="control-btn switch-btn" bindtap="switchCamera">
+  <image class="btn-icon" src="/assets/icons/ar-switch.png" />
+<text class="btn-text">翻转</text>
+</view>
+</view>
+</view>
+
+<!-- 商品信息卡片 -->
+<view wx:if="{{productInfo}}" class="product-info-card">
+  <image class="card-image" src="{{productInfo.image}}" />
+<view class="card-content">
+  <text class="card-title">{{productInfo.name}}</text>
+  <text class="card-price">¥{{productInfo.price}}</text>
+  <view class="card-actions">
+    <view class="btn-small btn-secondary" bindtap="viewProduct">
+      <text>查看详情</text>
+    </view>
+    <view class="btn-small btn-primary" bindtap="addToCart">
+      <text>加入购物车</text>
+    </view>
+  </view>
+</view>
+</view>
+</view>
+</view>
+
+<view wx:if="{{showHelpModal}}" class="help-modal" catchtap="hideHelp">
+  <view class="help-content" catchtap="">
+    <view class="help-header">
+      <text class="help-title">AR使用指南</text>
+      <view class="close-btn" bindtap="hideHelp">
+        <image class="close-icon" src="/assets/icons/close-small.png" />
+  </view>
+</view>
+<view class="help-steps">
+  <view class="help-step">
+    <view class="step-number">1</view>
+    <view class="step-content">
+      <text class="step-title">选择商品</text>
+      <text class="step-desc">在底部选择想要预览的商品</text>
+    </view>
+  </view>
+  <view class="help-step">
+    <view class="step-number">2</view>
+    <view class="step-content">
+      <text class="step-title">寻找平面</text>
+      <text class="step-desc">移动手机，寻找平坦的桌面或地面</text>
+    </view>
+  </view>
+  <view class="help-step">
+    <view class="step-number">3</view>
+    <view class="step-content">
+      <text class="step-title">放置商品</text>
+      <text class="step-desc">点击"放置"按钮，将商品放在合适位置</text>
+    </view>
+  </view>
+  <view class="help-step">
+    <view class="step-number">4</view>
+    <view class="step-content">
+      <text class="step-title">拍照保存</text>
+      <text class="step-desc">调整好位置后，可拍照保存效果</text>
+    </view>
+  </view>
+</view>
+<view class="help-tips">
+  <text class="tips-title">温馨提示</text>
+  <view class="tip-item">
+    <text>• 确保光线充足，避免在黑暗环境使用</text>
+  </view>
+  <view class="tip-item">
+    <text>• 选择纹理清晰的平面放置效果更好</text>
+  </view>
+  <view class="tip-item">
+    <text>• AR预览仅供参考，实际商品以实物为准</text>
+  </view>
+</view>
+</view>
+</view>
+
+<view wx:if="{{showPhotoPreview}}" class="photo-preview-modal" catchtap="closePhotoPreview">
+  <view class="photo-content" catchtap="">
+    <image class="preview-photo" mode="aspectFit" src="{{capturedPhoto}}" />
+<view class="photo-actions">
+  <view class="btn-secondary" bindtap="closePhotoPreview">
+    <text>重拍</text>
+  </view>
+  <view class="btn-primary" bindtap="savePhoto">
+    <text>保存到相册</text>
+  </view>
+</view>
+</view>
+</view>
+</view>

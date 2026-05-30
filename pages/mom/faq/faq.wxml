@@ -1,0 +1,62 @@
+<!-- pages/mom/faq/faq.wxml - 常见问题页面 -->
+<view class="page {{fontSizeClass}}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-icon">&lt;</text>
+      <text class="back-text">返回</text>
+    </view>
+    <text class="page-title">常见问题</text>
+    <view class="header-right">
+      <button class="service-btn" bindcontact="onContact" open-type="contact">联系客服</button>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-actions">
+    <button class="action-btn" bindcontact="onContact" open-type="contact">
+      <text class="action-icon">💬</text>
+      <text class="action-text">在线客服</text>
+    </button>
+    <view class="action-btn" bindtap="goToRules">
+      <text class="action-icon">📖</text>
+      <text class="action-text">规则说明</text>
+    </view>
+    <view class="action-btn" bindtap="goToSettings">
+      <text class="action-icon">⚙️</text>
+      <text class="action-text">通知设置</text>
+    </view>
+  </view>
+
+  <!-- FAQ分类 -->
+  <view wx:for="{{faqData}}" wx:for-item="category" wx:key="categoryId" class="faq-section">
+    <view class="category-title">{{category.categoryName}}</view>
+
+    <view class="faq-list">
+      <view wx:for="{{category.items}}" wx:for-item="item" wx:key="itemId" class="faq-item">
+        <view class="faq-question" bindtap="toggleItem" data-category="{{categoryIndex}}" data-index="{{index}}">
+          <text class="question-text">{{item.question}}</text>
+          <text class="question-arrow {{item.expanded ? 'expanded' : ''}}">›</text>
+        </view>
+        <view class="faq-answer {{item.expanded ? 'show' : ''}}">
+          <view class="answer-content">
+            <text class="answer-text">{{item.answer}}</text>
+            <view wx:if="{{item.action}}" class="answer-actions">
+              <button wx:if="{{item.action.type === 'contact'}}" class="answer-btn" bindcontact="onContact" open-type="contact">联系客服</button>
+              <button wx:if="{{item.action.type === 'navigate'}}" class="answer-btn" bindtap="navigateAction" data-url="{{item.action.url}}">{{item.action.text}}</button>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 联系客服 -->
+  <view class="contact-footer">
+    <text class="contact-hint">没有找到答案？</text>
+    <button class="contact-btn" bindcontact="onContact" open-type="contact">
+      <text class="contact-btn-icon">💬</text>
+      <text class="contact-btn-text">联系在线客服</text>
+    </button>
+  </view>
+</view>

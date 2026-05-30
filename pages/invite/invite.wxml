@@ -1,0 +1,123 @@
+<!-- pages/invite/invite.wxml - 邀请好友页面 -->
+<view class="invite-page" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 未登录 -->
+  <view wx:elif="{{!isLogin}}" class="login-prompt">
+    <view class="login-icon">🎁</view>
+    <text class="login-title">邀请好友享好礼</text>
+    <text class="login-desc">登录后即可生成专属邀请码，邀请好友下单得积分</text>
+    <button class="login-btn" bindtap="onLoginTap">立即登录</button>
+  </view>
+
+  <!-- 邀请主页 -->
+  <view wx:else class="invite-content">
+
+    <view class="invite-hero">
+      <view class="hero-bg"></view>
+      <view class="hero-content">
+        <text class="hero-title">邀请好友，共享好礼</text>
+        <text class="hero-subtitle">每邀请1位好友注册下单，您可获得奖励</text>
+      </view>
+    </view>
+
+    <!-- 统计卡片 -->
+    <view class="stats-card">
+      <view class="stat-item">
+        <text class="stat-value">{{stats.total}}</text>
+        <text class="stat-label">已邀请</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value highlight">{{stats.converted}}</text>
+        <text class="stat-label">已转化</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.pending}}</text>
+        <text class="stat-label">待转化</text>
+      </view>
+    </view>
+
+    <view class="invite-code-section">
+      <view class="section-title">专属邀请码</view>
+      <view class="code-display">
+        <text class="code-text">{{inviteCode}}</text>
+        <view class="code-actions">
+          <view class="code-btn" bindtap="onCopyCode">
+            <text class="code-btn-icon">📋</text>
+            <text class="code-btn-text">复制</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="invite-actions">
+        <view class="action-btn primary" bindtap="onShare">
+          <text class="action-icon">💌</text>
+          <text class="action-text">分享给好友</text>
+        </view>
+        <view class="action-btn secondary" bindtap="onSavePoster">
+          <text class="action-icon">🖼️</text>
+          <text class="action-text">生成海报</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 奖励说明 -->
+    <view class="reward-section">
+      <view class="section-header" bindtap="onShowRewardRules">
+        <text class="section-title">奖励说明</text>
+        <view class="section-more">
+          <text class="more-text">详情</text>
+          <text class="more-icon">›</text>
+        </view>
+      </view>
+
+      <view class="reward-list">
+        <block wx:for="{{rewardRules}}" wx:key="index">
+          <view class="reward-item">
+            <view class="reward-icon">{{item.icon}}</view>
+            <view class="reward-info">
+              <text class="reward-title">{{item.title}}</text>
+              <text class="reward-desc">{{item.desc}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 邀请记录 -->
+    <view wx:if="{{inviteRecords.length > 0}}" class="records-section">
+      <view class="section-title">邀请记录</view>
+
+      <block wx:for="{{inviteRecords}}" wx:key="inviteTime">
+        <view class="record-item">
+          <view class="record-icon">
+            <text wx:if="{{item.converted}}" class="icon-converted">✅</text>
+            <text wx:else class="icon-pending">⏳</text>
+          </view>
+          <view class="record-info">
+            <text class="record-user">{{item.formattedUser}}</text>
+            <text class="record-time">{{item.formattedTime}}</text>
+          </view>
+          <view class="record-status">
+            <text wx:if="{{item.converted}}" class="status-converted">已转化</text>
+            <text wx:else class="status-pending">待转化</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 空记录 -->
+    <view wx:if="{{inviteRecords.length === 0}}" class="empty-section">
+      <text class="empty-icon">📨</text>
+      <text class="empty-text">还没有邀请记录，快去分享吧！</text>
+    </view>
+
+    <view class="safe-area-bottom"></view>
+  </view>
+</view>

@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "我的积分",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#F8F8F8",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 100,
+  "usingComponents": {
+    "empty-state": "/components/empty-state/empty-state",
+    "loading-more": "/components/loading-more/loading-more"
+  }
+}

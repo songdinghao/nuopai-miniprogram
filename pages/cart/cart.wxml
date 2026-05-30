@@ -1,0 +1,144 @@
+<!-- pages/cart/cart.wxml - 购物车页面模板 -->
+<view class="cart-page font-{{fontSize}}" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <view class="header">
+    <view class="nav-bar">
+      <view class="nav-left">
+        <view class="back-btn" bindtap="onBackToHome">
+          <text class="icon">←</text>
+          <text>首页</text>
+        </view>
+      </view>
+
+      <view class="nav-title">
+        <text class="title-text">购物车</text>
+        <text wx:if="{{totalCount > 0}}" class="title-count">({{totalCount}}件)</text>
+      </view>
+
+      <view class="nav-right">
+        <view class="edit-btn" bindtap="onToggleEdit">
+          <text>{{isEditing ? '完成' : '编辑'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游客模式提示条 -->
+  <view wx:if="{{!isLogin && cartItems.length > 0}}" class="guest-tip">
+    <text class="guest-tip-icon">💡</text>
+    <text class="guest-tip-text">登录后可保存收货地址和订单信息</text>
+    <text class="guest-tip-login" bindtap="onLoginTap">去登录</text>
+  </view>
+
+  <view class="cart-content">
+    <view wx:if="{{loading}}" class="loading-container">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 加载失败 -->
+    <empty-state wx:if="{{!loading && loadError}}" title="加载失败" description="请检查网络后重试" type="network" buttonText="重新加载" bindaction="retryLoadCart"></empty-state>
+
+    <!-- 空购物车 -->
+    <empty-state wx:if="{{!loading && !loadError && cartItems.length === 0}}" title="购物车空空如也" description="快去挑选心仪的商品吧" type="cart" buttonText="去逛逛" bindaction="onBackToHome"></empty-state>
+
+    <scroll-view wx:if="{{!loading && !loadError && cartItems.length > 0}}" class="cart-list" scroll-y>
+      <view wx:for="{{cartItems}}" wx:key="id" class="cart-item">
+        <!-- 选择框 -->
+        <view class="item-select" bindtap="onToggleSelect" data-index="{{index}}">
+          <view class="select-box {{item.selected ? 'selected' : ''}}">
+            <text wx:if="{{item.selected}}">✓</text>
+          </view>
+        </view>
+
+        <!-- 商品图片 -->
+        <view class="item-image" bindtap="onProductTap" data-index="{{index}}">
+          <image class="product-image" lazy-load mode="aspectFill" src="{{item.image}}" />
+      </view>
+
+      <view class="item-info" bindtap="onProductTap" data-index="{{index}}">
+        <!-- 商品名称 -->
+        <view class="product-name">
+          <text>{{item.name}}</text>
+        </view>
+
+        <!-- 商品规格 -->
+        <view wx:if="{{item.attrs}}" class="product-specs">
+          <text>{{item.specsText}}</text>
+        </view>
+
+        <!-- 价格和数量 -->
+        <view class="product-bottom">
+          <view class="price-section">
+            <text class="current-price">¥{{item.price}}</text>
+            <text wx:if="{{item.originalPrice > item.price}}" class="original-price">¥{{item.originalPrice}}</text>
+          </view>
+
+          <!-- 数量选择器（编辑模式） -->
+          <view wx:if="{{isEditing}}" class="quantity-section">
+            <view class="quantity-btn minus {{item.quantity <= 1 ? 'disabled' : ''}}" bindtap="onDecreaseQuantity" data-index="{{index}}">
+              <text>−</text>
+            </view>
+            <input class="quantity-input" bindinput="onQuantityInput" data-index="{{index}}" type="number" value="{{item.quantity}}" />
+          <view class="quantity-btn plus {{item.quantity >= item.stock ? 'disabled' : ''}}"
+          bindtap="onIncreaseQuantity"
+          data-index="{{index}}"
+          >
+          <text>+</text>
+        </view>
+      </view>
+
+      <!-- 数量显示（非编辑模式） -->
+      <view wx:if="{{!isEditing}}" class="quantity-text">
+        <text>x{{item.quantity}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 删除按钮（编辑模式） -->
+  <view wx:if="{{isEditing}}" class="item-delete" bindtap="onDeleteItem" data-index="{{index}}">
+    <text>删除</text>
+  </view>
+</view>
+</scroll-view>
+</view>
+
+<!-- 底部操作栏 -->
+<view wx:if="{{cartItems.length > 0}}" class="bottom-bar">
+  <!-- 全选 -->
+  <view class="select-all" bindtap="onToggleSelectAll">
+    <view class="select-box {{isAllSelected ? 'selected' : ''}}">
+      <text wx:if="{{isAllSelected}}">✓</text>
+    </view>
+    <text class="select-text">全选</text>
+  </view>
+
+  <!-- 合计金额 -->
+  <view class="total-section">
+    <text class="total-label">合计：</text>
+    <text class="total-price">¥{{totalPrice}}</text>
+    <text wx:if="{{totalCount > 0}}" class="total-tip">(含运费)</text>
+  </view>
+
+  <view class="checkout-btn" bindtap="onCheckout">
+    <text>{{isEditing ? '删除选中' : '去结算'}}</text>
+    <text wx:if="{{!isEditing && selectedCount > 0}}">({{selectedCount}})</text>
+  </view>
+</view>
+
+<view wx:if="{{showDeleteConfirm}}" class="confirm-modal">
+  <view class="modal-mask" bindtap="onHideDeleteConfirm"></view>
+  <view class="modal-content">
+    <text class="modal-title">确认删除</text>
+    <text class="modal-desc">确定要删除选中的{{selectedCount}}件商品吗？</text>
+    <view class="modal-actions">
+      <view class="modal-btn cancel" bindtap="onHideDeleteConfirm">
+        <text>取消</text>
+      </view>
+      <view class="modal-btn confirm" bindtap="onConfirmDelete">
+        <text>删除</text>
+      </view>
+    </view>
+  </view>
+</view>
+</view>

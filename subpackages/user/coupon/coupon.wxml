@@ -1,0 +1,99 @@
+<!-- pages/user/coupon/coupon.wxml - 优惠券页面 -->
+<view class="coupon-page">
+  <!-- Tab切换栏 -->
+  <view class="tab-bar">
+    <block wx:for="{{tabs}}" wx:key="id">
+      <view class="tab-item {{currentTab === item.id ? 'active' : ''}}" bindtap="onTabTap" data-tab="{{item.id}}">
+        <text class="tab-text">{{item.name}}</text>
+        <view wx:if="{{currentTab === item.id}}" class="tab-indicator"></view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view wx:elif="{{emptyState.show && !loading}}" class="empty-state-wrap">
+    <empty-state description="{{emptyState.desc}}" title="{{emptyState.title}}" type="coupon"></empty-state>
+  </view>
+
+  <scroll-view wx:elif="{{couponList.length > 0}}"
+  scroll-y
+  class="coupon-scroll"
+  bindscrolltolower="onLoadMore"
+  >
+  <view class="coupon-list">
+    <block wx:for="{{couponList}}" wx:key="id">
+      <view class="coupon-card {{item.status === 'expired' ? 'expired' : ''}}">
+        <!-- 左侧金额 -->
+        <view class="coupon-left">
+          <text class="coupon-symbol">¥</text>
+          <text class="coupon-amount">{{item.value}}</text>
+        </view>
+
+        <view class="coupon-right">
+          <text class="coupon-title">{{item.name}}</text>
+          <text class="coupon-condition">{{item.conditionText}}</text>
+          <text class="coupon-desc">{{item.description}}</text>
+          <view class="coupon-bottom">
+            <text wx:if="{{item.status === 'unused'}}" class="coupon-endtime">有效期至 {{item.endTime}}</text>
+            <text wx:elif="{{item.status === 'used'}}" class="coupon-usedtime">已使用 {{item.usedTime}}</text>
+            <text wx:elif="{{item.status === 'expired'}}" class="coupon-endtime expired-text">已过期</text>
+
+            <view wx:if="{{item.status === 'unused'}}" class="coupon-action" bindtap="onUseCoupon" data-coupon="{{item}}">
+              <text class="action-text">立即使用</text>
+            </view>
+            <view wx:elif="{{item.status === 'expired'}}" class="coupon-action disabled">
+              <text class="action-text">已过期</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="safe-area-bottom"></view>
+</scroll-view>
+
+<!-- 领券入口 -->
+<view class="claim-entry" bindtap="onClaimCoupon">
+  <image class="claim-icon" src="/assets/icons/coupon-claim.png" />
+<text class="claim-text">领券中心</text>
+<image class="claim-arrow" src="/assets/icons/arrow-right.png" />
+</view>
+
+<view wx:if="{{showClaimModal}}" class="claim-mask" bindtap="onCloseClaimModal">
+  <view class="claim-modal" catchtap="onModalTap">
+    <view class="claim-modal-header">
+      <text class="claim-modal-title">领券中心</text>
+      <view class="claim-close" bindtap="onCloseClaimModal">
+        <text class="claim-close-text">✕</text>
+      </view>
+    </view>
+
+    <scroll-view class="claim-modal-body" scroll-y>
+      <block wx:for="{{claimableCoupons}}" wx:key="id">
+        <view class="claim-item">
+          <view class="claim-item-left">
+            <view class="claim-item-value">
+              <text wx:if="{{item.type !== 'discount'}}" class="claim-value-amount">¥{{item.value}}</text>
+              <text wx:else class="claim-value-amount">{{100 - item.value}}折</text>
+              <text class="claim-value-condition">{{item.conditionText}}</text>
+            </view>
+          </view>
+          <view class="claim-item-right">
+            <text class="claim-item-name">{{item.name}}</text>
+            <text class="claim-item-desc">{{item.description}}</text>
+            <button class="claim-btn {{item.claimed ? 'claimed' : ''}}" bindtap="onClaimCouponItem" data-id="{{item.id}}" disabled="{{item.claimed}}">
+              {{item.claimed ? '已领取' : '立即领取'}}
+            </button>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+</view>
+</view>

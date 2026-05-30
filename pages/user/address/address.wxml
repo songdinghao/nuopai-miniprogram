@@ -1,0 +1,43 @@
+<!-- pages/user/address/address.wxml - 收货地址管理页面 -->
+<view class="address-page {{fontSize === 'large' ? 'font-large' : fontSize === 'xlarge' ? 'font-xlarge' : ''}}" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <view wx:if="{{addressList.length > 0}}" class="address-list">
+    <view wx:for="{{addressList}}" wx:key="id" class="address-item" bindtap="onSelectAddress" data-id="{{item.id}}">
+      <view class="address-content">
+        <view class="address-header">
+          <text class="receiver-name">{{item.name}}</text>
+          <text class="receiver-phone">{{item.phone}}</text>
+          <view wx:if="{{item.isDefault}}" class="default-tag">默认</view>
+        </view>
+        <view class="address-detail">
+          <text class="address-text">{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</text>
+        </view>
+      </view>
+      <view class="address-actions">
+        <view class="action-btn" bindtap="onEditAddress" catchtap="" data-id="{{item.id}}">
+          <text class="action-icon">✏️</text>
+          <text class="action-text">编辑</text>
+        </view>
+        <view class="action-btn" bindtap="onDeleteAddress" catchtap="" data-id="{{item.id}}">
+          <text class="action-icon">🗑️</text>
+          <text class="action-text">删除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty-state">
+    <text class="empty-icon">📍</text>
+    <text class="empty-text">暂无收货地址</text>
+    <text class="empty-desc">添加一个收货地址，方便购物</text>
+  </view>
+
+  <view class="bottom-section">
+    <button class="add-btn" bindtap="onAddAddress">
+      <text class="add-icon">+</text>
+      <text class="add-text">添加收货地址</text>
+    </button>
+  </view>
+
+  <view class="safe-area-bottom"></view>
+</view>

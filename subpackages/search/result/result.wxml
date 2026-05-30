@@ -1,0 +1,91 @@
+<!-- pages/search/result/result.wxml - 搜索结果页 -->
+<view class="result-page">
+  <!-- 顶部搜索关键词 -->
+  <view class="result-header">
+    <view class="header-back" bindtap="goBack">
+      <image class="back-icon" src="/assets/icons/arrow-left.png" />
+</view>
+<view class="header-keyword">
+  <image class="keyword-icon" src="/assets/icons/search.png" />
+<text class="keyword-text">"{{keyword}}"</text>
+</view>
+</view>
+
+<!-- 筛选栏 -->
+<view class="filter-bar">
+  <scroll-view class="category-scroll" scroll-x show-scrollbar="{{false}}">
+    <view class="category-list">
+      <block wx:for="{{categories}}" wx:key="id">
+        <view class="category-item {{item.selected ? 'active' : ''}}" bindtap="onCategoryTap" data-index="{{index}}">
+          <text class="category-text">{{item.name}}</text>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+
+  <view class="sort-dropdown">
+    <view class="sort-btn" bindtap="toggleSort">
+      <text class="sort-text">{{currentSortText}}</text>
+      <image class="sort-icon" src="/assets/icons/arrow-down.png" />
+</view>
+</view>
+</view>
+
+<!-- 排序菜单 -->
+<view wx:if="{{showSortMenu}}" class="sort-menu" catchtap="hideSortMenu">
+  <view class="sort-mask" bindtap="hideSortMenu"></view>
+  <view class="sort-options">
+    <block wx:for="{{sortOptions}}" wx:key="id">
+      <view class="sort-option {{item.selected ? 'active' : ''}}" bindtap="onSortTap" data-index="{{index}}">
+        <text class="sort-option-text">{{item.name}}</text>
+        <image wx:if="{{item.selected}}" class="check-icon" src="/assets/icons/check.png" />
+  </view>
+</block>
+</view>
+</view>
+
+<!-- 加载中 -->
+<view wx:if="{{loading && firstLoad}}" class="loading-state">
+  <view class="loading-spinner"></view>
+  <text class="loading-text">搜索中...</text>
+</view>
+
+<view wx:elif="{{emptyState.show && !loading}}" class="empty-state-wrap">
+  <empty-state buttonText="浏览全部" buttonUrl="/pages/category/category" description="{{emptyState.desc}}" title="{{emptyState.title}}" type="search"></empty-state>
+</view>
+
+<!-- 商品列表 - 双列网格 -->
+<view wx:elif="{{productList.length > 0}}" class="product-section">
+  <view class="result-count">
+    <text class="count-text">找到 {{productList.length}} 个商品</text>
+  </view>
+
+  <view class="product-grid">
+    <block wx:for="{{productList}}" wx:key="id">
+      <view class="product-card card" bindtap="onProductTap" data-index="{{index}}" data-product="{{item}}">
+        <image class="product-image" mode="aspectFill" src="{{item.image}}" />
+    <view class="product-info">
+      <text class="product-name">{{item.name}}</text>
+      <view wx:if="{{item.tags && item.tags.length > 0}}" class="product-tags">
+        <block wx:for="{{item.tags}}" wx:key="*this">
+          <text class="tag-item">{{item}}</text>
+        </block>
+      </view>
+      <view class="product-price">
+        <text class="current-price">¥{{item.price}}</text>
+        <text wx:if="{{item.originalPrice}}" class="original-price">¥{{item.originalPrice}}</text>
+      </view>
+      <text class="sales-text">已售{{item.sales}}</text>
+    </view>
+  </view>
+</block>
+</view>
+
+<!-- 加载更多 -->
+<view class="load-more-section">
+  <loading-more hasMore="{{hasMore}}" noMoreText="— 已显示全部商品 —" status="{{loading ? 'loading' : (hasMore ? 'loading' : 'no-more')}}"></loading-more>
+</view>
+</view>
+
+<view class="safe-area-bottom"></view>
+</view>

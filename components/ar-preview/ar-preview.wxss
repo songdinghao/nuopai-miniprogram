@@ -1,0 +1,98 @@
+.ar-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx;
+}
+
+.ar-icon-hover {
+  opacity: 0.8;
+}
+
+.ar-icon-bg {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+
+.ar-icon-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 2rpx;
+}
+
+.ar-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.ar-button {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.25);
+}
+
+.ar-button-hover {
+  opacity: 0.9;
+}
+
+.ar-button-inner {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  gap: 16rpx;
+}
+
+.ar-btn-icon {
+  font-size: 48rpx;
+  flex-shrink: 0;
+}
+
+.ar-btn-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #ffffff;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ar-btn-arrow {
+  font-size: 40rpx;
+  color: rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+}
+
+.ar-floating {
+  position: fixed;
+  right: 32rpx;
+  bottom: 200rpx;
+  z-index: 999;
+}
+
+.ar-floating-hover {
+  transform: scale(0.9);
+}
+
+.ar-floating-inner {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+}
+
+.ar-floating-icon {
+  font-size: 48rpx;
+}

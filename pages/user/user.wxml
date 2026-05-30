@@ -1,0 +1,286 @@
+<!-- pages/user/user.wxml - 用户中心页面 -->
+<view class="user-page {{fontSize === 'large' ? 'font-large' : fontSize === 'xlarge' ? 'font-xlarge' : ''}}" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <!-- 全局加载失败 -->
+  <empty-state wx:if="{{loadError && !isLogin}}" title="加载失败" description="请检查网络后重试" type="network" buttonText="重新加载" bindaction="retryLoadUserData"></empty-state>
+
+  <block wx:if="{{!loadError || isLogin}}">
+
+  <!-- 快捷导航栏 -->
+  <view class="quick-nav">
+    <view class="quick-nav-item" bindtap="onGoHome">
+      <text class="quick-nav-icon">🏠</text>
+      <text class="quick-nav-text">回首页</text>
+    </view>
+    <view class="quick-nav-item" bindtap="onNotificationTap">
+      <text class="quick-nav-icon">🔔</text>
+      <text class="quick-nav-text">消息</text>
+      <view wx:if="{{notificationUnread > 0}}" class="quick-nav-badge">{{notificationUnread > 99 ? '99+' : notificationUnread}}</view>
+    </view>
+  </view>
+
+  <view class="user-header">
+    <view class="user-info-section">
+      <view wx:if="{{!isLogin}}" class="avatar-section">
+        <view class="avatar-placeholder" bindtap="onLoginTap">
+          <text class="avatar-icon">👤</text>
+        </view>
+        <view class="login-prompt" bindtap="onLoginTap">
+          <text class="login-text">点击登录/注册</text>
+          <text class="login-desc">登录后可查看订单、管理收货地址</text>
+        </view>
+        <view class="login-btn-wrapper" bindtap="onLoginTap">
+          <text class="login-btn-text">登录/注册</text>
+        </view>
+      </view>
+
+      <view wx:else class="avatar-section">
+        <image class="user-avatar" mode="aspectFill" src="{{userInfo.avatar || '/assets/default-avatar.png'}}" />
+    <view class="user-detail">
+      <text class="user-name">{{userInfo.nickname || '用户'}}</text>
+      <text wx:if="{{userInfo.level}}" class="user-level">{{userInfo.level}}</text>
+    </view>
+  </view>
+</view>
+
+<!-- 会员信息卡片 -->
+<view wx:if="{{isLogin}}" class="member-card">
+  <!-- 加载中 -->
+  <block wx:if="{{loading}}">
+    <view class="member-info">
+      <text class="member-label">会员积分</text>
+      <text class="member-info-loading">--</text>
+    </view>
+    <view class="member-divider"></view>
+    <view class="member-info">
+      <text class="member-label">优惠券</text>
+      <text class="member-info-loading">--</text>
+    </view>
+    <view class="member-divider"></view>
+    <view class="member-info">
+      <text class="member-label">收藏</text>
+      <text class="member-info-loading">--</text>
+    </view>
+  </block>
+  <!-- 加载完成 -->
+  <block wx:else>
+    <view class="member-info" bindtap="onPointsTap">
+      <text class="member-label">会员积分</text>
+      <text class="member-points">{{userInfo.points || 0}}</text>
+    </view>
+    <view class="member-divider"></view>
+    <view class="member-info">
+      <text class="member-label">优惠券</text>
+      <text class="member-coupons">{{userInfo.coupons || 0}}</text>
+    </view>
+    <view class="member-divider"></view>
+    <view class="member-info">
+      <text class="member-label">收藏</text>
+      <text class="member-favorites">{{userInfo.favorites || 0}}</text>
+    </view>
+  </block>
+</view>
+</view>
+
+<view class="order-section">
+  <view class="section-header" bindtap="onAllOrdersTap">
+    <text class="section-title">我的订单</text>
+    <view class="section-more">
+      <text class="more-text">全部订单</text>
+      <text class="more-icon">›</text>
+    </view>
+  </view>
+
+  <view class="order-entries">
+    <view class="order-entry" bindtap="onOrderTap" data-status="pending">
+      <view class="entry-icon">💳</view>
+      <text class="entry-label">待付款</text>
+      <view wx:if="{{orderCount.pending > 0}}" class="entry-badge">
+        <text class="badge-text">{{orderCount.pending > 99 ? '99+' : orderCount.pending}}</text>
+      </view>
+    </view>
+
+    <view class="order-entry" bindtap="onOrderTap" data-status="paid">
+      <view class="entry-icon">📦</view>
+      <text class="entry-label">待发货</text>
+      <view wx:if="{{orderCount.paid > 0}}" class="entry-badge">
+        <text class="badge-text">{{orderCount.paid > 99 ? '99+' : orderCount.paid}}</text>
+      </view>
+    </view>
+
+    <view class="order-entry" bindtap="onOrderTap" data-status="shipped">
+      <view class="entry-icon">🚚</view>
+      <text class="entry-label">待收货</text>
+      <view wx:if="{{orderCount.shipped > 0}}" class="entry-badge">
+        <text class="badge-text">{{orderCount.shipped > 99 ? '99+' : orderCount.shipped}}</text>
+      </view>
+    </view>
+
+    <view class="order-entry" bindtap="onOrderTap" data-status="completed">
+      <view class="entry-icon">✅</view>
+      <text class="entry-label">已完成</text>
+    </view>
+
+    <view class="order-entry" bindtap="onOrderTap" data-status="refund">
+      <view class="entry-icon">🔄</view>
+      <text class="entry-label">售后</text>
+    </view>
+  </view>
+</view>
+
+<!-- 兼职妈妈体验官入口 -->
+<view class="mom-entry-section">
+  <view wx:if="{{!momData || !momData.isMom}}" class="mom-entry-card">
+    <view class="mom-entry-content">
+      <text class="mom-entry-title">🌸 兼职妈妈体验官</text>
+      <text class="mom-entry-desc">零门槛、零投入，分享就能赚零花钱</text>
+    </view>
+    <view class="mom-entry-actions">
+      <view class="mom-entry-btn primary" bindtap="onMomTap">
+        <text>立即加入</text>
+      </view>
+      <view class="mom-entry-btn outline" bindtap="onInviteTap">
+        <text>邀请好友</text>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="mom-entry-card active">
+    <view class="mom-entry-content">
+      <text class="mom-entry-title">🌸 兼职妈妈体验官</text>
+      <view class="mom-stats-card">
+        <view class="mom-stat-item">
+          <text class="mom-stat-value">¥{{momData.totalEarnings || 0}}</text>
+          <text class="mom-stat-label">累计收益</text>
+        </view>
+        <view class="mom-stat-divider"></view>
+        <view class="mom-stat-item">
+          <text class="mom-stat-value">{{momData.shareCount || 0}}</text>
+          <text class="mom-stat-label">分享次数</text>
+        </view>
+        <view class="mom-stat-divider"></view>
+        <view class="mom-stat-item">
+          <text class="mom-stat-value">{{momData.validOrders || 0}}</text>
+          <text class="mom-stat-label">有效订单</text>
+        </view>
+      </view>
+    </view>
+    <view class="mom-entry-actions">
+      <view class="mom-entry-btn primary" bindtap="onMomTap">
+        <text>我的主页</text>
+      </view>
+      <view class="mom-entry-btn outline" bindtap="onInviteTap">
+        <text>邀请好友</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="menu-section">
+  <!-- 第一组菜单 -->
+  <view class="menu-group">
+    <view class="menu-item" bindtap="onNotificationTap">
+      <view class="menu-icon">🔔</view>
+      <text class="menu-label">消息通知</text>
+      <view wx:if="{{notificationUnread > 0}}" class="menu-badge notification-badge">
+        <text class="badge-text">{{notificationUnread > 99 ? '99+' : notificationUnread}}</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onAddressTap">
+      <view class="menu-icon">📍</view>
+      <text class="menu-label">收货地址</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onCouponTap">
+      <view class="menu-icon">🎫</view>
+      <text class="menu-label">优惠券</text>
+      <view wx:if="{{userInfo.coupons > 0}}" class="menu-badge">
+        <text class="badge-text">{{userInfo.coupons}}</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onFavoritesTap">
+      <view class="menu-icon">❤️</view>
+      <text class="menu-label">我的收藏</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onHistoryTap">
+      <view class="menu-icon">📜</view>
+      <text class="menu-label">浏览历史</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 第二组菜单 - 新增功能 -->
+  <view class="menu-group">
+    <view class="menu-item" bindtap="onInviteTap">
+      <view class="menu-icon">🎁</view>
+      <text class="menu-label">邀请好友</text>
+      <view wx:if="{{inviteCount > 0}}" class="menu-badge">
+        <text class="badge-text">{{inviteCount}}</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onAnniversaryTap">
+      <view class="menu-icon">📅</view>
+      <text class="menu-label">纪念日提醒</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 第二组菜单 -->
+  <view class="menu-group">
+    <view class="menu-item" bindtap="onServiceTap">
+      <view class="menu-icon">💬</view>
+      <text class="menu-label">在线客服</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onHelpTap">
+      <view class="menu-icon">❓</view>
+      <text class="menu-label">帮助中心</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onFeedbackTap">
+      <view class="menu-icon">📝</view>
+      <text class="menu-label">意见反馈</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onAboutTap">
+      <view class="menu-icon">ℹ️</view>
+      <text class="menu-label">关于我们</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 第三组菜单（设置相关） -->
+  <view wx:if="{{isLogin}}" class="menu-group">
+    <view class="menu-item" bindtap="onFontSizeTap">
+      <view class="menu-icon">🔤</view>
+      <text class="menu-label">字体大小</text>
+      <text class="menu-value">{{fontSizeText}}</text>
+      <text class="menu-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="onSecurityTap">
+      <view class="menu-icon">🔒</view>
+      <text class="menu-label">账号安全</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+</view>
+
+<view wx:if="{{isLogin}}" class="logout-section">
+  <button class="logout-btn" bindtap="onLogoutTap">退出登录</button>
+</view>
+
+<view class="safe-area-bottom"></view>
+</block>
+</view>

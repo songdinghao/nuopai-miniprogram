@@ -1,0 +1,173 @@
+page {
+  background: var(--bg-color);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 48rpx;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  padding: 88rpx 32rpx 32rpx;
+  background: #ffffff;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.back-icon {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-right: 8rpx;
+}
+
+.back-text {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.page-title {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-right: 80rpx;
+}
+
+.setting-section {
+  margin: 24rpx 32rpx 0;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24rpx;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.section-label {
+  font-size: 14px;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-bottom: 16rpx;
+  padding-bottom: 12rpx;
+  border-bottom: 1rpx solid var(--bg-secondary);
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--bg-secondary);
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-info {
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.setting-label {
+  display: block;
+  font-size: 16px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.setting-desc {
+  display: block;
+  font-size: 14px;
+  color: var(--text-tertiary);
+  margin-top: 4rpx;
+}
+
+.setting-switch {
+  transform: scale(0.8);
+}
+
+.subscribe-btn {
+  font-size: 14px;
+  padding: 8rpx 24rpx;
+  background: var(--color-primary);
+  color: #ffffff;
+  border-radius: 20px;
+  min-height: 48px;
+  line-height: 48px;
+  border: none;
+  margin: 0;
+}
+
+.subscribe-btn.active {
+  background: var(--border-color);
+  color: var(--text-tertiary);
+}
+
+.subscribe-btn::after {
+  border: none;
+}
+
+.font-size-selector {
+  display: flex;
+  gap: 8rpx;
+}
+
+.font-option {
+  padding: 8rpx 20rpx;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  min-height: 44px;
+  line-height: 44px;
+  text-align: center;
+}
+
+.font-option.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.setting-tip {
+  margin: 24rpx 48rpx;
+}
+
+.tip-text {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}
+
+.page.font-large .page-title {
+  font-size: 20px;
+}
+
+.page.font-large .setting-label {
+  font-size: 18px;
+}
+
+.page.font-large .setting-desc {
+  font-size: 16px;
+}
+
+.page.font-extra-large .page-title {
+  font-size: 22px;
+}
+
+.page.font-extra-large .setting-label {
+  font-size: 20px;
+}
+
+.page.font-extra-large .setting-desc {
+  font-size: 18px;
+}

@@ -1,0 +1,31 @@
+<!-- pages/help/help.wxml - 帮助中心页面 -->
+<view class="help-page">
+
+  <!-- 顶部说明 -->
+  <view class="help-header">
+    <text class="help-title">常见问题</text>
+    <text class="help-desc">找不到答案？点击底部按钮联系客服</text>
+  </view>
+
+  <!-- FAQ列表 -->
+  <view class="faq-list">
+    <block wx:for="{{faqList}}" wx:key="index">
+      <view class="faq-item {{item.open ? 'open' : ''}}">
+        <view class="faq-question" bindtap="onFaqTap" data-index="{{index}}">
+          <text class="faq-q-text">{{item.q}}</text>
+          <text class="faq-arrow {{item.open ? 'rotated' : ''}}">›</text>
+        </view>
+        <view wx:if="{{item.open}}" class="faq-answer">
+          <text class="faq-a-text">{{item.a}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 联系客服 -->
+  <view class="contact-section">
+    <button class="contact-btn" bindtap="onContactService">联系客服</button>
+  </view>
+
+  <view class="safe-area-bottom"></view>
+</view>

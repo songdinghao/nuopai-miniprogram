@@ -1,0 +1,26 @@
+<!-- components/ar-preview/ar-preview.wxml - AR预览入口 -->
+<view wx:if="{{!checking}}">
+  <!-- 图标模式（商品详情页） -->
+  <view wx:if="{{type === 'icon'}}" class="ar-icon" bindtap="onTap" hover-class="ar-icon-hover">
+    <view class="ar-icon-bg">
+      <text class="ar-icon-text">AR</text>
+    </view>
+    <text class="ar-label">AR预览</text>
+  </view>
+
+  <!-- 按钮模式 -->
+  <view wx:elif="{{type === 'button'}}" class="ar-button" bindtap="onTap" hover-class="ar-button-hover">
+    <view class="ar-button-inner">
+      <text class="ar-btn-icon">📷</text>
+      <text class="ar-btn-text">AR预览 - 看看摆在家里的效果</text>
+      <text class="ar-btn-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 悬浮模式（商品详情页悬浮） -->
+  <view wx:elif="{{type === 'floating'}}" class="ar-floating" bindtap="onTap" hover-class="ar-floating-hover">
+    <view class="ar-floating-inner">
+      <text class="ar-floating-icon">📷</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,29 @@
+<view class="page exchange-page">
+  <view class="balance-bar">
+    <text class="bar-label">可用收益</text>
+    <text class="bar-amount">¥{{availableAmount}}</text>
+    <text class="bar-hint">可1:1兑换商品</text>
+  </view>
+
+  <view class="product-list">
+    <view wx:for="{{products}}" wx:key="id" class="product-item" bindtap="onSelectProduct" data-index="{{index}}">
+      <image class="product-img" mode="aspectFill" src="{{item.image||'/assets/images/product-placeholder.png'}}" />
+    <view class="product-info">
+      <text class="product-name">{{item.name}}</text>
+      <text class="product-price">¥{{item.price}}</text>
+    </view>
+  </view>
+</view>
+
+<view wx:if="{{confirmVisible}}" class="modal {{confirmVisible?'show':''}}">
+  <view class="modal-content">
+    <text class="modal-title">确认兑换</text>
+    <text class="modal-desc">{{targetProduct && targetProduct.name}}</text>
+    <text class="modal-price">¥{{targetProduct && targetProduct.price}}</text>
+    <view class="modal-actions">
+      <button class="btn-cancel" bindtap="onCancelConfirm">取消</button>
+      <button class="btn-confirm" bindtap="onConfirmExchange">确认兑换</button>
+    </view>
+  </view>
+</view>
+</view>

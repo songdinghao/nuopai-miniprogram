@@ -1,0 +1,194 @@
+<!--pages/index/index.wxml - 首页 - 雅集布局（场景生活杂志风格）-->
+<view class="page-container index-page" style="background: var(--bg-color);">
+  <privacy-popup wx:if="{{needPrivacyAuth}}"></privacy-popup>
+
+  <view class="index-nav">
+    <view class="nav-brand">
+      <text class="nav-logo">诺派</text>
+    </view>
+    <view class="nav-actions">
+      <view class="nav-btn nav-btn-search" bindtap="onSearchTap" aria-label="搜索">
+        <text class="nav-btn-icon">⌕</text>
+      </view>
+      <view class="nav-btn nav-btn-notify" bindtap="onNotificationTap" aria-label="消息通知">
+        <text class="nav-btn-icon">🔔</text>
+        <view wx:if="{{notificationCount > 0}}" class="nav-badge">{{notificationCount > 99 ? '99+' : notificationCount}}</view>
+      </view>
+      <view class="nav-btn nav-btn-cart" bindtap="onCartTap" aria-label="购物车">
+        <text class="nav-btn-icon">🛒</text>
+        <view wx:if="{{cartCount > 0}}" class="nav-badge">{{cartCount > 99 ? '99+' : cartCount}}</view>
+      </view>
+    </view>
+</view>
+
+<!-- ===== 轮播横幅 ===== -->
+<!-- 骨架屏 -->
+<view wx:if="{{bannersLoading}}" class="hero-banner-skeleton">
+  <view class="hero-skeleton-slide"></view>
+</view>
+<!-- 错误状态 -->
+<view wx:if="{{!bannersLoading && bannersError}}" class="module-error">
+  <text>⚠️ 轮播图加载失败</text>
+  <view class="module-retry" bindtap="retryLoadBanners">点击重试</view>
+</view>
+<!-- 正常轮播 -->
+<view wx:if="{{!bannersLoading && !bannersError && banners.length > 0}}" class="hero-banner-wrap">
+  <swiper class="hero-banner" circular autoplay interval="4000" duration="500" indicator-active-color="#fff" indicator-dots indicator-color="rgba(255,255,255,0.3)">
+    <swiper-item wx:for="{{banners}}" wx:key="id">
+      <view class="hero-slide" style="background: linear-gradient(135deg, {{item.bgStart || '#2D8C7A'}}, {{item.bgEnd || '#1A6858'}});" data-index="{{index}}">
+        <view class="hero-content">
+          <text class="hero-title">{{item.title}}</text>
+          <text class="hero-subtitle">{{item.subtitle}}</text>
+          <view class="hero-tag">{{item.tagText || '查看详情 ›'}}</view>
+        </view>
+      </view>
+    </swiper-item>
+  </swiper>
+</view>
+
+<!-- ===== 场景导航 ===== -->
+<view class="section-header">
+  <view class="section-title-row">
+    <text class="section-title">按场景选花</text>
+    <text class="section-more" bindtap="onViewAllScenes">全部场景 ›</text>
+  </view>
+</view>
+<scroll-view class="scene-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+  <view class="scene-nav">
+    <view wx:for="{{sceneTags}}" wx:key="id" class="scene-tag {{currentScene === item.id ? 'active' : ''}}" bindtap="onSceneTap" data-id="{{item.id}}">
+      <text class="scene-emoji">{{item.emoji}}</text>
+      <text class="scene-label">{{item.name}}</text>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- ===== 编辑推荐 ===== -->
+<view class="section-spacing">
+  <view class="section-header">
+    <view class="section-title-row">
+      <text class="section-title">编辑推荐</text>
+      <text class="section-more" bindtap="onViewAllProducts">查看更多 ›</text>
+    </view>
+  </view>
+  <!-- 骨架屏 -->
+  <view wx:if="{{hotProductsLoading}}" class="product-grid-2">
+    <view wx:for="{{[1,2,3,4]}}" wx:key="*this" class="product-card product-card-skeleton">
+      <view class="product-img skeleton-img"></view>
+      <view class="product-info">
+        <view class="skeleton-line w80"></view>
+        <view class="skeleton-line w40"></view>
+      </view>
+    </view>
+  </view>
+  <!-- 错误状态 -->
+  <view wx:if="{{!hotProductsLoading && hotProductsError}}" class="module-error">
+    <text>⚠️ 推荐商品加载失败</text>
+    <view class="module-retry" bindtap="retryLoadHotProducts">点击重试</view>
+  </view>
+  <!-- 空状态 -->
+  <view wx:if="{{!hotProductsLoading && !hotProductsError && hotProducts.length === 0}}" class="section-spacing">
+    <empty-state title="暂无热销商品" type="default"></empty-state>
+  </view>
+  <!-- 正常列表 -->
+  <view wx:if="{{!hotProductsLoading && !hotProductsError && hotProducts.length > 0}}" class="product-grid-2">
+    <view wx:for="{{hotProducts}}" wx:for-item="item" wx:key="id" class="product-card" bindtap="onProductTap" data-id="{{item.id}}">
+      <view class="product-img" style="background: {{item.bgColor || '#E8F5E9'}};">
+        <image wx:if="{{item.image || item.mainImage}}" lazy-load mode="aspectFill" src="{{item.image || item.mainImage}}" />
+      <text wx:else class="product-emoji">{{item.emoji || '🌸'}}</text>
+      <view wx:if="{{item.tagText}}" class="product-tag">{{item.tagText}}</view>
+    </view>
+    <view class="product-info">
+      <view wx:if="{{item.scene}}" class="product-scene-tag">{{item.scene}}</view>
+      <text class="product-name">{{item.name}}</text>
+      <view class="product-price-row">
+        <text class="product-price">¥{{item.price}}</text>
+        <text wx:if="{{item.oldPrice || item.originalPrice}}" class="product-oldprice">¥{{item.oldPrice || item.originalPrice}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+</view>
+
+<!-- ===== 促销CTA条 ===== -->
+<view class="cta-banner" bindtap="onPromoTap">
+  <view class="cta-content">
+    <text class="cta-emoji">🎁</text>
+    <view class="cta-texts">
+      <text class="cta-title">母亲节专区</text>
+      <text class="cta-subtitle">全场满299减30 · 限时包邮</text>
+    </view>
+  </view>
+  <view class="cta-arrow">去看看 ›</view>
+</view>
+
+<!-- ===== 场景搭配灵感 ===== -->
+<view class="section-spacing">
+  <view class="section-header">
+    <view class="section-title-row">
+      <text class="section-title">场景搭配灵感</text>
+      <text class="section-more" bindtap="onViewAllScenes">更多搭配 ›</text>
+    </view>
+  </view>
+  <!-- 骨架屏 -->
+  <view wx:if="{{sceneBundlesLoading}}" class="scene-bundle-scroll skeleton-scroll">
+    <view wx:for="{{[1,2,3,4]}}" wx:key="*this" class="bundle-card bundle-skeleton">
+      <view class="bundle-img skeleton-img"></view>
+      <view class="bundle-info">
+        <view class="skeleton-line w80"></view>
+        <view class="skeleton-line w60"></view>
+      </view>
+    </view>
+  </view>
+  <!-- 错误状态 -->
+  <view wx:if="{{!sceneBundlesLoading && sceneBundlesError}}" class="module-error">
+    <text>⚠️ 场景搭配加载失败</text>
+    <view class="module-retry" bindtap="retryLoadSceneBundles">点击重试</view>
+  </view>
+  <!-- 空状态 -->
+  <view wx:if="{{!sceneBundlesLoading && !sceneBundlesError && sceneBundles.length === 0}}" class="section-spacing">
+    <empty-state title="暂无场景搭配" type="default"></empty-state>
+  </view>
+  <scroll-view wx:if="{{!sceneBundlesLoading && !sceneBundlesError && sceneBundles.length > 0}}" class="scene-bundle-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view wx:for="{{sceneBundles}}" wx:key="id" class="bundle-card" bindtap="onBundleTap" data-id="{{item.id}}">
+      <view class="bundle-img" style="background: {{item.bgColor || '#E1F5EE'}};">
+        <text class="bundle-emoji">{{item.emoji}}</text>
+      </view>
+      <view class="bundle-info">
+        <text class="bundle-name">{{item.name}}</text>
+        <text class="bundle-desc">{{item.productCount}}件 · ¥{{item.totalPrice}}</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- ===== 优惠券弹窗 ===== -->
+<view wx:if="{{showCouponPopup}}" class="coupon-overlay" catchtouchmove="preventScroll">
+  <view class="coupon-modal">
+    <view class="coupon-header">
+      <text class="coupon-title">限时优惠</text>
+      <text class="coupon-close" bindtap="onCloseCoupon">✕</text>
+    </view>
+    <view class="coupon-body">
+      <view wx:for="{{claimableCoupons}}" wx:key="id" class="coupon-item">
+        <view class="coupon-left">
+          <text class="coupon-amount">¥{{item.amount}}</text>
+          <text class="coupon-condition">{{item.condition || '无门槛'}}</text>
+        </view>
+        <view class="coupon-right">
+          <text class="coupon-name">{{item.name}}</text>
+          <text class="coupon-desc">{{item.description || ''}}</text>
+          <view class="coupon-claim-btn {{item.claimed ? 'claimed' : ''}}" bindtap="onClaimCoupon" data-id="{{item.id}}" data-name="{{item.name}}">
+            {{item.claimed ? '已领取' : '立即领取'}}
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="coupon-footer" bindtap="onViewAllCoupons">
+      <text>查看全部优惠券 ›</text>
+    </view>
+  </view>
+</view>
+
+<!-- 底部占位 -->
+<view style="height: 20px;"></view>
+</view>

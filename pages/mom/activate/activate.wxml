@@ -1,0 +1,74 @@
+<!-- pages/mom/activate/activate.wxml - 兼职妈妈体验官开通页 -->
+<view class="page-container activate-page">
+  <!-- 顶部背景装饰 -->
+  <view class="bg-decoration">
+    <view class="circle c1"></view>
+    <view class="circle c2"></view>
+    <view class="circle c3"></view>
+  </view>
+
+  <view class="content-wrapper">
+    <!-- 主标题 -->
+    <view class="hero-section">
+      <text class="hero-title">成为兼职妈妈体验官</text>
+      <text class="hero-subtitle">零门槛 · 零投入 · 轻松赚</text>
+    </view>
+
+    <!-- 权益卡片 -->
+    <view class="benefits-card">
+      <text class="benefits-title">🌸 您将获得</text>
+
+      <view class="benefit-item">
+        <view class="benefit-icon">
+          <text class="icon-text">💰</text>
+        </view>
+        <view class="benefit-content">
+          <text class="benefit-name">分享赚佣金</text>
+          <text class="benefit-desc">把喜欢的花分享给朋友，成交即可获得最高10%佣金</text>
+        </view>
+      </view>
+
+      <view class="benefit-item">
+        <view class="benefit-icon">
+          <text class="icon-text">🎁</text>
+        </view>
+        <view class="benefit-content">
+          <text class="benefit-name">专属奖励</text>
+          <text class="benefit-desc">邀请好友加入，双方均可获得额外奖励</text>
+        </view>
+      </view>
+
+      <view class="benefit-item">
+        <view class="benefit-icon">
+          <text class="icon-text">🏆</text>
+        </view>
+        <view class="benefit-content">
+          <text class="benefit-name">成长体系</text>
+          <text class="benefit-desc">晋升资深体验官，享受更高佣金比例</text>
+        </view>
+      </view>
+
+      <view class="benefit-item">
+        <view class="benefit-icon">
+          <text class="icon-text">🛡️</text>
+        </view>
+        <view class="benefit-content">
+          <text class="benefit-name">无忧保障</text>
+          <text class="benefit-desc">无需囤货、无需发货，我们全程服务</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="action-section">
+      <button class="btn-activate" bindtap="onActivateTap" loading="{{activating}}">
+        <text class="btn-activate-text">{{activating ? '开通中...' : '一键开通，立即赚钱'}}</text>
+        <text wx:if="{{!activating}}" class="btn-activate-sub">全程免费，无需任何费用</text>
+      </button>
+
+      <view class="agreement">
+        <text class="agreement-text">点击开通即表示同意</text>
+        <text class="agreement-link" bindtap="onRulesTap">《兼职妈妈体验官协议》</text>
+      </view>
+    </view>
+  </view>
+</view>

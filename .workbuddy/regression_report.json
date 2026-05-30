@@ -1,0 +1,278 @@
+{
+  "total": 54,
+  "passed": 53,
+  "failed": 1,
+  "pass_rate": "98%",
+  "details": [
+    {
+      "name": "根文件 app.js",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "根文件 app.json",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "根文件 app.wxss",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "根文件 sitemap.json",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "根文件 project.config.json",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "app.json JSON格式有效",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/index/index",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/category/category",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/product/detail",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/group/group",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/search/search",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/cart/cart",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/order/checkout",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/order/list",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/order/detail",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/user/user",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/activate/activate",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/home/home",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/login/login",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/register/register",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/scene/scene",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/error/error",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/invite/invite",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/anniversary/anniversary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/rules/rules",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/settings/settings",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/faq/faq",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/materials/materials",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/earnings/earnings",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/withdraw/withdraw",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/mom/exchange/exchange",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/ar/ar",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "subpackages/user/coupon/coupon",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "subpackages/user/points/points",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/promotion/promotion",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pages/notification/notification",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "subpackages/search/result/result",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "全部页面四文件完整",
+      "pass": true,
+      "detail": "0个缺失"
+    },
+    {
+      "name": "未注册页面目录",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "product-card: /components/product-card/product-card",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "category-card: /components/category-card/category-card",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "promotion-card: /components/promotion-card/promotion-card",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "voice-search: /components/voice-search/voice-search",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "ar-preview: /components/ar-preview/ar-preview",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "loading-more: /components/loading-more/loading-more",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "empty-state: /components/empty-state/empty-state",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "privacy-popup: /components/privacy-popup/privacy-popup",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "JS语法检查",
+      "pass": false,
+      "detail": "44个文件有语法错误"
+    },
+    {
+      "name": "粉色#FF6B9D残留",
+      "pass": true,
+      "detail": "0处残留 - 全部清除"
+    },
+    {
+      "name": "TabBar页面导航合规",
+      "pass": true,
+      "detail": "未发现违规"
+    },
+    {
+      "name": "密钥泄露",
+      "pass": true,
+      "detail": "未发现明文密钥"
+    },
+    {
+      "name": "require路径检查",
+      "pass": true,
+      "detail": "全部有效"
+    },
+    {
+      "name": "页面JSON配置",
+      "pass": true,
+      "detail": "全部有效"
+    },
+    {
+      "name": "WXML方法绑定",
+      "pass": true,
+      "detail": "全部正常"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+.error-page {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60rpx;
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.error-icon-wrapper {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background-color: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40rpx;
+}
+
+.error-icon {
+  font-size: 100rpx;
+}
+
+.error-title {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 16rpx;
+}
+
+.error-desc {
+  font-size: 28rpx;
+  color: #999999;
+  line-height: 1.5;
+  margin-bottom: 24rpx;
+  max-width: 500rpx;
+}
+
+.error-detail {
+  padding: 16rpx 24rpx;
+  background-color: #fff8f0;
+  border-radius: 8rpx;
+  margin-bottom: 48rpx;
+  max-width: 500rpx;
+}
+
+.error-detail-text {
+  font-size: 24rpx;
+  color: #cc6600;
+  line-height: 1.4;
+}
+
+.error-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  width: 100%;
+}
+
+.btn-primary {
+  width: 400rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary text {
+  font-size: 32rpx;
+  color: white;
+  font-weight: 500;
+}
+
+.btn-primary:active {
+  background-color: #e55a8a;
+}
+
+.btn-secondary {
+  width: 400rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background-color: #ffffff;
+  border: 2rpx solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-secondary text {
+  font-size: 32rpx;
+  color: #666666;
+}
+
+.btn-secondary:active {
+  background-color: var(--bg-secondary);
+}
+
+.error-footer {
+  position: absolute;
+  bottom: 60rpx;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.footer-text {
+  font-size: 24rpx;
+  color: #cccccc;
+}
+
+.footer-phone {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+}

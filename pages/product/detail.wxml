@@ -1,0 +1,527 @@
+<!-- pages/product/detail.wxml - 商品详情页模板 -->
+<view class="product-detail-page {{fontSize === 'large' ? 'font-large' : fontSize === 'xlarge' ? 'font-xlarge' : ''}}" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <view wx:if="{{loading && !loadingError}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载商品信息...</text>
+  </view>
+
+  <view wx:if="{{loadingError}}" class="error-container">
+    <text class="error-icon">😔</text>
+    <text class="error-title">加载失败</text>
+    <text class="error-desc">网络不太给力，请稍后重试</text>
+    <view class="error-action" bindtap="onReloadTap">
+      <text>重新加载</text>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && !loadingError && !productInfo}}" class="empty-container">
+    <text class="empty-icon">🔍</text>
+    <text class="empty-title">商品找不到了</text>
+    <text class="empty-desc">该商品可能已下架或不存在</text>
+    <view class="empty-action" bindtap="onBackTap">
+      <text>返回首页</text>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && !loadingError && productInfo}}" class="product-content">
+
+    <view class="header">
+      <view class="nav-bar">
+        <view class="nav-left">
+          <view class="back-btn" bindtap="onBackTap" data-aria-label="返回">
+            <text class="icon">←</text>
+          </view>
+        </view>
+
+        <view class="nav-title">
+          <text class="title-text">商品详情</text>
+        </view>
+
+        <view class="nav-right">
+          <view class="nav-btn nav-btn-share" bindtap="onShareTap" aria-label="分享">
+            <text class="nav-btn-icon">↗</text>
+          </view>
+          <view class="nav-btn nav-btn-cart" bindtap="onCartTap" aria-label="购物车">
+            <text class="nav-btn-icon">🛒</text>
+            <view wx:if="{{cartCount > 0}}" class="nav-badge">
+              <text>{{cartCount > 99 ? '99+' : cartCount}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 商品图片轮播 -->
+    <view class="swiper-wrapper">
+      <swiper class="product-swiper" circular="{{true}}" bindchange="onSwiperChange" autoplay="{{false}}" current="{{currentImageIndex}}" duration="500" indicator-active-color="#2D8C7A" indicator-color="rgba(255, 255, 255, 0.5)" indicator-dots="{{true}}" interval="5000">
+        <swiper-item wx:for="{{imageList}}" wx:key="id">
+          <view class="swiper-item">
+            <image class="product-image" lazy-load="true" mode="aspectFit" src="{{item.url}}" bindtap="onImagePreview" />
+            <text wx:if="{{item.description}}" class="image-desc">{{item.description}}</text>
+          </view>
+        </swiper-item>
+      </swiper>
+
+      <!-- 图片指示器 -->
+      <view class="image-indicator">
+        <text class="indicator-text">{{currentImageIndex + 1}}/{{imageList.length}}</text>
+      </view>
+    </view>
+
+  <view class="product-basic-info">
+    <view class="price-section">
+      <view class="current-price">
+        <text class="price-symbol">¥</text>
+        <text class="price-number">{{selectedSku ? selectedSku.price : productInfo.price}}</text>
+      </view>
+      <view wx:if="{{(selectedSku ? selectedSku.originalPrice : productInfo.originalPrice) > (selectedSku ? selectedSku.price : productInfo.price)}}" class="original-price">
+        <text>¥{{selectedSku ? selectedSku.originalPrice : productInfo.originalPrice}}</text>
+      </view>
+      <view wx:if="{{(selectedSku ? selectedSku.originalPrice : productInfo.originalPrice) > (selectedSku ? selectedSku.price : productInfo.price)}}" class="discount-badge">
+        <text>{{discountPercent}}折</text>
+      </view>
+    </view>
+
+    <!-- 拼团价格 -->
+    <view wx:if="{{groupBuyEnabled && groupBuyInfo && groupBuyInfo.length > 0}}" class="group-buy-section">
+      <view class="group-buy-header">
+        <text class="group-buy-tag">拼团</text>
+        <text class="group-buy-label">组团购买更优惠</text>
+      </view>
+      <view class="group-buy-types">
+        <view wx:for="{{groupBuyInfo}}" wx:for-item="gb" wx:key="id" class="group-buy-type">
+          <view class="group-buy-price-row">
+            <text class="group-buy-price-label">{{gb.label}}</text>
+            <text class="group-buy-price">¥{{gb.groupPrice}}</text>
+            <text class="group-buy-original">原价¥{{selectedSku ? selectedSku.price : productInfo.price}}</text>
+          </view>
+          <text class="group-buy-desc">{{gb.desc}}</text>
+        </view>
+      </view>
+      <!-- 拼团社交证明 -->
+      <view wx:if="{{groupBuySocialProof}}" class="group-buy-social" bindtap="onGroupSocialTap">
+        <text class="social-text">{{groupBuySocialProof.text}}</text>
+        <text class="social-arrow">› 查看详情</text>
+      </view>
+    </view>
+
+    <!-- 商品名称 -->
+    <view class="product-name">
+      <text>{{productInfo.name}}</text>
+    </view>
+
+    <!-- 商品描述 -->
+    <view class="product-description">
+      <text>{{productInfo.description}}</text>
+    </view>
+
+    <!-- 商品标签 -->
+    <view wx:if="{{productInfo.tags && productInfo.tags.length > 0}}" class="product-tags">
+      <view wx:for="{{productInfo.tags}}" wx:key="*this" class="product-tag">
+        <text>{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 销量和评价 -->
+    <view class="sales-rating">
+      <view class="sales-info">
+        <text class="sales-label">销量</text>
+        <text class="sales-value">{{productInfo.sales}}件</text>
+      </view>
+      <view class="rating-info">
+        <text class="rating-label">评价</text>
+        <text class="rating-value">{{productInfo.rating}}分</text>
+        <text class="review-count">({{productInfo.reviewCount}}条评价)</text>
+      </view>
+      <view class="stock-info">
+        <text class="stock-label">库存</text>
+        <text class="stock-value">{{selectedSku ? selectedSku.stock : productInfo.stock}}件</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{promotions.length > 0}}" class="promotions-section">
+    <view class="section-title">
+      <text class="title-text">促销活动</text>
+    </view>
+    <view class="promotions-list">
+      <view wx:for="{{promotions}}" wx:key="id" class="promotion-item" style="border-left-color: {{item.color}};" bindtap="onPromotionTap" data-index="{{index}}">
+        <text class="promotion-icon">{{item.icon}}</text>
+        <view class="promotion-content">
+          <text class="promotion-title">{{item.title}}</text>
+          <text class="promotion-desc">{{item.content}}</text>
+        </view>
+        <text class="promotion-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 规格选择 -->
+  <view class="sku-section">
+    <view class="section-title">
+      <text class="title-text">选择规格</text>
+    </view>
+
+    <!-- 花器类型 -->
+    <view wx:if="{{attrOptions.vaseType && attrOptions.vaseType.length > 0}}" class="sku-option">
+      <text class="option-label">花器类型</text>
+      <view class="option-values">
+        <view wx:for="{{attrOptions.vaseType}}" wx:key="value" class="option-value {{selectedAttrs.vaseType === item.value ? 'selected' : ''}}" bindtap="onAttrSelect" data-key="vaseType" data-value="{{item.value}}">
+          <text class="value-text">{{item.name}}</text>
+          <text wx:if="{{item.priceDelta > 0}}" class="value-price">+¥{{item.priceDelta}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 花材搭配 -->
+    <view wx:if="{{attrOptions.flowerMatch && attrOptions.flowerMatch.length > 0}}" class="sku-option">
+      <text class="option-label">花材搭配</text>
+      <view class="option-values">
+        <view wx:for="{{attrOptions.flowerMatch}}" wx:key="value" class="option-value {{selectedAttrs.flowerMatch === item.value ? 'selected' : ''}}" bindtap="onAttrSelect" data-key="flowerMatch" data-value="{{item.value}}">
+          <text class="value-text">{{item.name}}</text>
+          <text wx:if="{{item.priceDelta > 0}}" class="value-price">+¥{{item.priceDelta}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 包装类型 -->
+    <view wx:if="{{attrOptions.packaging && attrOptions.packaging.length > 0}}" class="sku-option">
+      <text class="option-label">包装类型</text>
+      <view class="option-values">
+        <view wx:for="{{attrOptions.packaging}}" wx:key="value" class="option-value {{selectedAttrs.packaging === item.value ? 'selected' : ''}}" bindtap="onAttrSelect" data-key="packaging" data-value="{{item.value}}">
+          <text class="value-text">{{item.name}}</text>
+          <text wx:if="{{item.priceDelta > 0}}" class="value-price">+¥{{item.priceDelta}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{selectedSku}}" class="current-sku-info">
+      <text class="info-label">已选：</text>
+      <text class="info-value">{{selectedSkuAttrsText}}</text>
+      <text class="info-price">¥{{selectedSku.price}}</text>
+    </view>
+  </view>
+
+  <!-- 数量选择 -->
+  <view class="quantity-section">
+    <view class="section-title">
+      <text class="title-text">购买数量</text>
+    </view>
+    <view class="quantity-selector">
+      <view wx:if="{{quantity > minQuantity}}" class="quantity-btn minus" bindtap="onDecreaseQuantity">
+        <text>-</text>
+      </view>
+      <view wx:else class="quantity-btn minus disabled">
+        <text>-</text>
+      </view>
+
+      <input class="quantity-input" bindinput="onQuantityInput" max="{{maxQuantity}}" min="{{minQuantity}}" type="number" value="{{quantity}}" />
+
+    <view wx:if="{{quantity < maxQuantity && (!selectedSku || quantity < selectedSku.stock)}}" class="quantity-btn plus" bindtap="onIncreaseQuantity">
+      <text>+</text>
+    </view>
+    <view wx:else class="quantity-btn plus disabled">
+      <text>+</text>
+    </view>
+  </view>
+  <text wx:if="{{selectedSku && selectedSku.stock < 10}}" class="quantity-hint">
+    库存紧张，仅剩{{selectedSku.stock}}件
+  </text>
+</view>
+
+<!-- 商品详情选项卡 -->
+<view class="detail-tabs">
+  <view class="tabs-header">
+    <view wx:for="{{tabList}}" wx:key="id" class="tab-item {{currentTab === item.id ? 'active' : ''}}" bindtap="onTabTap" data-id="{{item.id}}">
+      <text class="tab-icon">{{item.icon}}</text>
+      <text class="tab-text">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="tabs-content">
+    <!-- 商品详情 -->
+    <view wx:if="{{currentTab === 'detail'}}" class="tab-pane">
+      <view class="detail-content">
+        <view class="detail-item">
+          <text class="item-label">适用场景</text>
+          <text class="item-value">{{productInfo.scene}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="item-label">产品尺寸</text>
+          <text class="item-value">{{productInfo.size}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="item-label">产品重量</text>
+          <text class="item-value">{{productInfo.weight}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="item-label">主要材质</text>
+          <text class="item-value">{{productInfo.material}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="item-label">产品特点</text>
+          <view class="item-value features">
+            <text wx:for="{{productInfo.features}}" wx:key="*this" class="feature-item">{{item}}</text>
+          </view>
+        </view>
+        <view class="detail-images">
+          <image class="detail-image" lazy-load="true" mode="widthFix" src="/assets/products/detail-desc1.jpg" />
+        <image class="detail-image" lazy-load="true" mode="widthFix" src="/assets/products/detail-desc2.jpg" />
+    </view>
+  </view>
+</view>
+
+<!-- 规格参数 -->
+<view wx:if="{{currentTab === 'params'}}" class="tab-pane">
+  <view class="params-content">
+    <view class="params-table">
+      <view class="params-row">
+        <text class="params-label">花材类型</text>
+        <text class="params-value">{{productInfo.flowerTypeName}}</text>
+      </view>
+      <view class="params-row">
+        <text class="params-label">颜色系列</text>
+        <text class="params-value">{{productInfo.colorName}}</text>
+      </view>
+      <view class="params-row">
+        <text class="params-label">设计风格</text>
+        <text class="params-value">{{productInfo.styleName}}</text>
+      </view>
+      <view class="params-row">
+        <text class="params-label">保鲜期限</text>
+        <text class="params-value">3-5年（避免阳光直射和潮湿）</text>
+      </view>
+      <view class="params-row">
+        <text class="params-label">养护要求</text>
+        <text class="params-value">免浇水，定期用吹风机冷风清洁灰尘</text>
+      </view>
+      <view class="params-row">
+        <text class="params-label">适用场景</text>
+        <text class="params-value">室内装饰，避免浴室等潮湿环境</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 用户评价 -->
+<view wx:if="{{currentTab === 'reviews'}}" class="tab-pane">
+  <view class="reviews-content">
+    <view class="reviews-summary">
+      <view class="rating-overall">
+        <text class="rating-score">{{productInfo.rating}}</text>
+        <text class="rating-star">★★★★★</text>
+        <text class="rating-count">{{productInfo.reviewCount}}条评价</text>
+      </view>
+      <view class="rating-distribution">
+        <view class="rating-item">
+          <text class="rating-label">非常好（5星）</text>
+          <view class="rating-bar">
+            <view class="rating-fill" style="width: 80%;"></view>
+          </view>
+          <text class="rating-percent">80%</text>
+        </view>
+        <view class="rating-item">
+          <text class="rating-label">很好（4星）</text>
+          <view class="rating-bar">
+            <view class="rating-fill" style="width: 15%;"></view>
+          </view>
+          <text class="rating-percent">15%</text>
+        </view>
+        <view class="rating-item">
+          <text class="rating-label">一般（3星）</text>
+          <view class="rating-bar">
+            <view class="rating-fill" style="width: 3%;"></view>
+          </view>
+          <text class="rating-percent">3%</text>
+        </view>
+        <view class="rating-item">
+          <text class="rating-label">较差（2星）</text>
+          <view class="rating-bar">
+            <view class="rating-fill" style="width: 1%;"></view>
+          </view>
+          <text class="rating-percent">1%</text>
+        </view>
+        <view class="rating-item">
+          <text class="rating-label">很差（1星）</text>
+          <view class="rating-bar">
+            <view class="rating-fill" style="width: 1%;"></view>
+          </view>
+          <text class="rating-percent">1%</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="reviews-list">
+      <view class="review-item">
+        <view class="review-header">
+          <image class="user-avatar" src="/assets/avatars/user1.jpg" />
+      <view class="user-info">
+        <text class="user-name">张女士</text>
+        <text class="review-time">2024-04-15</text>
+      </view>
+      <view class="review-rating">
+        <text class="rating-star">★★★★★</text>
+      </view>
+    </view>
+    <view class="review-content">
+      <text>非常漂亮！摆在家里玄关特别好看，朋友们都夸有品味。永生花不用打理很方便，适合我这种没时间养花的人。</text>
+    </view>
+    <view class="review-images">
+      <image class="review-image" lazy-load="{{true}}" src="/assets/reviews/review1.jpg" />
+</view>
+</view>
+
+<view class="review-item">
+  <view class="review-header">
+    <image class="user-avatar" src="/assets/avatars/user2.jpg" />
+<view class="user-info">
+  <text class="user-name">李女士</text>
+  <text class="review-time">2024-04-10</text>
+</view>
+<view class="review-rating">
+  <text class="rating-star">★★★★☆</text>
+</view>
+</view>
+<view class="review-content">
+  <text>质量很好，包装精美，送人很合适。就是价格稍微有点贵，但看在品质上还是值得的。</text>
+</view>
+</view>
+</view>
+</view>
+</view>
+
+<!-- 常见问题 -->
+<view wx:if="{{currentTab === 'qa'}}" class="tab-pane">
+  <view class="qa-content">
+    <view class="qa-item">
+      <view class="qa-question">
+        <text class="question-text">Q: 永生花可以保持多久？</text>
+      </view>
+      <view class="qa-answer">
+        <text class="answer-text">A: 正常室内环境下可以保持3-5年。避免阳光直射、高温潮湿环境，定期用吹风机冷风清洁灰尘即可。</text>
+      </view>
+    </view>
+
+    <view class="qa-item">
+      <view class="qa-question">
+        <text class="question-text">Q: 需要浇水吗？如何养护？</text>
+      </view>
+      <view class="qa-answer">
+        <text class="answer-text">A: 永生花不需要浇水。养护非常简单：避免阳光直射、避免潮湿环境、定期用吹风机冷风清洁灰尘即可。</text>
+      </view>
+    </view>
+
+    <view class="qa-item">
+      <view class="qa-question">
+        <text class="question-text">Q: 支持退换货吗？</text>
+      </view>
+      <view class="qa-answer">
+        <text class="answer-text">A: 支持7天无理由退换货。收到商品如有质量问题，请及时联系客服处理。</text>
+      </view>
+    </view>
+
+    <view class="qa-item">
+      <view class="qa-question">
+        <text class="question-text">Q: 发货需要多长时间？</text>
+      </view>
+      <view class="qa-answer">
+        <text class="answer-text">A: 正常情况下48小时内发货，偏远地区可能会有所延迟。发货后会短信通知物流单号。</text>
+      </view>
+    </view>
+
+    <view class="qa-item">
+      <view class="qa-question">
+        <text class="question-text">Q: 可以定制吗？</text>
+      </view>
+      <view class="qa-answer">
+        <text class="answer-text">A: 支持定制服务，包括花材搭配、花器选择、贺卡内容等。请联系客服咨询具体定制方案。</text>
+      </view>
+    </view>
+  </view>
+</view>
+</view>
+</view>
+
+<!-- 相关商品 -->
+<view wx:if="{{relatedProducts.length > 0}}" class="related-products">
+  <view class="section-title">
+    <text class="title-text">相关推荐</text>
+  </view>
+  <scroll-view class="related-list" scroll-x="true">
+    <view class="related-items">
+      <view wx:for="{{relatedProducts}}" wx:key="id" class="related-item" bindtap="onRelatedProductTap" data-index="{{index}}">
+        <image class="related-image" lazy-load="{{true}}" mode="aspectFill" src="{{item.image}}" />
+    <view class="related-info">
+      <text class="related-name">{{item.name}}</text>
+      <view class="related-price">
+        <text class="current-price">¥{{item.price}}</text>
+        <text wx:if="{{item.originalPrice > item.price}}" class="original-price">¥{{item.originalPrice}}</text>
+      </view>
+      <text class="related-sales">已售{{item.sales}}件</text>
+    </view>
+  </view>
+</view>
+</scroll-view>
+</view>
+
+<view class="delivery-afterSale">
+  <view class="info-item">
+    <text class="info-icon">🚚</text>
+    <view class="info-content">
+      <text class="info-title">配送服务</text>
+      <text class="info-desc">{{productInfo.deliveryInfo}}</text>
+    </view>
+  </view>
+
+  <view class="info-item">
+    <text class="info-icon">🛡️</text>
+    <view class="info-content">
+      <text class="info-title">售后保障</text>
+      <text class="info-desc">{{productInfo.afterSale}}</text>
+    </view>
+  </view>
+</view>
+</view>
+
+<!-- 底部操作栏 -->
+<view wx:if="{{!loading && !loadingError && productInfo}}" class="bottom-action-bar">
+  <view class="action-left">
+    <view class="action-item collect-btn" bindtap="onCollectTap" data-aria-label="{{isCollected ? '取消收藏' : '收藏'}}">
+      <text class="action-icon">{{isCollected ? '❤️' : '🤍'}}</text>
+      <text class="action-text">{{isCollected ? '已收藏' : '收藏'}}</text>
+    </view>
+
+    <view class="action-item cart-btn" bindtap="onCartTap" data-aria-label="购物车">
+      <text class="action-icon">🛒</text>
+      <text class="action-text">购物车</text>
+      <view wx:if="{{cartCount > 0}}" class="cart-badge-small">
+        <text>{{cartCount > 99 ? '99+' : cartCount}}</text>
+      </view>
+    </view>
+
+    <view class="action-item service-btn" bindtap="onServiceTap" data-aria-label="客服">
+      <text class="action-icon">💬</text>
+      <text class="action-text">客服</text>
+    </view>
+  </view>
+
+  <view class="action-right">
+    <view class="add-to-cart-btn" bindtap="onAddToCart" data-aria-label="加购物车">
+      <text>加购物车</text>
+    </view>
+    <view wx:if="{{groupBuyEnabled && groupBuyInfo && groupBuyInfo.length > 0}}" class="group-buy-btn" bindtap="onStartGroupBuy">
+      <text>发起拼团</text>
+    </view>
+    <view class="buy-now-btn" bindtap="onBuyNow" data-aria-label="立即购买">
+      <text>立即购买</text>
+    </view>
+  </view>
+
+  <!-- AR预览按钮（浮动） - 已隐藏，保留代码后续启用 -->
+  <view wx:if="{{arSupported && showARButton}}" class="ar-preview-btn" style="display:none;" bindtap="onARTap" data-aria-label="AR预览">
+    <text class="ar-icon">👁️</text>
+    <text class="ar-text">AR预览</text>
+  </view>
+</view>
+</view>

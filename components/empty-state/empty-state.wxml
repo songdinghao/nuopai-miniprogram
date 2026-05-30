@@ -1,0 +1,17 @@
+<!-- components/empty-state/empty-state.wxml - 空状态 -->
+<view class="empty-state">
+  <!-- 图标 -->
+  <view class="empty-icon-wrap">
+    <text class="empty-icon font-extra-large">{{displayIcon}}</text>
+  </view>
+
+  <!-- 标题 -->
+  <text wx:if="{{displayTitle}}" class="empty-title font-large">{{displayTitle}}</text>
+
+  <!-- 描述 -->
+  <text wx:if="{{displayDesc}}" class="empty-description">{{displayDesc}}</text>
+
+  <button wx:if="{{displayButtonText}}" class="empty-action" bindtap="onAction" hover-class="empty-action-hover">
+    {{displayButtonText}}
+  </button>
+</view>

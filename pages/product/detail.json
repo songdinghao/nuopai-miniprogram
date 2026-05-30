@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "ar-preview": "/components/ar-preview/ar-preview"
+  }
+}

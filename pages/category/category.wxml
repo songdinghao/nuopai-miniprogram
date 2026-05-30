@@ -1,0 +1,314 @@
+<!-- pages/category/category.wxml - 分类页面模板 -->
+<view class="category-page font-{{fontSize}}" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <view class="header">
+    <!-- 返回按钮和标题 -->
+    <view class="nav-bar">
+      <view class="nav-left">
+        <view class="back-btn" bindtap="onBackToHome" data-aria-label="返回首页">
+          <text class="icon">←</text>
+          <text>首页</text>
+        </view>
+      </view>
+
+      <view class="nav-title">
+        <text class="title-text">{{categoryName}}</text>
+        <text wx:if="{{total > 0}}" class="title-count">({{total}}件)</text>
+      </view>
+
+      <view class="nav-right">
+        <view class="nav-action-btn sort-btn {{filters.sort && filters.sort !== 'default' ? 'active' : ''}}" bindtap="onShowSortPanel" data-aria-label="排序">
+          <text class="nav-action-icon">⇅</text>
+          <text class="nav-action-text">排序</text>
+        </view>
+        <view class="nav-action-btn filter-btn" bindtap="onShowFilterPanel" data-aria-label="筛选">
+          <text class="nav-action-icon">⚙</text>
+          <text class="nav-action-text">筛选</text>
+          <view wx:if="{{filters.priceRange || filters.flowerType || filters.color || filters.style || filters.scene}}" class="nav-action-dot"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 搜索输入框 -->
+    <view wx:if="{{showSearchInput}}" class="search-container">
+      <view class="search-input-wrapper">
+        <text class="search-icon">🔍</text>
+        <input class="search-input" bindconfirm="onSearchConfirm" bindinput="onSearchInput" confirm-type="search" focus="{{showSearchInput}}" placeholder="搜索{{categoryName}}" placeholder-style="color: #999;" value="{{searchKeyword}}" />
+      <text wx:if="{{searchKeyword}}" class="clear-icon" bindtap="onSearchCancel">×</text>
+    </view>
+    <text class="search-cancel" bindtap="onSearchCancel">取消</text>
+  </view>
+
+  <!-- 分类标签 -->
+  <scroll-view class="category-tabs" scroll-with-animation scroll-x="true">
+    <view class="tabs-wrapper">
+      <view class="tabs-container">
+        <!-- 全部商品 -->
+        <view class="tab-item {{!categoryId ? 'active' : ''}}" bindtap="onCategoryTabTap" data-id="">
+          <text>全部</text>
+        </view>
+
+        <!-- 各分类标签 -->
+        <view wx:for="{{storeConfigCategories}}" wx:key="id" class="tab-item {{item.id === categoryId ? 'active' : ''}}" bindtap="onCategoryTabTap" data-id="{{item.id}}">
+          <text>{{item.name}}</text>
+        </view>
+      </view>
+      
+      <!-- 右侧：排序和筛选按钮 -->
+      <view class="tabs-right">
+        <view class="filter-item sort-btn {{filters.sort && filters.sort !== 'default' ? 'active' : ''}}" bindtap="onShowSortPanel" data-aria-label="排序">
+          <text class="filter-icon">⇅</text>
+          <text class="filter-text">排序</text>
+        </view>
+        <view class="filter-item filter-btn" bindtap="onShowFilterPanel" data-aria-label="筛选">
+          <text class="filter-icon">⚙</text>
+          <text class="filter-text">筛选</text>
+          <!-- 筛选标记 -->
+          <view wx:if="{{filters.priceRange || filters.flowerType || filters.color || filters.style || filters.scene}}" class="filter-badge">
+            <text>●</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 活动筛选标签 -->
+<view wx:if="{{filters.priceRange || filters.flowerType || filters.color || filters.style || filters.scene}}" class="active-filters">
+  <!-- 价格筛选 -->
+  <view wx:if="{{filters.priceRange}}" class="filter-item price-filter">
+    <text class="filter-text">{{filters.currentPriceRangeName || ''}}</text>
+    <text class="filter-close" bindtap="onFilterTap" data-type="priceRange" data-value="{{filters.priceRange}}">×</text>
+  </view>
+
+  <!-- 花材筛选 -->
+  <view wx:if="{{filters.flowerType}}" class="filter-item flower-filter">
+    <text class="filter-text">{{filters.currentFlowerTypeName || ''}}</text>
+    <text class="filter-close" bindtap="onFilterTap" data-type="flowerType" data-value="{{filters.flowerType}}">×</text>
+  </view>
+</view>
+
+<view class="product-list-container">
+  <!-- 骨架屏：首次加载时展示 -->
+  <view wx:if="{{loading && !refreshing}}" class="skeleton-grid">
+    <view wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this" class="skeleton-card">
+      <view class="skeleton-img"></view>
+      <view class="skeleton-info">
+        <view class="skeleton-line w80"></view>
+        <view class="skeleton-line w60"></view>
+        <view class="skeleton-line w40"></view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && loadError}}" class="error-container">
+    <text class="error-icon">⚠️</text>
+    <text class="error-title">加载失败</text>
+    <text class="error-desc">网络开小差了，请重试</text>
+    <view class="error-action" bindtap="loadProducts">
+      <text>重新加载</text>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && !loadError && products.length === 0 && !hasActiveFilters}}" class="empty-container">
+    <text class="empty-icon">🌷</text>
+    <text class="empty-title">暂无商品</text>
+    <text class="empty-desc">该分类下暂时没有商品，去看看其他分类吧</text>
+  </view>
+
+  <view wx:if="{{!loading && !loadError && products.length === 0 && hasActiveFilters}}" class="empty-container">
+    <text class="empty-icon">🔍</text>
+    <text class="empty-title">没有找到商品</text>
+    <text class="empty-desc">当前筛选条件下没有找到商品，试试调整筛选条件</text>
+    <view class="empty-action" bindtap="onResetFilters">
+      <text>重置筛选条件</text>
+    </view>
+  </view>
+
+  <!-- 商品网格 -->
+  <view wx:if="{{!loading && !loadError && products.length > 0}}" class="product-grid">
+    <view wx:for="{{products}}" wx:key="id" class="product-item" bindtap="onProductTap" data-index="{{index}}">
+      <!-- 商品图片 -->
+      <view class="product-image-container">
+        <image class="product-image" lazy-load="true" mode="aspectFill" src="{{item.mainImage || item.image || '/assets/products/product-placeholder.jpg'}}" binderror="onProductImageError" data-id="{{item.id}}" />
+        <view wx:if="{{item._imageError}}" class="product-image-fallback">
+          <text class="fallback-icon">🌷</text>
+        </view>
+
+      <!-- 标签 -->
+      <view wx:if="{{item.tags && item.tags.length > 0}}" class="product-tags">
+        <view wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag" wx:if="{{index < 2}}" class="product-tag">
+          <text>{{tag}}</text>
+        </view>
+      </view>
+
+      <!-- 新品标记 -->
+      <view wx:if="{{item.tags && item.tags.includes('新品')}}" class="new-badge">
+        <text>NEW</text>
+      </view>
+    </view>
+
+    <view class="product-info">
+      <!-- 商品名称 -->
+      <view class="product-name">
+        <text>{{item.name}}</text>
+      </view>
+
+      <!-- 商品描述 -->
+      <view wx:if="{{item.scene}}" class="product-desc">
+        <text>适用场景：{{item.sceneName}}</text>
+      </view>
+
+      <view class="product-price">
+        <text class="current-price">¥{{item.price}}</text>
+        <text wx:if="{{item.originalPrice > item.price}}" class="original-price">¥{{item.originalPrice}}</text>
+        <text wx:if="{{item.originalPrice > item.price}}" class="discount">
+          {{item.discountPercent}}折
+        </text>
+      </view>
+
+      <view class="product-sales">
+        <text>已售{{item.sales}}件</text>
+      </view>
+
+      <view class="product-actions">
+        <view class="add-to-cart-btn" catchtap="onAddToCart" data-index="{{index}}">
+          <text>加入购物车</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载更多 -->
+<view wx:if="{{!loading && products.length > 0}}" class="load-more-container">
+  <view wx:if="{{loadingMore}}" class="load-more">
+    <view class="loading-spinner small"></view>
+    <text>加载中...</text>
+  </view>
+  <view wx:if="{{!loadingMore && hasMore}}" class="load-more" bindtap="loadMoreProducts">
+    <text>点击加载更多</text>
+  </view>
+  <view wx:if="{{!loadingMore && !hasMore && !loadMoreFailed && products.length > 0}}" class="load-more">
+    <text>没有更多商品了</text>
+  </view>
+  <view wx:if="{{!loadingMore && loadMoreFailed}}" class="load-more load-more-retry" bindtap="retryLoadMore">
+    <text>⚠️ 加载失败，点击重试</text>
+  </view>
+</view>
+</view>
+
+<!-- 筛选面板 -->
+<view wx:if="{{filterPanelVisible}}" class="filter-panel">
+  <view class="filter-panel-mask" bindtap="onHideFilterPanel"></view>
+
+  <view class="filter-panel-content">
+    <!-- 面板标题 -->
+    <view class="panel-header">
+      <text class="panel-title">筛选</text>
+      <text class="panel-close" bindtap="onHideFilterPanel">×</text>
+    </view>
+
+    <!-- 筛选标签 -->
+    <view class="filter-tabs">
+      <view class="filter-tab {{currentFilterTab === 'price' ? 'active' : ''}}" bindtap="onFilterTabTap" data-tab="price">
+        <text>价格</text>
+      </view>
+      <view class="filter-tab {{currentFilterTab === 'flower' ? 'active' : ''}}" bindtap="onFilterTabTap" data-tab="flower">
+        <text>花材</text>
+      </view>
+      <view class="filter-tab {{currentFilterTab === 'color' ? 'active' : ''}}" bindtap="onFilterTabTap" data-tab="color">
+        <text>颜色</text>
+      </view>
+      <view class="filter-tab {{currentFilterTab === 'style' ? 'active' : ''}}" bindtap="onFilterTabTap" data-tab="style">
+        <text>风格</text>
+      </view>
+      <view class="filter-tab {{currentFilterTab === 'scene' ? 'active' : ''}}" bindtap="onFilterTabTap" data-tab="scene">
+        <text>场景</text>
+      </view>
+    </view>
+
+    <!-- 价格筛选 -->
+    <view wx:if="{{currentFilterTab === 'price'}}" class="filter-content">
+      <view class="price-options">
+        <view wx:for="{{filters.priceRanges}}" wx:key="id" class="price-option {{filters.priceRange === item.id ? 'selected' : ''}}" bindtap="onFilterTap" data-type="priceRange" data-value="{{item.id}}">
+          <text class="option-text">{{item.name}}</text>
+          <text class="option-desc">{{item.description}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 花材筛选 -->
+    <view wx:if="{{currentFilterTab === 'flower'}}" class="filter-content">
+      <view class="flower-options">
+        <view wx:for="{{filters.flowerTypes}}" wx:key="id" class="flower-option {{filters.flowerType === item.id ? 'selected' : ''}}" bindtap="onFilterTap" data-type="flowerType" data-value="{{item.id}}">
+          <text class="option-text">{{item.name}}</text>
+          <view class="flower-icon" style="background-color: {{item.color || '#2D8C7A'}};"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 颜色筛选 -->
+    <view wx:if="{{currentFilterTab === 'color'}}" class="filter-content">
+      <view class="color-options">
+        <view wx:for="{{filters.colors}}" wx:key="id" class="color-option {{filters.color === item.id ? 'selected' : ''}}" bindtap="onFilterTap" data-type="color" data-value="{{item.id}}">
+          <view class="color-circle" style="background-color: {{item.value}};"></view>
+          <text class="color-text">{{item.name}}</text>
+          <text class="color-desc">{{item.description}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 风格筛选 -->
+    <view wx:if="{{currentFilterTab === 'style'}}" class="filter-content">
+      <view class="style-options">
+        <view wx:for="{{filters.styles}}" wx:key="id" class="style-option {{filters.style === item.id ? 'selected' : ''}}" bindtap="onFilterTap" data-type="style" data-value="{{item.id}}">
+          <text class="option-text">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 场景筛选 -->
+    <view wx:if="{{currentFilterTab === 'scene'}}" class="filter-content">
+      <view class="scene-options">
+        <view wx:for="{{filters.scenes}}" wx:key="id" class="scene-option {{filters.scene === item.id ? 'selected' : ''}}" bindtap="onFilterTap" data-type="scene" data-value="{{item.id}}">
+          <text class="option-text">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="filter-actions">
+      <view class="filter-action reset" bindtap="onResetFilters">
+        <text>重置</text>
+      </view>
+      <view class="filter-action confirm" bindtap="onConfirmFilters">
+        <text>确定</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 排序面板 -->
+<view wx:if="{{sortPanelVisible}}" class="filter-panel">
+  <view class="filter-panel-mask" bindtap="onHideSortPanel"></view>
+  <view class="filter-panel-content">
+    <view class="panel-header">
+      <text class="panel-title">排序方式</text>
+      <text class="panel-close" bindtap="onHideSortPanel">×</text>
+    </view>
+    <view class="sort-options">
+      <view wx:for="{{filters.sortOptions}}" wx:key="id"
+            class="sort-option {{filters.sort === item.id ? 'selected' : ''}}"
+            bindtap="onSortOptionTap" data-sort="{{item.id}}">
+        <text class="option-text">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 下拉刷新提示 -->
+<view wx:if="{{refreshing}}" class="refresh-indicator">
+  <view class="refresh-spinner"></view>
+  <text>刷新中...</text>
+</view>
+</view>

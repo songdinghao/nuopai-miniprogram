@@ -1,0 +1,273 @@
+page {
+  background: var(--bg-color);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 48rpx;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  padding: 88rpx 32rpx 24rpx;
+  background: #ffffff;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.back-icon {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-right: 8rpx;
+}
+
+.back-text {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.page-title {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.header-right {
+  min-width: 100rpx;
+}
+
+.service-btn {
+  font-size: 13px;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.service-btn::after {
+  border: none;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 16rpx;
+  margin: 20rpx 32rpx;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20rpx 8rpx;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  min-height: 48px;
+  border: none;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.action-icon {
+  font-size: 24px;
+  margin-bottom: 8rpx;
+}
+
+.action-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.faq-section {
+  margin: 0 32rpx 24rpx;
+}
+
+.category-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: 12rpx;
+  padding-left: 8rpx;
+}
+
+.faq-list {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.faq-item {
+  border-bottom: 1rpx solid var(--bg-secondary);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 24rpx;
+  min-height: 48px;
+}
+
+.question-text {
+  flex: 1;
+  font-size: 16px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-right: 16rpx;
+}
+
+.question-arrow {
+  font-size: 20px;
+  color: var(--text-tertiary);
+  transition: transform 0.2s;
+  font-weight: 500;
+}
+
+.question-arrow.expanded {
+  transform: rotate(90deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.faq-answer.show {
+  max-height: 600rpx;
+}
+
+.answer-content {
+  padding: 0 24rpx 24rpx;
+}
+
+.answer-text {
+  display: block;
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.answer-actions {
+  margin-top: 16rpx;
+}
+
+.answer-btn {
+  display: inline-block;
+  font-size: 14px;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 8rpx 24rpx;
+  min-height: 48px;
+  line-height: 48px;
+  margin: 0;
+}
+
+.answer-btn::after {
+  border: none;
+}
+
+.contact-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 24rpx 32rpx;
+  padding: 32rpx;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.contact-hint {
+  font-size: 15px;
+  color: var(--text-tertiary);
+  margin-bottom: 16rpx;
+}
+
+.contact-btn {
+  display: flex;
+  align-items: center;
+  background: var(--color-primary);
+  border-radius: 24px;
+  padding: 16rpx 48rpx;
+  min-height: 48px;
+  color: #ffffff;
+  border: none;
+}
+
+.contact-btn::after {
+  border: none;
+}
+
+.contact-btn-icon {
+  font-size: 18px;
+  margin-right: 8rpx;
+}
+
+.contact-btn-text {
+  font-size: 16px;
+}
+
+.page.font-large .page-title {
+  font-size: 20px;
+}
+
+.page.font-large .action-text {
+  font-size: 16px;
+}
+
+.page.font-large .category-title {
+  font-size: 18px;
+}
+
+.page.font-large .question-text {
+  font-size: 18px;
+}
+
+.page.font-large .answer-text {
+  font-size: 17px;
+}
+
+.page.font-extra-large .page-title {
+  font-size: 22px;
+}
+
+.page.font-extra-large .action-text {
+  font-size: 18px;
+}
+
+.page.font-extra-large .category-title {
+  font-size: 20px;
+}
+
+.page.font-extra-large .question-text {
+  font-size: 20px;
+}
+
+.page.font-extra-large .answer-text {
+  font-size: 19px;
+}

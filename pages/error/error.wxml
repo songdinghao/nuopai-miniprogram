@@ -1,0 +1,34 @@
+<!-- pages/error/error.wxml - 错误状态页面 -->
+<view class="page-container error-page">
+  <view class="error-content">
+    <!-- 错误图标 -->
+    <view class="error-icon-wrapper">
+      <text class="error-icon">{{errorConfigs[errorType].icon}}</text>
+    </view>
+
+    <!-- 错误标题 -->
+    <text class="error-title">{{errorConfigs[errorType].title}}</text>
+
+    <!-- 错误描述 -->
+    <text class="error-desc">{{errorConfigs[errorType].desc}}</text>
+
+    <view wx:if="{{errorMessage}}" class="error-detail" bindtap="onViewDetail">
+      <text class="error-detail-text">{{errorMessage}}</text>
+    </view>
+
+    <view class="error-actions">
+      <view class="btn-primary" bindtap="onPrimaryAction">
+        <text>{{errorConfigs[errorType].primaryBtn}}</text>
+      </view>
+
+      <view class="btn-secondary" bindtap="onSecondaryAction">
+        <text>{{errorConfigs[errorType].secondaryBtn}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="error-footer">
+    <text class="footer-text">如需帮助，请联系客服</text>
+    <text class="footer-phone">400-xxx-xxxx</text>
+  </view>
+</view>

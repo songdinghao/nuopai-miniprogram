@@ -1,0 +1,137 @@
+<!-- pages/order/detail.wxml - 订单详情页面 -->
+<view class="order-detail-page {{fontSize === 'large' ? 'font-large' : fontSize === 'xlarge' ? 'font-xlarge' : ''}}" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载订单信息...</text>
+  </view>
+
+  <!-- 加载失败 -->
+  <view wx:if="{{!loading && loadError}}" class="error-container">
+    <text class="error-icon">😔</text>
+    <text class="error-title">加载失败</text>
+    <text class="error-desc">网络不太给力，请稍后重试</text>
+    <view class="error-action" bindtap="loadOrderDetail">
+      <text>重新加载</text>
+    </view>
+  </view>
+
+  <!-- 订单内容 -->
+  <view wx:if="{{!loading && !loadError && orderInfo}}" class="order-content-wrap">
+
+  <!-- 订单状态头部 -->
+  <view class="status-header">
+    <text class="status-icon">{{statusInfo.icon}}</text>
+    <text class="status-text">{{statusInfo.text}}</text>
+    <text class="status-desc">{{statusInfo.desc}}</text>
+  </view>
+
+  <!-- 收货地址 -->
+  <view wx:if="{{orderInfo.address}}" class="address-section">
+    <view class="section-title">
+      <text class="title-icon">📍</text>
+      <text class="title-text">收货地址</text>
+    </view>
+    <view class="address-info">
+      <view class="address-top">
+        <text class="receiver-name">{{orderInfo.address.name}}</text>
+        <text class="receiver-phone">{{orderInfo.address.phone}}</text>
+      </view>
+      <text class="address-detail">{{orderInfo.address.province}}{{orderInfo.address.city}}{{orderInfo.address.district}}{{orderInfo.address.detail}}</text>
+    </view>
+  </view>
+
+  <view class="goods-section">
+    <view class="section-title">
+      <text class="title-icon">🎁</text>
+      <text class="title-text">商品信息</text>
+    </view>
+    <view class="goods-list">
+      <view wx:for="{{orderInfo.goods}}" wx:key="id" class="goods-item" bindtap="onGoodsDetail" data-id="{{item.productId}}">
+        <image class="goods-image" mode="aspectFill" src="{{item.image}}" />
+    <view class="goods-info">
+      <text class="goods-name">{{item.name}}</text>
+      <text wx:if="{{item.spec}}" class="goods-spec">{{item.spec}}</text>
+      <view class="goods-bottom">
+        <text class="goods-price">¥{{item.price}}</text>
+        <text class="goods-count">x{{item.count}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+</view>
+
+<view class="order-info-section">
+  <view class="section-title">
+    <text class="title-icon">📋</text>
+    <text class="title-text">订单信息</text>
+  </view>
+  <view class="info-list">
+    <view class="info-item">
+      <text class="info-label">订单编号</text>
+      <text class="info-value">{{orderInfo.orderNo}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">下单时间</text>
+      <text class="info-value">{{orderInfo.createTime}}</text>
+    </view>
+    <view wx:if="{{orderInfo.payTime}}" class="info-item">
+      <text class="info-label">支付时间</text>
+      <text class="info-value">{{orderInfo.payTime}}</text>
+    </view>
+    <view wx:if="{{orderInfo.shipTime}}" class="info-item">
+      <text class="info-label">发货时间</text>
+      <text class="info-value">{{orderInfo.shipTime}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">支付方式</text>
+      <text class="info-value">{{orderInfo.payMethod || '微信支付'}}</text>
+    </view>
+  </view>
+</view>
+
+<view class="price-section">
+  <view class="section-title">
+    <text class="title-icon">💰</text>
+    <text class="title-text">费用明细</text>
+  </view>
+  <view class="price-list">
+    <view class="price-item">
+      <text class="price-label">商品金额</text>
+      <text class="price-value">¥{{orderInfo.goodsPrice}}</text>
+    </view>
+    <view wx:if="{{orderInfo.freightPrice}}" class="price-item">
+      <text class="price-label">运费</text>
+      <text class="price-value">¥{{orderInfo.freightPrice}}</text>
+    </view>
+    <view wx:if="{{orderInfo.couponPrice}}" class="price-item">
+      <text class="price-label">优惠券</text>
+      <text class="price-value coupon">-¥{{orderInfo.couponPrice}}</text>
+    </view>
+    <view class="price-item total">
+      <text class="price-label">实付金额</text>
+      <text class="price-value total">¥{{orderInfo.totalPrice}}</text>
+    </view>
+  </view>
+</view>
+
+<view wx:if="{{orderInfo.actions && orderInfo.actions.length > 0}}" class="bottom-section">
+  <view class="action-buttons">
+    <button wx:for="{{orderInfo.actions}}" wx:key="key" class="action-btn {{item.primary ? 'primary' : 'secondary'}}" bindtap="onActionTap" data-action="{{item.key}}">
+      {{item.text}}
+    </button>
+  </view>
+</view>
+
+<view class="safe-area-bottom"></view>
+</view>
+
+  <!-- 订单不存在 -->
+  <view wx:if="{{!loading && !loadError && !orderInfo}}" class="empty-container">
+    <text class="empty-icon">📋</text>
+    <text class="empty-title">订单不存在</text>
+    <text class="empty-desc">该订单可能已被删除或信息有误</text>
+    <navigator url="/pages/order/list" class="empty-action">返回订单列表</navigator>
+  </view>
+</view>

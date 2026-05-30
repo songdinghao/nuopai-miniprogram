@@ -1,0 +1,65 @@
+<view class="page earnings-page">
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 收益总览卡片 -->
+  <view class="summary-card">
+    <view class="summary-header">累计收益</view>
+    <view class="summary-total">¥{{totalEarnings}}</view>
+    <view class="summary-row">
+      <view class="summary-item">
+        <text class="label">待到账</text>
+        <text class="value pending">¥{{pendingEarnings}}</text>
+      </view>
+      <view class="summary-item">
+        <text class="label">已到账</text>
+        <text class="value settled">¥{{settledEarnings}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 月度数据 -->
+  <view wx:if="{{!loading && monthlyStats}}" class="monthly-card">
+    <view class="card-title">{{monthlyYear}}年{{monthlyMonth}}月 分享统计</view>
+    <view class="monthly-row">
+      <view class="monthly-item">
+        <text class="num">{{monthlyStats.count}}</text>
+        <text class="lbl">有效订单</text>
+      </view>
+      <view class="monthly-item">
+        <text class="num">¥{{monthlyStats.settled}}</text>
+        <text class="lbl">已到账</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 类型筛选 -->
+  <view wx:if="{{!loading}}" class="filter-bar">
+    <view class="filter-tab {{filterType===''?'active':''}}" bindtap="onFilterChange" data-type="">全部</view>
+    <view class="filter-tab {{filterType==='share'?'active':''}}" bindtap="onFilterChange" data-type="share">分享津贴</view>
+    <view class="filter-tab {{filterType==='referral'?'active':''}}" bindtap="onFilterChange" data-type="referral">友伴奖励</view>
+    <view class="filter-tab {{filterType==='growth'?'active':''}}" bindtap="onFilterChange" data-type="growth">成长奖励</view>
+  </view>
+
+  <view class="earnings-list">
+    <view wx:for="{{earningsList}}" wx:for-item="item" wx:key="id" class="earnings-item">
+      <view class="earn-info">
+        <text class="earn-type">{{item.type==='share'?'分享津贴':item.type==='referral'?'友伴奖励':'成长奖励'}}</text>
+        <text wx:if="{{item.productName}}" class="earn-order">{{item.productName}}</text>
+        <text class="earn-time">{{item.formattedCreatedAt}}</text>
+      </view>
+      <view class="earn-amount">
+        <text class="amount-num">+¥{{item.amount}}</text>
+        <text class="status-tag {{item.status}}">{{item.status==='pending'?'待结算':item.status==='settled'?'已到账':'已取消'}}</text>
+      </view>
+    </view>
+    <view wx:if="{{earningsList.length===0}}" class="empty-state">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无收益记录</text>
+      <text class="empty-hint">分享商品给好友，赚取分享津贴</text>
+    </view>
+  </view>
+</view>

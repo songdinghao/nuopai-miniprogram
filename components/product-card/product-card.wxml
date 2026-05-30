@@ -1,0 +1,43 @@
+<!-- components/product-card/product-card.wxml - 商品卡片 -->
+<view class="product-card product-card-{{layout}}" bindtap="onTap" data-aria-label="{{product.title || product.name}}" hover-class="product-card-hover">
+  <!-- 商品图片 -->
+  <view class="product-image-wrap">
+    <image class="product-image" binderror="onImageError" bindload="onImageLoad" data-aria-label="{{product.title || product.name}}" lazy-load="{{true}}" mode="aspectFill" src="{{product.image}}" />
+  <!-- 图片加载失败占位 -->
+  <view wx:if="{{imageError && !imageLoaded}}" class="image-placeholder">
+    <text class="placeholder-icon">🖼</text>
+  </view>
+  <!-- 图片加载成功 -->
+  <view wx:elif="{{imageLoaded}}" class="image-loaded-wrapper"></view>
+  <!-- 兜底 -->
+  <view wx:else></view>
+  <!-- 销售标签 -->
+  <view wx:if="{{product.tags && product.tags.length > 0}}" class="product-badge">
+    <text class="badge-text">{{product.tags[0]}}</text>
+  </view>
+</view>
+
+<view class="product-info">
+  <!-- 标题 -->
+  <text class="product-title font-large">{{product.title || product.name}}</text>
+  <!-- 价格行 -->
+  <view class="product-price-row">
+    <text class="product-price">¥{{product.price}}</text>
+    <text wx:if="{{product.originalPrice > product.price}}" class="product-original-price">
+      ¥{{product.originalPrice}}
+    </text>
+  </view>
+  <!-- 标签和销量 -->
+  <view class="product-meta">
+    <view wx:if="{{product.tags && product.tags.length > 1}}" class="product-tags">
+      <text wx:for="{{product.tags}}" wx:key="*this" wx:if="{{index > 0}}" class="tag-item">{{item}}</text>
+    </view>
+    <text wx:if="{{product.sales}}" class="product-sales">已售 {{product.sales}}</text>
+  </view>
+</view>
+
+<!-- 网格布局：添加购物车按钮 -->
+<view wx:if="{{layout === 'grid'}}" class="cart-btn" catchtap="onAddCart" data-aria-label="加入购物车">
+  <text class="cart-icon">🛒</text>
+</view>
+</view>

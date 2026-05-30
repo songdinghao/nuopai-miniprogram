@@ -1,0 +1,169 @@
+<!-- pages/mom/home/home.wxml - 妈妈体验官主页（精美现代风格） -->
+<view class="page-container mom-home-page">
+  <!-- 开通成功提示浮层 -->
+  <view wx:if="{{showGuide}}" class="guide-overlay">
+    <view class="guide-modal">
+      <view class="guide-header">
+        <text class="guide-icon">🎉</text>
+        <text class="guide-title">开通成功！</text>
+      </view>
+      <text class="guide-subtitle">只需3步，开始赚取收益</text>
+
+      <view class="guide-steps">
+        <view class="guide-step">
+          <view class="step-number">1</view>
+          <view class="step-content">
+            <text class="step-title">生成素材</text>
+            <text class="step-desc">在素材库中选择喜欢的花品，一键生成分享海报</text>
+          </view>
+        </view>
+
+        <view class="guide-arrow">↓</view>
+
+        <view class="guide-step">
+          <view class="step-number">2</view>
+          <view class="step-content">
+            <text class="step-title">分享给朋友</text>
+            <text class="step-desc">将海报分享到朋友圈或微信好友</text>
+          </view>
+        </view>
+
+        <view class="guide-arrow">↓</view>
+
+        <view class="guide-step">
+          <view class="step-number">3</view>
+          <view class="step-content">
+            <text class="step-title">赚取收益</text>
+            <text class="step-desc">好友下单后，佣金自动到账</text>
+          </view>
+        </view>
+      </view>
+
+      <button class="btn-guide-done" bindtap="onGuideDone">开始体验</button>
+    </view>
+  </view>
+
+  <!-- 顶部收益卡片 - 渐变背景 -->
+  <view class="earnings-header">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <view class="header-title-section">
+        <text class="header-title">我的收益</text>
+        <text class="header-subtitle">分享美好，收获收益</text>
+      </view>
+    </view>
+
+    <view class="earnings-card">
+      <view class="earnings-row">
+        <view class="earning-item">
+          <text class="earning-value">¥{{totalEarnings}}</text>
+          <text class="earning-label">累计收益</text>
+        </view>
+        <view class="earning-divider"></view>
+        <view class="earning-item">
+          <text class="earning-value pending">¥{{pendingEarnings}}</text>
+          <text class="earning-label">待到账</text>
+        </view>
+        <view class="earning-divider"></view>
+        <view class="earning-item">
+          <text class="earning-value settled">¥{{settledEarnings}}</text>
+          <text class="earning-label">已到账</text>
+        </view>
+      </view>
+
+      <!-- 用户等级和邀请码 -->
+      <view class="user-level-section">
+        <view class="level-badge {{momLevel}}">
+          <text>{{momLevel === 'newbie' ? '🌱 新手体验官' : '⭐ 资深体验官'}}</text>
+        </view>
+        <text wx:if="{{momLevel === 'newbie'}}" class="level-desc">新手期还有 {{newbieDaysLeft}} 天</text>
+        <text class="invite-code">邀请码：{{inviteCode}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能入口 - 网格布局 -->
+  <view class="menu-section">
+    <view class="section-header">
+      <text class="section-title">常用功能</text>
+    </view>
+    <view class="menu-grid">
+      <view class="menu-item" bindtap="onMaterialTap">
+        <view class="menu-icon bg-material">🖼️</view>
+        <text class="menu-name">素材库</text>
+        <text class="menu-desc">生成海报</text>
+      </view>
+
+      <view class="menu-item" bindtap="onRewardsTap">
+        <view class="menu-icon bg-rewards">🏆</view>
+        <text class="menu-name">我的奖励</text>
+        <text class="menu-desc">收益明细</text>
+      </view>
+
+      <view class="menu-item" bindtap="onWithdrawTap">
+        <view class="menu-icon bg-withdraw">💳</view>
+        <text class="menu-name">提现</text>
+        <text class="menu-desc">满10元可提</text>
+      </view>
+
+      <view class="menu-item" bindtap="onRulesTap">
+        <view class="menu-icon bg-rules">📋</view>
+        <text class="menu-name">规则说明</text>
+        <text class="menu-desc">了解规则</text>
+      </view>
+
+      <view class="menu-item" bindtap="onServiceTap">
+        <view class="menu-icon bg-service">💬</view>
+        <text class="menu-name">在线客服</text>
+        <text class="menu-desc">解答疑问</text>
+      </view>
+
+      <view class="menu-item" bindtap="onNotificationTap">
+        <view class="menu-icon bg-notification">🔔</view>
+        <text class="menu-name">通知设置</text>
+        <text class="menu-desc">到账提醒</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 当月数据 -->
+  <view class="monthly-section">
+    <view class="section-header">
+      <text class="section-title">本月数据</text>
+      <text class="section-date">{{currentMonth}}月</text>
+    </view>
+    <view class="monthly-card">
+      <view class="monthly-item">
+        <text class="monthly-value">{{monthlyShareCount}}</text>
+        <text class="monthly-label">分享次数</text>
+      </view>
+      <view class="monthly-divider"></view>
+      <view class="monthly-item">
+        <text class="monthly-value">{{monthlyOrders}}</text>
+        <text class="monthly-label">有效订单</text>
+      </view>
+      <view class="monthly-divider"></view>
+      <view class="monthly-item">
+        <text class="monthly-value">¥{{monthlyEarnings}}</text>
+        <text class="monthly-label">本月收益</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 小贴士 -->
+  <view class="tips-section">
+    <view class="tips-card">
+      <view class="tips-header">
+        <text class="tips-icon">💡</text>
+        <text class="tips-title">赚钱小贴士</text>
+      </view>
+      <view class="tips-content">
+        <text class="tips-text">• 每周至少分享3次，收益更稳定</text>
+        <text class="tips-text">• 邀请好友成为体验官，获得额外奖励</text>
+        <text class="tips-text">• 关注热门花品，转化率更高</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-area-bottom"></view>
+</view>

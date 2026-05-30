@@ -1,0 +1,497 @@
+.group-page {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 8rpx solid var(--border-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  color: #999999;
+  font-size: 28rpx;
+}
+
+.product-section {
+  background-color: #ffffff;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.product-card {
+  display: flex;
+  background-color: #fff9fb;
+  border-radius: 12rpx;
+  padding: 16rpx;
+}
+
+.product-image {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 8rpx;
+  background-color: #dddddd;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.product-name {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-price-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.product-price {
+  font-size: 36rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-right: 12rpx;
+}
+
+.product-original {
+  font-size: 22rpx;
+  color: #999999;
+  text-decoration: line-through;
+  margin-right: 12rpx;
+}
+
+.product-discount {
+  font-size: 20rpx;
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
+}
+
+.product-specs {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.status-section {
+  padding: 0 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.status-card {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.status-card.pending {
+  border: 2rpx solid var(--color-primary);
+}
+
+.status-card.success {
+  border: 2rpx solid var(--color-success);
+}
+
+.status-card.expired {
+  border: 2rpx solid #CCC;
+}
+
+.status-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+}
+
+.status-icon {
+  font-size: 48rpx;
+  margin-right: 12rpx;
+}
+
+.status-text {
+  font-size: 36rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.status-text.success-text {
+  color: var(--color-success);
+}
+
+.status-text.expired-text {
+  color: #999999;
+}
+
+.members-avatars {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: -12rpx;
+  margin-bottom: 20rpx;
+}
+
+.member-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  border: 4rpx solid #FFFFFF;
+  margin-left: -12rpx;
+  position: relative;
+  z-index: 1;
+  background-color: var(--border-light);
+}
+
+.member-avatar:first-child {
+  margin-left: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #dddddd;
+}
+
+.member-role {
+  position: absolute;
+  bottom: -16rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18rpx;
+  color: #ffffff;
+  background-color: var(--color-primary);
+  padding: 2rpx 8rpx;
+  border-radius: 10rpx;
+  white-space: nowrap;
+}
+
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 28rpx;
+  color: #cccccc;
+  border: 2rpx dashed #DDD;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.progress-section {
+  margin-bottom: 20rpx;
+}
+
+.progress-bar {
+  height: 12rpx;
+  background-color: var(--border-light);
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-warm), var(--color-primary));
+  border-radius: 6rpx;
+  transition: width 0.5s;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.countdown-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+  padding: 16rpx;
+  background-color: var(--color-primary-light);
+  border-radius: 12rpx;
+}
+
+.countdown-label {
+  font-size: 26rpx;
+  color: #666666;
+  margin-right: 12rpx;
+}
+
+.countdown-time {
+  font-size: 40rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 4rpx;
+}
+
+.countdown-time.expired {
+  color: #999999;
+}
+
+.action-section {
+  display: flex;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.invite-btn, .join-btn, .checkout-btn, .restart-btn, .full-btn {
+  padding: 20rpx 48rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.invite-btn {
+  background: var(--color-orange);
+  color: white;
+  flex: 1;
+}
+
+.join-btn {
+  background: var(--color-primary);
+  color: white;
+  flex: 1;
+}
+
+.checkout-btn {
+  background: var(--color-success);
+  color: white;
+  flex: 1;
+}
+
+.restart-btn {
+  background: var(--color-primary);
+  color: white;
+  flex: 1;
+}
+
+.full-btn {
+  background-color: var(--border-light);
+  color: #999999;
+  flex: 1;
+}
+
+.success-info, .expired-info {
+  display: block;
+  font-size: 26rpx;
+  color: #666666;
+  margin-bottom: 24rpx;
+}
+
+.info-section {
+  background-color: #ffffff;
+  padding: 24rpx;
+  margin: 0 24rpx 16rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.rules-section {
+  background-color: #ffffff;
+  padding: 24rpx;
+  margin: 0 24rpx 16rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.rules-title {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.rules-arrow {
+  font-size: 32rpx;
+  color: #999999;
+}
+
+.share-bar {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.share-btn, .copy-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: #333333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.share-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.groups-list-section {
+  padding: 24rpx;
+}
+
+.list-header {
+  margin-bottom: 20rpx;
+}
+
+.list-title {
+  font-size: 32rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.groups-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.groups-item {
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.groups-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.groups-members {
+  display: flex;
+  align-items: center;
+}
+
+.groups-avatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background-color: #dddddd;
+  margin-right: 12rpx;
+}
+
+.groups-count {
+  font-size: 24rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.groups-type {
+  font-size: 22rpx;
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.groups-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.groups-creator {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.groups-status {
+  font-size: 22rpx;
+  color: var(--color-orange);
+  font-weight: 500;
+}
+
+.groups-status.success {
+  color: var(--color-success);
+}
+
+.groups-empty {
+  text-align: center;
+  padding: 80rpx 0;
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.start-group-btn {
+  margin-top: 24rpx;
+  display: inline-block;
+  padding: 20rpx 48rpx;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}

@@ -1,0 +1,145 @@
+<!--pages/scene/scene.wxml - 场景搭配页面（针对30-60岁主妇优化）-->
+<view class="page-container scene-page" style="font-size: {{fontSize === 'normal' ? '16px' : fontSize === 'large' ? '18px' : '20px'}}">
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">
+      <image class="back-icon" src="/assets/icons/arrow-left.png" />
+</view>
+<view class="nav-title">
+  <text class="title-text">场景搭配</text>
+</view>
+<view class="nav-scene-selector" bindtap="toggleSceneSelector">
+  <text class="scene-text">{{sceneName}}</text>
+  <image class="arrow-icon" src="/assets/icons/arrow-down.png" />
+</view>
+</view>
+
+<!-- 场景选择器 -->
+<view wx:if="{{showSceneSelector}}" class="scene-selector-overlay" bindtap="toggleSceneSelector">
+  <view class="scene-selector" catchtap="emptyTap">
+    <view class="selector-header">
+      <text class="selector-title">选择场景</text>
+    </view>
+    <scroll-view class="selector-scroll" scroll-y>
+      <view class="scene-list">
+        <block wx:for="{{scenes}}" wx:key="id">
+          <view class="scene-item {{currentScene === item.id ? 'active' : ''}}" bindtap="onSceneTap" data-id="{{item.id}}" data-name="{{item.name}}">
+            <image wx:if="{{item.image}}" class="scene-item-image" mode="aspectFill" src="{{item.image}}" />
+        <view class="scene-item-content">
+          <text class="scene-item-name">{{item.name}}</text>
+          <text class="scene-item-desc">{{item.desc}}</text>
+        </view>
+        <view wx:if="{{currentScene === item.id}}" class="check-icon">
+          <image class="check-image" src="/assets/icons/check.png" />
+    </view>
+  </view>
+</block>
+</view>
+</scroll-view>
+</view>
+</view>
+
+<scroll-view bindrefresherrefresh="initPageData" bindscrolltolower="onLoadMore" refresher-enabled="{{true}}" refresher-triggered="{{loading}}" scroll-y class="scroll-view">
+  <view wx:if="{{loading && combinations.length === 0}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view wx:elif="{{emptyState.show && !loading}}" class="empty-state">
+    <image class="empty-icon" src="/assets/icons/empty-scene.png" />
+<text class="empty-title">{{emptyState.title}}</text>
+<text class="empty-desc">{{emptyState.desc}}</text>
+</view>
+
+<view wx:elif="{{combinations.length > 0}}" class="content">
+  <!-- 场景介绍 -->
+  <view class="scene-intro card">
+    <text class="intro-title">{{sceneName}}搭配推荐</text>
+    <text class="intro-desc">我们为您精选了{{sceneName}}的搭配方案，让您的家更温馨美好</text>
+  </view>
+
+  <view class="combinations-list">
+    <block wx:for="{{combinations}}" wx:key="id">
+      <view class="combination-card card" bindtap="toggleSceneDetail" data-index="{{index}}">
+        <!-- 搭配封面 -->
+        <view class="combination-cover">
+          <image class="cover-image" mode="aspectFill" src="{{item.image}}" />
+      <view class="cover-overlay">
+        <view class="scene-badge">
+          <text class="scene-badge-text">{{item.sceneName}}</text>
+        </view>
+        <view wx:if="{{item.tags && item.tags.length > 0}}" class="combination-tags">
+          <block wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">
+            <view class="combination-tag">
+              <text class="tag-text">{{tag}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+
+    <view class="combination-info">
+      <view class="info-header">
+        <text class="combination-title">{{item.title}}</text>
+        <view wx:if="{{item.matchScore}}" class="match-score">
+          <text class="match-text">匹配度 {{item.matchScore}}%</text>
+        </view>
+      </view>
+      <text class="combination-desc">{{item.description}}</text>
+    </view>
+
+    <!-- 包含商品 -->
+    <view class="combination-products">
+      <view class="products-label">
+        <text class="label-text">搭配包含</text>
+      </view>
+      <scroll-view class="products-scroll" scroll-x>
+        <view class="products-list">
+          <block wx:for="{{item.products}}" wx:for-item="product" wx:key="id">
+            <view class="product-item" bindtap="onProductTap" catchtap="" data-product="{{product}}">
+              <image class="product-item-image" mode="aspectFill" src="{{product.image}}" />
+          <text class="product-item-name">{{product.name}}</text>
+          <text class="product-item-price">¥{{product.price}}</text>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+</view>
+
+<view class="combination-footer">
+  <view class="price-section">
+    <view class="price-row">
+      <text class="price-label">组合价</text>
+      <text class="total-price">¥{{item.totalPrice}}</text>
+    </view>
+    <view wx:if="{{item.saveText}}" class="save-section">
+      <text class="save-text">{{item.saveText}}</text>
+    </view>
+  </view>
+  <view class="action-section">
+    <view class="view-detail-btn" bindtap="onCombinationTap" catchtap="" data-combination="{{item}}">
+      <text class="view-detail-text">查看详情</text>
+    </view>
+    <view class="add-to-cart-btn" bindtap="onAddToCartTap" catchtap="" data-combination="{{item}}">
+      <image class="cart-icon" src="/assets/icons/cart-plus.png" />
+  <text class="add-to-cart-text">一键加购</text>
+</view>
+</view>
+</view>
+</view>
+</block>
+</view>
+
+<!-- 加载更多 -->
+<view wx:if="{{loading}}" class="loading-more">
+  <view class="loading-spinner small"></view>
+  <text class="loading-more-text">加载中...</text>
+</view>
+
+<view wx:if="{{!hasMore && combinations.length > 0}}" class="no-more">
+  <text class="no-more-text">已显示全部搭配</text>
+</view>
+
+<view class="safe-area-bottom"></view>
+</view>
+</scroll-view>
+</view>
