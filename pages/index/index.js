@@ -277,6 +277,7 @@ Page({
       if (available.length ===0) return
 
       // 检查冷却期
+      // TODO: 冷却期判断应在服务端完成，本地时间可被篡改
       const now = Date.now()
       const popupDismiss = wx.getStorageSync('couponPopupDismiss') || 0
       const popupViewDay = wx.getStorageSync('couponPopupViewDay') || ''
@@ -475,6 +476,7 @@ Page({
   return new Promise((resolve, reject) =>{
       setTimeout(() =>{
     try {
+      // TODO: 上线前调用 imageUtils.getWebPUrl() 优化图片加载
       const banners = [
           {
         id: 1,
@@ -578,13 +580,16 @@ Page({
   },
 
   // 加载热销商品（本地数据优先，API作为刷新源）
+  // 双重加载目的：先用本地数据即时渲染，避免白屏；API 返回后再用权威数据覆盖，
+  // 保证线上价格/库存始终最新。若 API 数据字段格式与本地不一致，需先映射再 setData。
   loadHotProducts() {
     this.setData({ hotProductsLoading: true, hotProductsError: false })
     return new Promise((resolve) => {
-      // 优先使用本地数据（即时展示）
+      // 第一次加载：优先使用本地数据（即时展示，避免白屏）
       try {
         const localProducts = productsData.getHotProducts(6)
         if (localProducts && localProducts.length > 0) {
+          // TODO: 上线前调用 imageUtils.getWebPUrl() 优化图片加载
           // 字段映射：本地数据格式 -> WXML期望格式
           const mapped = localProducts.map(p => ({
             ...p,
@@ -599,10 +604,19 @@ Page({
       } catch (e) {
         console.warn('[index] 本地产品数据加载失败:', e)
       }
-      // 异步尝试API刷新
+      // 第二次加载：异步尝试API刷新（保证线上价格/库存最新）
       api.product.getProducts({ limit: 6 }).then(result => {
         if (!result.error && result.products && result.products.length > 0) {
-          this.setData({ hotProducts: result.products, hotProductsLoading: false, hotProductsError: false })
+          // API 返回后统一用 API 数据覆盖；若字段格式不一致，先做映射
+          const mapped = result.products.map(p => ({
+            ...p,
+            image: p.mainImage || p.image || p.head_img_url || '',
+            oldPrice: p.originalPrice || p.market_price || 0,
+            tagText: p.tags && p.tags.length > 0 ? p.tags[0] : (p.tagText || ''),
+            bgColor: this.getCategoryColor(p.category),
+            emoji: this.getCategoryEmoji(p.category)
+          }))
+          this.setData({ hotProducts: mapped, hotProductsLoading: false, hotProductsError: false })
         }
         resolve()
       }).catch(() => {

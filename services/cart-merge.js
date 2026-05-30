@@ -40,6 +40,7 @@ function mergeCart(localCart, remoteCart = []) {
   app.globalData.cartCount = totalCount
 
   // 更新 TabBar 角标
+  // 注意: 购物车 TabBar 索引为 2，如调整 TabBar 顺序需同步修改
   if (totalCount > 0) {
   wx.setTabBarBadge({
       index: 2,

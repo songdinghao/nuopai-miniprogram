@@ -9,6 +9,9 @@ const STORAGE_KEY_USER = 'mom_user_data'
 
 /**
   * 获取用户数据
+  * 注意: mom-earnings.js 中的 getMomUserData() 存在重复实现，
+  *       两处读取同一 STORAGE_KEY ('mom_user_data')，
+  *       后续应抽取为公共方法以避免逻辑漂移。
   */
 function _getUserData() {
   const data = wx.getStorageSync(STORAGE_KEY_USER)

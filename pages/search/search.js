@@ -273,7 +273,7 @@ Page({
   // 保存搜索历史
   this.saveToSearchHistory(keyword)
 
-  // 显示搜索状态
+  // 显示搜索状态（loading 保持直到 API 返回）
   this.setData({
       searching: true,
       loading: true,
@@ -306,17 +306,17 @@ Page({
     }
   }
 
-  // 首先使用本地数据搜索
+  // 先用本地数据快速填充结果，避免用户等待时看到空白
   try {
     const allProducts = productsData.getAllProducts()
     const kw = keyword.toLowerCase()
     const matchedProducts = allProducts.filter(
-      p => p.name.toLowerCase().includes(kw) || 
+      p => p.name.toLowerCase().includes(kw) ||
            (p.description && p.description.toLowerCase().includes(kw))
     )
     const total = matchedProducts.length
     const products = matchedProducts.slice(0, this.data.pageSize)
-    
+
     this.setData({
       searching: false,
       loading: false,
@@ -331,15 +331,20 @@ Page({
     console.warn('[search] 本地搜索失败:', e)
   }
 
-  // 异步API搜索（后台刷新）
+  // 异步API搜索，返回后统一用 API 数据覆盖本地结果，保证数据权威性
   api.product.searchProducts(keyword, 1, this.data.pageSize).then(result => {
     if (result.error) {
-      this.setData({
-        searching: false, loading: false,
-        'emptyState.show': true,
-        'emptyState.title': '网络异常',
-        'emptyState.desc': '搜索失败，请检查网络后重试'
-      })
+      // API 报错但本地已有结果则保留，否则显示错误
+      if (!this.data.searchResults || this.data.searchResults.length === 0) {
+        this.setData({
+          searching: false, loading: false,
+          'emptyState.show': true,
+          'emptyState.title': '网络异常',
+          'emptyState.desc': '搜索失败，请检查网络后重试'
+        })
+      } else {
+        this.setData({ searching: false, loading: false })
+      }
       return
     }
     const products = result.products || []
@@ -354,20 +359,27 @@ Page({
         'emptyState.desc': '试试其他关键词吧'
       })
     } else {
+      // API 返回后统一用 API 数据覆盖本地结果
       this.setData({
         searching: false, loading: false,
         searchResults: products,
+        total,
         hasMore: products.length < total,
         'emptyState.show': false
       })
     }
   }).catch(() => {
-    this.setData({
-      searching: false, loading: false,
-      'emptyState.show': true,
-      'emptyState.title': '网络异常',
-      'emptyState.desc': '搜索失败，请检查网络后重试'
-    })
+    // API 请求失败，若本地已有结果则保留
+    if (!this.data.searchResults || this.data.searchResults.length === 0) {
+      this.setData({
+        searching: false, loading: false,
+        'emptyState.show': true,
+        'emptyState.title': '网络异常',
+        'emptyState.desc': '搜索失败，请检查网络后重试'
+      })
+    } else {
+      this.setData({ searching: false, loading: false })
+    }
   })
   },
 

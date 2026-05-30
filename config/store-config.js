@@ -239,7 +239,7 @@ module.exports = {
   customerService: {
   enabled: true,
   workTime: '9: 00 - 18: 00',
-  phone: '400-000-0000',
+  phone: '400-000-0000', // TODO: 替换为真实客服电话
   wechat: 'nuopai_service',
   qq: '123456789',
   email: 'service@nuopai.com'

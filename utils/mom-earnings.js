@@ -41,6 +41,9 @@ function saveEarningsList(list) {
 
 /**
   * 获取用户mom数据
+  * 注意: mom-withdraw.js 中的 _getUserData() 存在重复实现，
+  *       两处读取同一 STORAGE_KEY ('mom_user_data')，
+  *       后续应抽取为公共方法以避免逻辑漂移。
   * @returns {Object}
   */
 function getMomUserData() {

@@ -732,6 +732,7 @@ Page({
   },
 
   // 生成图片列表
+  // TODO: 上线前调用 imageUtils.getWebPUrl() 优化图片加载
   generateImageList(productInfo) {
   const mainImage = productInfo.mainImage || '/assets/products/product-default.jpg'
   const imageList = [
