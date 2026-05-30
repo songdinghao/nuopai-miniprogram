@@ -69,18 +69,9 @@ Page({
   loadOrderList() {
   this.setData({ loading: true, loadError: false })
   try {
-    // 先从本地存储读取真实订单
+    // 从本地存储读取真实订单，无订单时显示空状态（不再自动生成 mock）
     const storedOrders = wx.getStorageSync('orders') || []
-
-    // 没有存储订单时才使用mock数据并存入localStorage
-    let orderList
-    if (storedOrders.length > 0) {
-      orderList = storedOrders
-    } else {
-      orderList = this.generateMockOrders()
-      // 存入localStorage，确保后续操作（确认收货等）能更新状态
-      wx.setStorageSync('orders', orderList)
-    }
+    let orderList = storedOrders
 
     // 规范化所有订单数据（统一字段格式）
     orderList = orderList.map(order => this.normalizeOrderData(order))

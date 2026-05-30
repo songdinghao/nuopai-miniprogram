@@ -48,7 +48,7 @@ function canWithdraw(userData, amount) {
   }
 
   if (amount < minAmount) {
-  return { allowed: false, reason: `最低${minAmount}元起提`, minAmount }
+  return { allowed: false, reason: `最低${minAmount / 100}元起提`, minAmount }
   }
 
   const available = momData.settledEarnings || 0
@@ -277,30 +277,35 @@ function exchangeToCoupon(earningId, coupon) {
 }
 
 /**
-  * 获取可兑换的商品列表（基础配置）
-  * 实际场景应从 store - config 读取
+  * 获取可兑换的商品列表
+  * 从 store-config.exchangeProducts 读取真实配置价格
   * @returns {Array}
   */
 function getExchangeableProducts() {
   try {
   const storeConfig = require('../config/store-config.js')
-  // 从 store - config 提取商品信息，模拟返回可兑换商品
-  const categories = storeConfig.categories || []
-  const products = []
-  categories.forEach(cat =>{
-      products.push({
-    id: `exchange_${cat.id}`,
-    name: `${cat.name}专区优惠`,
-    description: cat.description,
-    price: Math.floor(Math.random() * 50 + 20), // 模拟价格
-    image: cat.icon || '/assets/images/product-placeholder.png',
-    categoryId: cat.id,
+  // 优先使用 store-config 中的兑换商品列表（价格为配置值，非随机）
+  const exchangeProducts = storeConfig.exchangeProducts || storeConfig.getExchangeProductList?.() || []
+  if (exchangeProducts.length > 0) {
+      return exchangeProducts.map(p => ({
+    id: p.id,
+    name: p.name,
+    price: p.useEarnings || Math.round(p.price * 0.3),  // 兑换所需收益
+    image: p.image || '/assets/images/product-placeholder.png',
     stock: 99
-      })
-  })
-  return products
+      }))
+  }
+  // 回退：从分类生成（使用配置中的默认价格）
+  const categories = storeConfig.categories || []
+  return categories.map(cat => ({
+      id: `exchange_${cat.id}`,
+      name: `${cat.name}专区优惠`,
+      price: 100,  // 默认100收益
+      image: cat.icon || '/assets/images/product-placeholder.png',
+      stock: 99
+  }))
   } catch (e) {
-  console.warn('[mom - withdraw] 读取商品配置失败: ', e)
+  console.warn('[mom-withdraw] 读取商品配置失败:', e)
   return []
   }
 }

@@ -1,5 +1,6 @@
 // pages/user/user.js - 用户中心页面
 const app = getApp()
+const storeConfig = require('../../config/store-config.js')
 const referral = require('../../utils/referral.js')
 const pointsManager = require('../../utils/points-manager.js')
 const notificationManager = require('../../utils/notification-manager.js')
@@ -312,16 +313,20 @@ Page({
 
   // 显示联系方式
   showContactInfo() {
+  const csConfig = storeConfig.customerService || {}
+  const phone = csConfig.phone || '400-000-0000'
+  const wechat = csConfig.wechat || 'nuopai_service'
+  const workTime = csConfig.workTime || '9:00-18:00'
   wx.showModal({
       title: '联系客服',
-      content: '📞 客服电话：400-123-4567\n💬 客服微信：nuopai_service\n🕘 工作时间：9:00-18:00',
+      content: `📞 客服电话：${phone}\n💬 客服微信：${wechat}\n🕘 工作时间：${workTime}`,
       confirmText: '复制微信号',
       confirmColor: '#2D8C7A',
       cancelText: '关闭',
       success: (res) =>{
     if (res.confirm) {
           wx.setClipboardData({
-      data: 'nuopai_service',
+      data: wechat,
       success: () =>{
               wx.showToast({
         title: '微信号已复制，请打开微信添加',

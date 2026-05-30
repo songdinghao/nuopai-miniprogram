@@ -36,12 +36,12 @@ const GROWTH_MILESTONES = [
   { threshold: 10, bonusRate: 0.10, label: '满10单 + 10%' }
 ]
 
-// 最低提现金额（使用10元作为统一门槛）
-const MIN_WITHDRAWAL = 10
+// 最低提现金额（单位：分，1000分 = 10元，与 api-server 对齐）
+const MIN_WITHDRAWAL = 1000
 
-// 按等级的最低提现金额（统一为10元）
-const MIN_WITHDRAWAL_NEWBIE = 10
-const MIN_WITHDRAWAL_REGULAR = 10
+// 按等级的最低提现金额（单位：分，与 api-server 对齐）
+const MIN_WITHDRAWAL_NEWBIE = 1000
+const MIN_WITHDRAWAL_REGULAR = 1000
 
 // 收益结算等待天数
 const SETTLE_WAIT_DAYS = 7
@@ -141,7 +141,7 @@ function canWithdraw(userData, amount) {
   const minAmount = momLevel ==='newbie' ? MIN_WITHDRAWAL_NEWBIE : MIN_WITHDRAWAL_REGULAR
 
   if (amount < minAmount) {
-  return { allowed: false, reason: `最低提现金额为${minAmount}元` }
+  return { allowed: false, reason: `最低提现金额为${minAmount / 100}元` }
   }
 
   // 单笔提现上限
@@ -158,15 +158,16 @@ function canWithdraw(userData, amount) {
 }
 
 /**
-  * 生成邀请码
+  * 生成邀请码（使用 crypto 防碰撞）
   * @param {string} userId - 用户ID
   * @returns {string} 邀请码
   */
 function generateInviteCode(userId) {
+  const crypto = require('crypto')
   const prefix = 'NP'
-  const timestamp = Date.now().toString(36).toUpperCase()
-  const suffix = userId ? userId.toString(36).slice(-4).toUpperCase() : '0000'
-  return `${prefix}${timestamp.slice(-4)}${suffix}`
+  const randomPart = crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, 8)
+  const suffix = userId ? userId.toString().slice(-4).toUpperCase() : '0000'
+  return `${prefix}${randomPart}${suffix}`
 }
 
 /**

@@ -5,13 +5,13 @@ Page({
     availableAmount: 0,  // 可提现金额（分）
     withdrawAmount: '',     // 输入的金额（元）
     momLevel: 'newbie',
-    minWithdraw: 100,      // 最低提现金额（分）= 1元
+    minWithdraw: 1000,     // 最低提现金额（分）= 10元，与 api-server 对齐
     withdrawHistory: [],
     submitting: false,
     isLoading: false,
     // 格式化数据 - 用于WXML显示
     formattedBalance: '0.00',
-    minWithdrawFormatted: '1.00'
+    minWithdrawFormatted: '10.00'
   },
 
   onShow() {
@@ -36,7 +36,7 @@ Page({
           this.setData({
             availableAmount: earnings.availableAmount || 0,
             momLevel: 'normal',
-            minWithdraw: 100  // 1元 = 100分
+            minWithdraw: 1000  // 10元 = 1000分，与 api-server 对齐
           }, () => {
             this.formatBalance()  // 格式化余额显示
           })
@@ -57,14 +57,12 @@ Page({
     const momEarnings = require('../../../utils/mom-earnings.js')
     const userData = momEarnings.getMomUserData()
     const momData = userData.momData || {}
-    const minAmount = momData.momLevel === 'newbie' ? 2000 : 5000  // 本地模式：20元/50元
-
     const withdrawHistory = this.formatWithdrawHistory(momEarnings.getWithdrawalsList())
-    
+
     this.setData({
-      availableAmount: (momData.settledEarnings || 0) * 100,  // 转换为分
+      availableAmount: momData.settledEarnings || 0,  // 已经是分
       momLevel: momData.momLevel || 'newbie',
-      minWithdraw: minAmount,
+      minWithdraw: 1000,  // 统一1000分（10元），与 api-server 对齐
       withdrawHistory: withdrawHistory
     }, () => {
       this.formatBalance()  // 格式化余额显示
@@ -147,7 +145,7 @@ Page({
   // 格式化余额显示 - 避免在WXML中使用.toFixed()等方法
   formatBalance() {
     const availableAmount = this.data.availableAmount || 0
-    const minWithdraw = this.data.minWithdraw || 100
+    const minWithdraw = this.data.minWithdraw || 1000
     
     this.setData({
       formattedBalance: (availableAmount / 100).toFixed(2),

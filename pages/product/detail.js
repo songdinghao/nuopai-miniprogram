@@ -1464,15 +1464,19 @@ Page({
 
   // 显示联系方式
   showContactInfo() {
+  const csConfig = storeConfig.customerService || {}
+  const phone = csConfig.phone || '400-000-0000'
+  const wechat = csConfig.wechat || 'nuopai_service'
+  const workTime = csConfig.workTime || '9:00-18:00'
   wx.showModal({
       title: '联系我们',
-      content: '客服电话：400 - xxx - xxxx\n客服微信：nuopai_service\n工作时间：9: 00 - 18: 00',
+      content: `客服电话：${phone}\n客服微信：${wechat}\n工作时间：${workTime}`,
       confirmText: '复制微信号',
       cancelText: '关闭',
       success: (res) =>{
     if (res.confirm) {
           wx.setClipboardData({
-      data: 'nuopai_service',
+      data: wechat,
       success: () =>{
               wx.showToast({
         title: '微信号已复制',
