@@ -154,6 +154,57 @@
   </view>
 </view>
 
+<!-- 浏览历史 -->
+<view wx:if="{{recentHistory.length > 0}}" class="history-section">
+  <view class="section-header" bindtap="onHistoryTap">
+    <text class="section-title">📜 浏览历史</text>
+    <view class="section-more">
+      <text class="more-text">查看全部</text>
+      <text class="more-icon">›</text>
+    </view>
+  </view>
+  <scroll-view class="history-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="history-list">
+      <view wx:for="{{recentHistory}}" wx:key="id" class="history-item" bindtap="onHistoryItemTap" data-id="{{item.id}}">
+        <image class="history-image" mode="aspectFill" src="{{item.image}}" />
+        <text class="history-name">{{item.name}}</text>
+        <text class="history-price">¥{{item.price}}</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 收藏列表 -->
+<view class="collection-section">
+  <view class="section-header" bindtap="onFavoritesTap">
+    <text class="section-title">❤️ 我的收藏</text>
+    <view wx:if="{{collectionCount > 6}}" class="section-more">
+      <text class="more-text">查看全部 ({{collectionCount}})</text>
+      <text class="more-icon">›</text>
+    </view>
+  </view>
+  <!-- 空状态 -->
+  <view wx:if="{{recentCollections.length === 0}}" class="collection-empty">
+    <text class="collection-empty-icon">💝</text>
+    <text class="collection-empty-text">还没有收藏商品，去逛逛吧</text>
+  </view>
+  <!-- 收藏列表 -->
+  <view wx:if="{{recentCollections.length > 0}}" class="collection-list">
+    <view wx:for="{{recentCollections}}" wx:key="id" class="collection-item">
+      <view class="collection-item-content" bindtap="onCollectionItemTap" data-id="{{item.id}}">
+        <image class="collection-image" mode="aspectFill" src="{{item.image}}" />
+        <view class="collection-info">
+          <text class="collection-name">{{item.name}}</text>
+          <text class="collection-price">¥{{item.price}}</text>
+        </view>
+      </view>
+      <view class="collection-delete" catchtap="onDeleteCollection" data-id="{{item.id}}">
+        <text class="collection-delete-text">取消</text>
+      </view>
+    </view>
+  </view>
+</view>
+
 <!-- 兼职妈妈体验官入口 -->
 <view class="mom-entry-section">
   <view wx:if="{{!momData || !momData.isMom}}" class="mom-entry-card">

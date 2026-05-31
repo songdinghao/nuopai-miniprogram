@@ -1,0 +1,147 @@
+/* pages/user/history/history.wxss */
+.history-page {
+  min-height: 100vh;
+  background-color: #F8F8F8;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 空状态 */
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 100rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #999999;
+  margin-bottom: 40rpx;
+}
+
+.empty-btn {
+  padding: 20rpx 60rpx;
+  background: linear-gradient(135deg, #2D8C7A, #3AA99E);
+  color: #ffffff;
+  font-size: 28rpx;
+  border-radius: 44rpx;
+  font-weight: 500;
+}
+
+/* 头部 */
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+}
+
+.history-count {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.clear-btn {
+  padding: 10rpx 24rpx;
+}
+
+.clear-text {
+  font-size: 26rpx;
+  color: #e64340;
+}
+
+/* 列表 */
+.history-list {
+  padding: 0 24rpx;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.item-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+}
+
+.item-image {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  background-color: #F5F5F5;
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 160rpx;
+}
+
+.item-name {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 12rpx;
+}
+
+.item-price {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2D8C7A;
+}
+
+.item-time {
+  font-size: 22rpx;
+  color: #cccccc;
+}
+
+/* 删除按钮 */
+.item-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120rpx;
+  height: 200rpx;
+  background-color: #FF4D4F;
+  flex-shrink: 0;
+}
+
+.delete-text {
+  font-size: 26rpx;
+  color: #ffffff;
+  font-weight: 500;
+}

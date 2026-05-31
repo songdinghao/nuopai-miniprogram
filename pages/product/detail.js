@@ -124,6 +124,9 @@ Page({
 
   // 初始化浏览人数
   this.initViewCount(productId)
+
+  // 记录浏览历史
+  this.recordBrowseHistory(productId)
   },
 
   // 页面显示
@@ -291,6 +294,9 @@ Page({
         this.initPromotion()
         this.startCountdown()
 
+        // 记录浏览历史（产品数据加载完成后）
+        this.recordBrowseHistory(productId)
+
         app.trackEvent('product_detail_loaded', {
           product_id: productId,
           product_name: productInfo.name,
@@ -407,6 +413,9 @@ Page({
       this.initPromotion()
       this.startCountdown()
 
+      // 记录浏览历史（产品数据加载完成后）
+      this.recordBrowseHistory(productId)
+
       app.trackEvent('product_detail_loaded', {
         product_id: productId,
         product_name: productInfo.name,
@@ -414,7 +423,7 @@ Page({
       })
       return
     }
-    
+
     // 本地数据中没找到，fallback到mock
     this._loadOriginalMockData(productId)
       } catch (error) {
@@ -1716,6 +1725,31 @@ Page({
     const salesCount = productInfo.sales || 0
     const salesCountText = this.formatSalesCount(salesCount)
     this.setData({ salesCount, salesCountText })
+  },
+
+  // 记录浏览历史
+  recordBrowseHistory(productId) {
+    try {
+      const history = wx.getStorageSync('browse_history') || []
+      // 去重：移除已存在的同一商品
+      const filtered = history.filter(item => item.id !== productId)
+      // 获取商品信息
+      const productInfo = this.data.productInfo
+      if (!productInfo) return
+      const newItem = {
+        id: productId,
+        name: productInfo.name || '',
+        price: productInfo.price || 0,
+        image: productInfo.mainImage || '',
+        category: productInfo.category || '',
+        timestamp: Date.now()
+      }
+      // 插入头部，最多50条
+      filtered.unshift(newItem)
+      wx.setStorageSync('browse_history', filtered.slice(0, 50))
+    } catch (e) {
+      console.warn('记录浏览历史失败', e)
+    }
   },
 
   // 更新库存紧迫感提示

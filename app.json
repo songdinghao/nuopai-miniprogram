@@ -27,7 +27,8 @@
     "pages/mom/exchange/exchange",
     "pages/user/address/address",
     "pages/feedback/feedback",
-    "pages/help/help"
+    "pages/help/help",
+    "pages/user/history/history"
   ],
   "window": {
     "navigationBarTitleText": "诺派永生花商城",

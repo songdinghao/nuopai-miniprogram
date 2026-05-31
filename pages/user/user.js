@@ -41,7 +41,15 @@ Page({
   isCheckedIn: false,
   checkinDays: 0,
   canCheckin: true,
-  checkinWeek: []
+  checkinWeek: [],
+
+  // 浏览历史
+  recentHistory: [],
+  historyCount: 0,
+
+  // 收藏列表
+  recentCollections: [],
+  collectionCount: 0
   },
 
   // 页面加载
@@ -73,6 +81,12 @@ Page({
 
   // 检查签到状态
   this.checkCheckinStatus()
+
+  // 加载浏览历史
+  this.loadBrowseHistory()
+
+  // 加载收藏列表
+  this.loadCollections()
   },
 
   // 下拉刷新
@@ -287,28 +301,26 @@ Page({
   app.trackEvent('user_coupon_click')
   },
 
-  // 点击我的收藏
+  // 点击我的收藏 - 页面内已展示收藏列表
   onFavoritesTap() {
 
-  if (!this.checkLogin()) return
-
-  wx.showToast({
-      title: '即将上线，敬请期待',
-      icon: 'none',
-      duration: 1500
+  // 收藏已在页面下方展示，滚动到收藏区域
+  wx.pageScrollTo({
+      selector: '.collection-section',
+      duration: 300
   })
+
+  app.trackEvent('user_favorites_click')
   },
 
   // 点击浏览历史
   onHistoryTap() {
 
-  if (!this.checkLogin()) return
-
-  wx.showToast({
-      title: '即将上线，敬请期待',
-      icon: 'none',
-      duration: 1500
+  wx.navigateTo({
+      url: '/pages/user/history/history'
   })
+
+  app.trackEvent('user_history_click')
   },
 
   // 点击在线客服
@@ -707,6 +719,74 @@ Page({
   // 重试加载用户数据
   retryLoadUserData() {
     this.loadUserData()
+  },
+
+  // ========== 浏览历史 ==========
+
+  // 加载浏览历史（最近6条）
+  loadBrowseHistory() {
+    try {
+      const history = wx.getStorageSync('browse_history') || []
+      const recentHistory = history.slice(0, 6)
+      this.setData({
+        recentHistory,
+        historyCount: history.length
+      })
+    } catch (e) {
+      console.warn('加载浏览历史失败', e)
+    }
+  },
+
+  // ========== 收藏列表 ==========
+
+  // 加载收藏列表（最近6条）
+  loadCollections() {
+    try {
+      const collections = wx.getStorageSync('userCollections') || []
+      const recentCollections = collections.slice(0, 6)
+      this.setData({
+        recentCollections,
+        collectionCount: collections.length
+      })
+    } catch (e) {
+      console.warn('加载收藏列表失败', e)
+    }
+  },
+
+  // 点击收藏中的商品
+  onCollectionItemTap(e) {
+    const id = e.currentTarget.dataset.id
+    wx.navigateTo({
+      url: `/pages/product/detail?id=${id}`
+    })
+  },
+
+  // 删除收藏（从用户页面）
+  onDeleteCollection(e) {
+    const id = e.currentTarget.dataset.id
+    let collections = wx.getStorageSync('userCollections') || []
+    collections = collections.filter(item => item.id !== id)
+    wx.setStorageSync('userCollections', collections)
+    this.loadCollections()
+    // 同步更新会员卡片收藏数
+    this.setData({
+      'userInfo.favorites': collections.length
+    })
+    wx.showToast({ title: '已取消收藏', icon: 'success', duration: 1000 })
+  },
+
+  // 点击浏览历史中的商品
+  onHistoryItemTap(e) {
+    const id = e.currentTarget.dataset.id
+    wx.navigateTo({
+      url: `/pages/product/detail?id=${id}`
+    })
+  },
+
+  // 查看全部收藏
+  onViewAllCollections() {
+    // 收藏展示在用户页面内（已展示完整列表），此处可扩展为独立页面
+    wx.showToast({ title: '已加载全部收藏', icon: 'none' })
   },
 
   // ========== 签到功能 ==========
