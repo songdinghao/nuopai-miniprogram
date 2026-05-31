@@ -519,3 +519,107 @@
   height: 40rpx;
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* ========== 签到卡片 ========== */
+.checkin-card {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 20rpx 24rpx;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.checkin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.checkin-title {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.checkin-streak {
+  font-size: 24rpx;
+  color: #2D8C7A;
+  font-weight: 500;
+}
+
+.checkin-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.checkin-reward-hint {
+  font-size: 24rpx;
+  color: #999999;
+  flex: 1;
+}
+
+.checkin-btn {
+  background-color: #2D8C7A;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 500;
+  border-radius: 40rpx;
+  width: 160rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.checkin-btn-done {
+  background-color: #E0E0E0;
+  color: #999999;
+}
+
+.checkin-week {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  padding-bottom: 32rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.checkin-day {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  border: 2rpx solid #eeeeee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.checkin-day-done {
+  background-color: #2D8C7A;
+  border-color: #2D8C7A;
+}
+
+.checkin-day-icon {
+  font-size: 22rpx;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.checkin-day-label {
+  font-size: 16rpx;
+  color: #999999;
+  position: absolute;
+  bottom: -28rpx;
+  white-space: nowrap;
+}
+
+.checkin-day-done .checkin-day-label {
+  color: #2D8C7A;
+}

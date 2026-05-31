@@ -35,7 +35,13 @@ Page({
   notificationUnread: 0,
 
   // 兼职妈妈数据
-  momData: null
+  momData: null,
+
+  // 签到相关
+  isCheckedIn: false,
+  checkinDays: 0,
+  canCheckin: true,
+  checkinWeek: []
   },
 
   // 页面加载
@@ -64,6 +70,9 @@ Page({
 
   // 加载兼职妈妈数据
   this.loadMomData()
+
+  // 检查签到状态
+  this.checkCheckinStatus()
   },
 
   // 下拉刷新
@@ -698,6 +707,136 @@ Page({
   // 重试加载用户数据
   retryLoadUserData() {
     this.loadUserData()
+  },
+
+  // ========== 签到功能 ==========
+
+  // 获取今天的日期字符串 YYYY-MM-DD
+  _getTodayStr() {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  },
+
+  // 获取昨天的日期字符串
+  _getYesterdayStr() {
+    const now = new Date()
+    now.setDate(now.getDate() - 1)
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  },
+
+  // 检查签到状态
+  checkCheckinStatus() {
+    try {
+      const lastCheckinDate = wx.getStorageSync('last_checkin_date') || ''
+      const todayStr = this._getTodayStr()
+      const isCheckedIn = lastCheckinDate === todayStr
+      const checkinDays = wx.getStorageSync('checkin_streak') || 0
+
+      // 如果昨天没签到，连续天数重置
+      const yesterdayStr = this._getYesterdayStr()
+      if (checkinDays > 0 && lastCheckinDate !== todayStr && lastCheckinDate !== yesterdayStr) {
+        wx.setStorageSync('checkin_streak', 0)
+        this.setData({ checkinDays: 0 })
+      }
+
+      // 生成最近7天签到记录
+      const checkinWeek = this._generateCheckinWeek(lastCheckinDate, checkinDays)
+
+      this.setData({
+        isCheckedIn,
+        checkinDays,
+        canCheckin: !isCheckedIn,
+        checkinWeek
+      })
+    } catch (e) {
+      console.warn('检查签到状态失败', e)
+    }
+  },
+
+  // 生成最近7天签到记录
+  _generateCheckinWeek(lastCheckinDate, streak) {
+    const week = []
+    const today = new Date()
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today)
+      d.setDate(d.getDate() - i)
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      // 从最后签到日往前推 streak 天都是已签到
+      let checked = false
+      if (lastCheckinDate) {
+        const lastDate = new Date(lastCheckinDate)
+        const diffDays = Math.floor((lastDate - d) / 86400000)
+        if (diffDays >= 0 && diffDays < streak) {
+          checked = true
+        }
+      }
+      week.push({
+        date: dateStr,
+        label: i === 0 ? '今' : (i === 1 ? '昨' : `${d.getMonth() + 1}/${d.getDate()}`),
+        checked: checked
+      })
+    }
+    return week
+  },
+
+  // 执行签到
+  onCheckin() {
+    if (!this.checkLogin()) return
+
+    if (this.data.isCheckedIn) {
+      wx.showToast({ title: '今天已经签到过了', icon: 'none' })
+      return
+    }
+
+    try {
+      const todayStr = this._getTodayStr()
+      const yesterdayStr = this._getYesterdayStr()
+      const lastCheckinDate = wx.getStorageSync('last_checkin_date') || ''
+      let checkinDays = wx.getStorageSync('checkin_streak') || 0
+
+      // 判断连续签到
+      if (lastCheckinDate === yesterdayStr) {
+        checkinDays += 1
+      } else {
+        checkinDays = 1
+      }
+
+      // 计算积分奖励
+      let pointsReward = 5
+      let rewardText = '+5积分'
+      if (checkinDays % 7 === 0) {
+        pointsReward = 20
+        rewardText = '连续7天签到 +20积分'
+      }
+
+      // 增加积分
+      pointsManager.addPoints(pointsReward, '每日签到奖励')
+
+      // 更新存储
+      wx.setStorageSync('last_checkin_date', todayStr)
+      wx.setStorageSync('checkin_streak', checkinDays)
+
+      // 更新页面数据
+      const checkinWeek = this._generateCheckinWeek(todayStr, checkinDays)
+      this.setData({
+        isCheckedIn: true,
+        checkinDays,
+        canCheckin: false,
+        checkinWeek,
+        'userInfo.points': pointsManager.getPoints()
+      })
+
+      wx.showToast({
+        title: `签到成功！${rewardText}`,
+        icon: 'success',
+        duration: 2000
+      })
+
+      app.trackEvent('user_checkin', { streak: checkinDays, points: pointsReward })
+    } catch (e) {
+      console.warn('签到失败', e)
+      wx.showToast({ title: '签到失败，请重试', icon: 'none' })
+    }
   },
 
   // 点击兼职妈妈体验官

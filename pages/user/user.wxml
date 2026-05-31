@@ -82,6 +82,32 @@
 </view>
 </view>
 
+<!-- 签到卡片 -->
+<view wx:if="{{isLogin}}" class="checkin-card">
+  <view class="checkin-header">
+    <text class="checkin-title">📅 每日签到</text>
+    <text class="checkin-streak">已连续签到 {{checkinDays}} 天</text>
+  </view>
+  <view class="checkin-body">
+    <view class="checkin-reward-hint" wx:if="{{checkinDays % 7 !== 0 || !isCheckedIn}}">
+      <text>连续签到7天额外奖励20积分 🎁</text>
+    </view>
+    <view class="checkin-reward-hint" wx:if="{{isCheckedIn && checkinDays % 7 === 0 && checkinDays > 0}}">
+      <text>🎉 恭喜获得连续7天签到奖励 +20积分！</text>
+    </view>
+    <view class="checkin-btn {{isCheckedIn ? 'checkin-btn-done' : ''}}" bindtap="onCheckin">
+      <text>{{isCheckedIn ? '已签到 ✓' : '签到'}}</text>
+    </view>
+  </view>
+  <!-- 最近7天签到记录 -->
+  <view class="checkin-week">
+    <view wx:for="{{checkinWeek}}" wx:key="date" class="checkin-day {{item.checked ? 'checkin-day-done' : ''}}">
+      <text class="checkin-day-icon">{{item.checked ? '✓' : ''}}</text>
+      <text class="checkin-day-label">{{item.label}}</text>
+    </view>
+  </view>
+</view>
+
 <view class="order-section">
   <view class="section-header" bindtap="onAllOrdersTap">
     <text class="section-title">我的订单</text>
