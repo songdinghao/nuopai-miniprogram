@@ -4,6 +4,7 @@ const storeConfig = require('../../config/store-config.js')
 const referral = require('../../utils/referral.js')
 const pointsManager = require('../../utils/points-manager.js')
 const notificationManager = require('../../utils/notification-manager.js')
+const analytics = require('../../utils/analytics.js')
 
 Page({
   data: {
@@ -64,6 +65,9 @@ Page({
 
   // 页面显示
   onShow() {
+
+  // 埋点：页面浏览
+  analytics.trackPageView('user')
 
   // 检查登录状态
   this.checkLoginStatus()

@@ -1,6 +1,7 @@
 // pages/cart/cart.js - 购物车页面逻辑
 const app = getApp()
 const storeConfig = require('../../config/store-config.js')
+const analytics = require('../../utils/analytics.js')
 
 Page({
   data: {
@@ -50,6 +51,9 @@ Page({
 
   // 页面显示
   onShow() {
+
+  // 埋点：页面浏览
+  analytics.trackPageView('cart')
 
   // 更新登录状态
   this.setData({ isLogin: app.globalData.isLogin })

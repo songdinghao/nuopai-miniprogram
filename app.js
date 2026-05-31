@@ -16,6 +16,9 @@ App({
 
       this.initModules()
 
+      // 初始化埋点系统
+      this.initAnalyticsSystem()
+
       // 检查微信版本兼容性
       this.checkCompatibility()
 
@@ -505,6 +508,17 @@ App({
   }
   },
 
+  // 初始化埋点系统：启用埋点、生成会话ID、记录启动事件
+  initAnalyticsSystem() {
+  app.globalData.analyticsEnabled = true
+  app.globalData.sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2)
+
+  this.trackEvent('app_launch', {
+      sessionId: app.globalData.sessionId,
+      timestamp: Date.now()
+  })
+  },
+
   initWechatStore() {
 
   // 从配置文件中读取店铺信息
@@ -990,32 +1004,35 @@ App({
   return true
   },
 
-  // 事件追踪
+  // 事件追踪（本地队列 + 微信分析 + 控制台日志）
   trackEvent(eventName, params = {}) {
-  // 开发环境跳过，避免analytics服务器不可达导致timeout刷屏
-  if (!this._shouldSendAnalytics()) return
+  if (!app.globalData.analyticsEnabled) return
 
-  const eventData = {
+  const event = {
       event: eventName,
+      params: params,
       timestamp: Date.now(),
-      page: app.globalData.currentPage || 'unknown',
-      user_id: app.globalData.userInfo?.id || 'anonymous',
-      device_info: app.globalData.deviceInfo || {},
-      ...params
+      userId: app.globalData.userInfo?.id || 'anonymous',
+      sessionId: app.globalData.sessionId,
+      page: getCurrentPages().pop()?.route || ''
   }
 
-  // 发送到统计服务器（2000ms短超时，fire-and-forget）
-  const trackReq = wx.request({
-      url: app.globalData.config?.analyticsUrl || 'https://wechat.zzjgsw.com/api/analytics/track',
-      method: 'POST',
-      data: eventData,
-      header: { 'Content-Type': 'application/json' },
-      timeout: 2000,
-      fail: () => {} // 静默失败，不打扰用户
-  })
-  if (trackReq && typeof trackReq.catch === 'function') {
-      trackReq.catch(() => {})
-  }
+  // 存入本地队列
+  try {
+      let queue = wx.getStorageSync('analytics_queue') || []
+      queue.push(event)
+      // 最多存200条
+      if (queue.length > 200) queue = queue.slice(-200)
+      wx.setStorageSync('analytics_queue', queue)
+  } catch (e) {}
+
+  // 微信自带分析
+  try {
+      wx.reportAnalytics(eventName, params)
+  } catch (e) {}
+
+  // 控制台日志（开发模式）
+  console.log(`[Analytics] ${eventName}`, params)
   },
 
   setUserProperties(userInfo) {
@@ -1256,6 +1273,10 @@ App({
 
   // 全局数据
   globalData: {
+  // 埋点开关
+  analyticsEnabled: false,
+  sessionId: '',
+
   // 用户相关
   userInfo: null,
   isLogin: false,

@@ -4,6 +4,7 @@ const storeConfig = require('../../config/store-config.js')
 const anniversary = require('../../utils/anniversary.js')
 const api = require('../../utils/api.js')
 const productsData = require('../../data/products.js')
+const analytics = require('../../utils/analytics.js')
 
 Page({
   data: {
@@ -98,6 +99,9 @@ Page({
 
   // 页面显示
   onShow() {
+
+  // 埋点：页面浏览
+  analytics.trackPageView('home')
 
   // 检查用户登录状态
   this.checkLoginStatus()

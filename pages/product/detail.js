@@ -311,6 +311,13 @@ Page({
           product_name: productInfo.name,
           price: productInfo.price
         })
+
+        // 埋点：商品浏览（含名称和价格）
+        app.trackEvent('product_view', {
+          product_id: productId,
+          name: productInfo.name,
+          price: productInfo.price
+        })
       } catch (error) {
         console.error('加载产品数据失败:', error)
         this._loadMockProductData(productId)

@@ -4,6 +4,7 @@ const storeConfig = require('../../config/store-config.js')
 const groupBuy = require('../../utils/group-buy.js')
 const couponManager = require('../../utils/coupon-manager.js')
 const pointsManager = require('../../utils/points-manager.js')
+const analytics = require('../../utils/analytics.js')
 
 Page({
   data: {
@@ -560,6 +561,9 @@ Page({
     order_id: orderId,
     total_price: this.data.totalPrice
       })
+
+      // 埋点：购买成功
+      analytics.trackPurchase(orderId, this.data.totalPrice, this.data.orderItems)
 
       // 跳转到订单详情页
       setTimeout(() =>{
