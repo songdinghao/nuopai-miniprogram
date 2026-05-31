@@ -1507,6 +1507,129 @@
   font-weight: bold;
 }
 
+/* ===== 组合购 ===== */
+.bundle-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 20rpx;
+}
+
+.bundle-section .section-title {
+  margin-bottom: 20rpx;
+}
+
+.bundle-scroll {
+  white-space: nowrap;
+}
+
+.bundle-list {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.bundle-plus {
+  display: inline-flex;
+  align-items: flex-start;
+}
+
+.bundle-plus-sign {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  color: #999999;
+  font-weight: bold;
+  padding: 0 12rpx;
+  margin-top: 60rpx;
+}
+
+.bundle-current-item,
+.bundle-item {
+  display: inline-flex;
+  flex-direction: column;
+  width: 240rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background-color: #f8f8f8;
+  flex-shrink: 0;
+}
+
+.bundle-item-image {
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.bundle-item-name {
+  font-size: 22rpx;
+  color: #333333;
+  padding: 10rpx 12rpx 4rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240rpx;
+  display: block;
+}
+
+.bundle-item-price {
+  font-size: 26rpx;
+  color: #FF4444;
+  font-weight: 600;
+  padding: 4rpx 12rpx 12rpx;
+}
+
+.bundle-item-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 4rpx 12rpx 12rpx;
+}
+
+.bundle-item-original {
+  font-size: 22rpx;
+  color: #999999;
+  text-decoration: line-through;
+}
+
+.bundle-item-bundle-price {
+  font-size: 26rpx;
+  color: #FF4444;
+  font-weight: 600;
+}
+
+.bundle-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.bundle-save {
+  font-size: 26rpx;
+  color: #ffffff;
+  background-color: #FF4444;
+  padding: 8rpx 20rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+}
+
+.bundle-add-btn {
+  background-color: #C9A96E;
+  color: #ffffff;
+  padding: 16rpx 40rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.bundle-add-btn:active {
+  opacity: 0.8;
+}
+
 /* ===== 字体大小适配 ===== */
 .product-detail-page.font-large .product-name { font-size: 38rpx; }
 .product-detail-page.font-large .product-description { font-size: 32rpx; }

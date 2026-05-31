@@ -56,6 +56,12 @@ Page({
   // 相关商品
   relatedProducts: [],
 
+  // 组合购
+  bundleProducts: [],
+  bundleDiscount: 0,
+  bundleSave: 0,
+  bundleName: '',
+
   // 促销信息
   promotions: [],
 
@@ -294,6 +300,9 @@ Page({
         this.initPromotion()
         this.startCountdown()
 
+        // 加载组合购商品
+        this.loadBundleProducts(productInfo)
+
         // 记录浏览历史（产品数据加载完成后）
         this.recordBrowseHistory(productId)
 
@@ -413,6 +422,9 @@ Page({
       this.initPromotion()
       this.startCountdown()
 
+      // 加载组合购商品
+      this.loadBundleProducts(productInfo)
+
       // 记录浏览历史（产品数据加载完成后）
       this.recordBrowseHistory(productId)
 
@@ -522,6 +534,9 @@ Page({
     // 初始化限时促销倒计时
     this.initPromotion()
     this.startCountdown()
+
+    // 加载组合购商品
+    this.loadBundleProducts(productInfo)
 
     // 追踪商品加载完成
     app.trackEvent('product_detail_loaded', {
@@ -1750,6 +1765,162 @@ Page({
     } catch (e) {
       console.warn('记录浏览历史失败', e)
     }
+  },
+
+  // ========== 组合购 ==========
+
+  // 加载组合购商品
+  loadBundleProducts(productInfo) {
+    if (!productInfo || !productInfo.category) {
+      this.setData({ bundleProducts: [], bundleDiscount: 0, bundleSave: 0, bundleName: '' })
+      return
+    }
+
+    const category = productInfo.category
+    const bundles = storeConfig.bundles || []
+
+    // 查找与当前商品分类匹配的组合
+    const matchedBundle = bundles.find(bundle => {
+      return bundle.items.some(itemId => itemId.startsWith(category + '_'))
+    })
+
+    if (!matchedBundle) {
+      this.setData({ bundleProducts: [], bundleDiscount: 0, bundleSave: 0, bundleName: '' })
+      return
+    }
+
+    // 从本地产品数据中筛选同分类的其他商品
+    const allProducts = productsData.getAllProducts()
+    const currentId = this.data.productId
+
+    // 获取组合内的子分类，筛选属于这些子分类的产品
+    // 由于本地产品没有细分到子分类，按主分类筛选并排除当前商品
+    const categoryProducts = allProducts.filter(p => {
+      const pid = String(p.id || p.productId)
+      return (p.category === category || p.sceneId === category) && pid !== String(currentId)
+    })
+
+    // 取最多2个其他商品作为组合商品
+    const bundleItems = categoryProducts.slice(0, 2).map(p => {
+      const price = p.price || 0
+      const originalPrice = p.originalPrice || price
+      return {
+        id: p.id || p.productId,
+        name: p.name || '',
+        image: p.mainImage || '',
+        price: price,
+        originalPrice: originalPrice,
+        bundlePrice: (price * matchedBundle.discount).toFixed(0)
+      }
+    })
+
+    if (bundleItems.length === 0) {
+      this.setData({ bundleProducts: [], bundleDiscount: 0, bundleSave: 0, bundleName: '' })
+      return
+    }
+
+    // 计算组合价和单独购买的差价
+    const currentPrice = this.data.selectedSku ? this.data.selectedSku.price : productInfo.price
+    const totalOriginal = currentPrice + bundleItems.reduce((sum, item) => sum + item.price, 0)
+    const totalBundle = currentPrice * matchedBundle.discount + bundleItems.reduce((sum, item) => sum + parseFloat(item.bundlePrice), 0)
+    const bundleSave = (totalOriginal - totalBundle).toFixed(0)
+
+    this.setData({
+      bundleProducts: bundleItems,
+      bundleDiscount: matchedBundle.discount,
+      bundleSave: bundleSave,
+      bundleName: matchedBundle.name
+    })
+  },
+
+  // 点击组合购商品
+  onBundleProductTap(e) {
+    const index = e.currentTarget.dataset.index
+    const product = this.data.bundleProducts[index]
+    if (product && product.id) {
+      wx.navigateTo({
+        url: `/pages/product/detail?id=${product.id}&source=bundle`
+      })
+    }
+  },
+
+  // 一键加购组合商品
+  onAddBundleToCart() {
+    const bundleProducts = this.data.bundleProducts
+    if (!bundleProducts || bundleProducts.length === 0) return
+
+    let cartItems = wx.getStorageSync('cartItems') || []
+
+    // 先加入当前商品（如果已选规格）
+    if (this.data.selectedSku) {
+      const currentAttrs = this.data.selectedAttrs
+      const existingCurrentIndex = cartItems.findIndex(item =>
+        item.productId === this.data.productId &&
+        JSON.stringify(item.attrs) === JSON.stringify(currentAttrs)
+      )
+      if (existingCurrentIndex >= 0) {
+        cartItems[existingCurrentIndex].quantity += 1
+      } else {
+        cartItems.push({
+          id: 'cart_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+          productId: this.data.productId,
+          name: this.data.productInfo.name,
+          image: this.data.productInfo.mainImage,
+          attrs: currentAttrs,
+          skuInfo: this.data.selectedSku,
+          specsText: this.data.selectedSkuAttrsText || '',
+          price: this.data.selectedSku.price,
+          originalPrice: this.data.selectedSku.originalPrice,
+          quantity: 1,
+          stock: this.data.selectedSku.stock,
+          selected: true,
+          addTime: Date.now()
+        })
+      }
+    }
+
+    // 加入组合中的其他商品（使用组合价）
+    bundleProducts.forEach(product => {
+      const existingIndex = cartItems.findIndex(item => item.productId === product.id)
+      if (existingIndex >= 0) {
+        cartItems[existingIndex].quantity += 1
+      } else {
+        cartItems.push({
+          id: 'cart_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+          productId: product.id,
+          name: product.name,
+          image: product.image,
+          attrs: {},
+          specsText: '',
+          price: parseFloat(product.bundlePrice),
+          originalPrice: product.price,
+          quantity: 1,
+          stock: 99,
+          selected: true,
+          addTime: Date.now()
+        })
+      }
+    })
+
+    wx.setStorageSync('cartItems', cartItems)
+
+    // 更新全局购物车数量
+    const totalCount = cartItems.reduce((total, item) => total + item.quantity, 0)
+    app.globalData.cartCount = totalCount
+    this.updateCartCount()
+
+    wx.showToast({
+      title: `已将${bundleProducts.length + 1}件商品加入购物车`,
+      icon: 'success',
+      duration: 2000
+    })
+
+    app.trackEvent('bundle_add_to_cart', {
+      product_id: this.data.productId,
+      bundle_name: this.data.bundleName,
+      bundle_count: bundleProducts.length + 1,
+      bundle_save: this.data.bundleSave
+    })
   },
 
   // 更新库存紧迫感提示

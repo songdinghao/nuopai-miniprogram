@@ -481,6 +481,39 @@
 </view>
 </view>
 
+<!-- 搭配购买 -->
+<view wx:if="{{bundleProducts.length > 0}}" class="bundle-section">
+  <view class="section-title">
+    <text class="title-text">搭配购买更划算 🎁</text>
+  </view>
+  <scroll-view class="bundle-scroll" scroll-x="true">
+    <view class="bundle-list">
+      <view class="bundle-current-item">
+        <image class="bundle-item-image" mode="aspectFill" src="{{productInfo.mainImage}}" />
+        <text class="bundle-item-name">{{productInfo.name}}</text>
+        <text class="bundle-item-price">¥{{selectedSku ? selectedSku.price : productInfo.price}}</text>
+      </view>
+      <view class="bundle-plus" wx:for="{{bundleProducts}}" wx:key="id" wx:for-item="bp">
+        <text class="bundle-plus-sign">+</text>
+        <view class="bundle-item" bindtap="onBundleProductTap" data-index="{{index}}">
+          <image class="bundle-item-image" lazy-load mode="aspectFill" src="{{bp.image}}" />
+          <text class="bundle-item-name">{{bp.name}}</text>
+          <view class="bundle-item-price-row">
+            <text class="bundle-item-original">¥{{bp.price}}</text>
+            <text class="bundle-item-bundle-price">¥{{bp.bundlePrice}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+  <view class="bundle-footer">
+    <text class="bundle-save">组合省¥{{bundleSave}}</text>
+    <view class="bundle-add-btn" bindtap="onAddBundleToCart">
+      <text>一键加购</text>
+    </view>
+  </view>
+</view>
+
 <!-- 相关商品 -->
 <view wx:if="{{relatedProducts.length > 0}}" class="related-products">
   <view class="section-title">

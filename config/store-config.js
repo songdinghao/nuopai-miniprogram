@@ -245,6 +245,24 @@ module.exports = {
   email: 'service@nuopai.com'
   },
 
+  // 组合购配置
+  bundles: [
+  {
+      id: 'bundle_xuanguan',
+      name: '玄关温馨套装',
+      discount: 0.9,
+      items: ['xuanguan_duanjingtai', 'xuanguan_gui'],
+      description: '玄关端景台+玄关柜组合，省10%'
+  },
+  {
+      id: 'bundle_keting',
+      name: '客厅雅致套装',
+      discount: 0.88,
+      items: ['keting_chaji', 'keting_dianshigui'],
+      description: '客厅茶几+电视柜组合，省12%'
+  }
+  ],
+
   // 收益兑换商品列表
   exchangeProducts: [
   { id: '100001', name: '玄关端景台永生花玫瑰摆件', image: '/assets/products/product1.jpg', price: 268, useEarnings: 100 },
