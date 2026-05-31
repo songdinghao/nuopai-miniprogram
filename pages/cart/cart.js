@@ -18,6 +18,9 @@ Page({
   totalPrice: '0.00',
   isAllSelected: false,
 
+  // 凑单提示
+  tipText: '',
+
   // 用户偏好
   fontSize: 'normal',
 
@@ -179,6 +182,77 @@ Page({
       totalPrice: totalPrice.toFixed(2),
       isAllSelected
   })
+
+  // 计算凑单提示
+  this.calculateTip(totalPrice)
+  },
+
+  // 计算凑单提示（满减优先，其次包邮）
+  calculateTip(selectedTotal) {
+  let tipText = ''
+
+  // 没有选中商品时不显示提示
+  if (selectedTotal <= 0 || this.data.selectedCount === 0) {
+      this.setData({ tipText: '' })
+      return
+  }
+
+  // 读取包邮门槛
+  const freeShippingTemplate = storeConfig.shippingTemplates.find(t => t.type === 'free')
+  const freeShippingThreshold = freeShippingTemplate && freeShippingTemplate.conditions[0]
+      ? freeShippingTemplate.conditions[0].minAmount : 99
+
+  // 读取满减活动（按门槛从高到低排序）
+  const fullReductions = (storeConfig.marketing && storeConfig.marketing.promotions
+      && storeConfig.marketing.promotions.fullReduction) || []
+  const sortedReductions = [...fullReductions].sort((a, b) => b.threshold - a.threshold)
+
+  // 1. 优先检查满减提示
+  // 找到当前已满足的最高满减
+  let matchedReduction = null
+  for (const fr of sortedReductions) {
+      if (selectedTotal >= fr.threshold) {
+      matchedReduction = fr
+      break
+      }
+  }
+
+  if (matchedReduction) {
+      // 已满足某个满减档位，检查是否接近下一档
+      const higherReduction = sortedReductions.find(fr => fr.threshold > matchedReduction.threshold)
+      if (higherReduction) {
+      const gap = higherReduction.threshold - selectedTotal
+      if (gap > 0) {
+          tipText = `再买¥${gap.toFixed(0)}可减¥${higherReduction.discount} 🏷️`
+      }
+      } else {
+      // 已是最高档，显示已享受提示
+      tipText = `已享${matchedReduction.label} ✅`
+      }
+
+      if (!tipText) {
+      tipText = `已享${matchedReduction.label} ✅`
+      }
+  } else {
+      // 未满足任何满减，找到最近的一档
+      const nextReduction = [...sortedReductions].reverse().find(fr => selectedTotal < fr.threshold)
+      if (nextReduction) {
+      const gap = nextReduction.threshold - selectedTotal
+      tipText = `再买¥${gap.toFixed(0)}可减¥${nextReduction.discount} 🏷️`
+      }
+  }
+
+  // 2. 如果没有满减提示（理论上有满减配置就不会走到这），回退到包邮提示
+  if (!tipText) {
+      if (selectedTotal >= freeShippingThreshold) {
+      tipText = '已享包邮 ✅'
+      } else {
+      const gap = freeShippingThreshold - selectedTotal
+      tipText = `再买¥${gap.toFixed(0)}享包邮 📦`
+      }
+  }
+
+  this.setData({ tipText })
   },
 
   // 获取规格文本 - 使用内联映射显示中文名称

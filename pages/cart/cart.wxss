@@ -443,6 +443,19 @@
   color: white;
 }
 
+/* ===== 凑单提示条 ===== */
+.cart-tip-bar {
+  background-color: #FFF8E1;
+  padding: 16rpx 24rpx;
+  text-align: center;
+}
+
+.cart-tip-bar text {
+  font-size: 26rpx;
+  color: #FF8F00;
+  font-weight: 500;
+}
+
 /* ===== 字体适配 ===== */
 .font-large .product-name {
   font-size: 32rpx;

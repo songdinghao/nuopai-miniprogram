@@ -30,6 +30,11 @@
     <text class="guest-tip-login" bindtap="onLoginTap">去登录</text>
   </view>
 
+  <!-- 凑单提示条 -->
+  <view class="cart-tip-bar" wx:if="{{tipText}}">
+    <text>{{tipText}}</text>
+  </view>
+
   <view class="cart-content">
     <view wx:if="{{loading}}" class="loading-container">
       <view class="loading-spinner"></view>
