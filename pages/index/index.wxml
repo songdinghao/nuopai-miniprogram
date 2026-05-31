@@ -121,6 +121,49 @@
   <view class="cta-arrow">去看看 ›</view>
 </view>
 
+<!-- ===== 猜你喜欢 ===== -->
+<view wx:if="{{guessYouLike.length > 0}}" class="section-spacing">
+  <view class="section-header">
+    <view class="section-title-row">
+      <text class="section-title">猜你喜欢 💕</text>
+      <text class="section-more" bindtap="onViewAllProducts">更多推荐 ›</text>
+    </view>
+  </view>
+  <!-- 骨架屏 -->
+  <view wx:if="{{guessYouLikeLoading}}" class="product-grid-2">
+    <view wx:for="{{[1,2,3,4]}}" wx:key="*this" class="product-card product-card-skeleton">
+      <view class="product-img skeleton-img"></view>
+      <view class="product-info">
+        <view class="skeleton-line w80"></view>
+        <view class="skeleton-line w40"></view>
+      </view>
+    </view>
+  </view>
+  <!-- 错误状态 -->
+  <view wx:elif="{{guessYouLikeError}}" class="module-error">
+    <text>⚠️ 推荐加载失败</text>
+    <view class="module-retry" bindtap="retryLoadGuessYouLike">点击重试</view>
+  </view>
+  <!-- 正常列表 -->
+  <view wx:elif="{{!guessYouLikeLoading && guessYouLike.length > 0}}" class="product-grid-2">
+    <view wx:for="{{guessYouLike}}" wx:for-item="item" wx:key="id" class="product-card" bindtap="onProductTap" data-id="{{item.id}}">
+      <view class="product-img" style="background: {{item.bgColor || '#E8F5E9'}};">
+        <image wx:if="{{item.image || item.mainImage}}" lazy-load mode="aspectFill" src="{{item.image || item.mainImage}}" />
+        <text wx:else class="product-emoji">{{item.emoji || '🌸'}}</text>
+        <view wx:if="{{item.tagText}}" class="product-tag">{{item.tagText}}</view>
+      </view>
+      <view class="product-info">
+        <view wx:if="{{item.scene}}" class="product-scene-tag">{{item.scene}}</view>
+        <text class="product-name">{{item.name}}</text>
+        <view class="product-price-row">
+          <text class="product-price">¥{{item.price}}</text>
+          <text wx:if="{{item.oldPrice || item.originalPrice}}" class="product-oldprice">¥{{item.oldPrice || item.originalPrice}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
 <!-- ===== 场景搭配灵感 ===== -->
 <view class="section-spacing">
   <view class="section-header">

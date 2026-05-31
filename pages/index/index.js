@@ -61,6 +61,11 @@ Page({
   showCouponPopup: false,
   claimableCoupons: [],
 
+  // 猜你喜欢
+  guessYouLike: [],
+  guessYouLikeLoading: true,
+  guessYouLikeError: false,
+
   // 分页状态
   page: 1,
   hasMore: true
@@ -228,6 +233,9 @@ Page({
 
       this.showLoadCompleteTip()
       this.checkCouponPopup()
+
+      // 加载猜你喜欢（依赖hotProducts已加载）
+      this.loadGuessYouLike()
     })
   },
 
@@ -637,6 +645,89 @@ Page({
     return emojiMap[categoryId] || '🌸'
   },
 
+  // 加载猜你喜欢推荐
+  loadGuessYouLike() {
+    this.setData({ guessYouLikeLoading: true, guessYouLikeError: false })
+    try {
+      // 读取浏览历史
+      const history = wx.getStorageSync('browse_history') || []
+
+      // 已在热销中展示的商品ID集合
+      const hotIds = new Set((this.data.hotProducts || []).map(p => String(p.id)))
+
+      // 所有本地产品
+      const allProducts = productsData.getAllProducts()
+
+      let candidates = []
+
+      if (history.length > 0) {
+        // 统计浏览最多的产品分类
+        const categoryCount = {}
+        history.forEach(item => {
+          const cat = item.category
+          if (cat) {
+            categoryCount[cat] = (categoryCount[cat] || 0) + 1
+          }
+        })
+
+        // 按浏览次数降序排列分类
+        const sortedCategories = Object.keys(categoryCount)
+          .sort((a, b) => categoryCount[b] - categoryCount[a])
+
+        // 从偏好分类中筛选，排除已在热销中的商品
+        for (const cat of sortedCategories) {
+          const matched = allProducts.filter(p =>
+            p.category === cat && !hotIds.has(String(p.id))
+          )
+          candidates.push(...matched)
+        }
+
+        // 如果偏好分类不够8个，补充其他分类的商品
+        if (candidates.length < 8) {
+          const candidateIds = new Set(candidates.map(p => String(p.id)))
+          const extra = allProducts.filter(p =>
+            !hotIds.has(String(p.id)) && !candidateIds.has(String(p.id))
+          )
+          candidates.push(...extra)
+        }
+      } else {
+        // 无浏览历史：随机推荐，排除热销商品
+        candidates = allProducts.filter(p => !hotIds.has(String(p.id)))
+      }
+
+      // 随机取8个（Fisher-Yates shuffle）
+      for (let i = candidates.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [candidates[i], candidates[j]] = [candidates[j], candidates[i]]
+      }
+      const selected = candidates.slice(0, 8)
+
+      // 映射为WXML期望格式
+      const mapped = selected.map(p => ({
+        ...p,
+        image: p.mainImage || p.image,
+        oldPrice: p.originalPrice,
+        tagText: p.tags && p.tags.length > 0 ? p.tags[0] : '',
+        bgColor: this.getCategoryColor(p.category),
+        emoji: this.getCategoryEmoji(p.category)
+      }))
+
+      this.setData({
+        guessYouLike: mapped,
+        guessYouLikeLoading: false,
+        guessYouLikeError: false
+      })
+    } catch (e) {
+      console.warn('[index] 加载猜你喜欢失败:', e)
+      this.setData({ guessYouLike: [], guessYouLikeLoading: false, guessYouLikeError: true })
+    }
+  },
+
+  // 重试加载猜你喜欢
+  retryLoadGuessYouLike() {
+    this.loadGuessYouLike()
+  },
+
   // 加载新品（取最新6款）
   loadNewProducts() {
     return api.product.getProducts({ limit: 6 }).then(result => {
@@ -751,6 +842,9 @@ Page({
       wx.stopPullDownRefresh()
       wx.showToast({ title: '刷新成功', icon: 'success', duration: 1500 })
       app.trackEvent('refresh', { page: 'index' })
+
+      // 刷新猜你喜欢
+      this.loadGuessYouLike()
     })
   },
 
@@ -995,7 +1089,7 @@ Page({
   const productId = e.currentTarget.dataset.id
   if (!productId) return
 
-  // 从hotProducts/newProducts/sceneProducts中查找商品
+  // 从hotProducts/newProducts/guessYouLike/sceneProducts中查找商品
   let product = null
   let type = 'hot'
 
@@ -1007,6 +1101,12 @@ Page({
   if (!product) {
     product = (this.data.newProducts || []).find(p => p.id === productId)
     if (product) type = 'new'
+  }
+
+  // 再在guessYouLike中找
+  if (!product) {
+    product = (this.data.guessYouLike || []).find(p => p.id === productId)
+    if (product) type = 'recommend'
   }
 
   // 最后在sceneProducts中找
