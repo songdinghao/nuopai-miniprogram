@@ -70,6 +70,24 @@
     </view>
 
   <view class="product-basic-info">
+    <!-- 限时促销倒计时 -->
+    <view class="promo-banner" wx:if="{{isPromoActive}}">
+      <view class="promo-left">
+        <text class="promo-icon">⚡</text>
+        <text class="promo-label">{{promoLabel}}</text>
+      </view>
+      <view class="promo-right">
+        <text class="promo-countdown-label">距结束 </text>
+        <view class="promo-countdown-blocks" wx:if="{{promoCountdown}}">
+          <text class="promo-cd-block">{{promoCountdown[0]}}{{promoCountdown[1]}}</text>
+          <text class="promo-cd-sep">:</text>
+          <text class="promo-cd-block">{{promoCountdown[3]}}{{promoCountdown[4]}}</text>
+          <text class="promo-cd-sep">:</text>
+          <text class="promo-cd-block">{{promoCountdown[6]}}{{promoCountdown[7]}}</text>
+        </view>
+      </view>
+    </view>
+
     <view class="price-section">
       <view class="current-price">
         <text class="price-symbol">¥</text>

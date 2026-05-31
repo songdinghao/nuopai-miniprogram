@@ -1448,6 +1448,65 @@
   opacity: 0.7;
 }
 
+/* ===== 限时促销倒计时 ===== */
+.promo-banner {
+  background: linear-gradient(135deg, #FF4444, #FF6B6B);
+  border-radius: 12rpx;
+  padding: 16rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.promo-left {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.promo-icon {
+  font-size: 30rpx;
+}
+
+.promo-label {
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.promo-right {
+  display: flex;
+  align-items: center;
+}
+
+.promo-countdown-label {
+  color: #ffffff;
+  font-size: 24rpx;
+}
+
+.promo-countdown-blocks {
+  display: flex;
+  align-items: center;
+  gap: 2rpx;
+}
+
+.promo-cd-block {
+  color: #ffffff;
+  font-size: 24rpx;
+  font-family: 'Courier New', Courier, monospace;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4rpx;
+  padding: 2rpx 6rpx;
+  font-weight: 500;
+}
+
+.promo-cd-sep {
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
 /* ===== 字体大小适配 ===== */
 .product-detail-page.font-large .product-name { font-size: 38rpx; }
 .product-detail-page.font-large .product-description { font-size: 32rpx; }

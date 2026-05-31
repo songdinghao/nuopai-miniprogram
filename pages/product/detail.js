@@ -84,7 +84,13 @@ Page({
   isSoldOut: false,
 
   // 用户信息
-  userInfo: null
+  userInfo: null,
+
+  // 限时促销倒计时
+  promoEndTime: 0,
+  promoCountdown: '',
+  isPromoActive: false,
+  promoLabel: ''
   },
 
   // 页面加载
@@ -145,6 +151,11 @@ Page({
 
   // 页面卸载
   onUnload() {
+  // 清除促销倒计时定时器
+  if (this._promoTimer) {
+    clearInterval(this._promoTimer)
+    this._promoTimer = null
+  }
   },
 
   // 分享
@@ -276,6 +287,10 @@ Page({
         this.initSalesCount(productInfo)
         this.updateStockWarning(defaultSku)
 
+        // 初始化限时促销倒计时
+        this.initPromotion()
+        this.startCountdown()
+
         app.trackEvent('product_detail_loaded', {
           product_id: productId,
           product_name: productInfo.name,
@@ -388,6 +403,10 @@ Page({
       this.initSalesCount(productInfo)
       this.updateStockWarning(defaultSku)
 
+      // 初始化限时促销倒计时
+      this.initPromotion()
+      this.startCountdown()
+
       app.trackEvent('product_detail_loaded', {
         product_id: productId,
         product_name: productInfo.name,
@@ -490,6 +509,10 @@ Page({
     // 初始化社会证明
     this.initSalesCount(productInfo)
     this.updateStockWarning(defaultSku)
+
+    // 初始化限时促销倒计时
+    this.initPromotion()
+    this.startCountdown()
 
     // 追踪商品加载完成
     app.trackEvent('product_detail_loaded', {
@@ -1574,6 +1597,58 @@ Page({
       icon: 'none',
       duration: 2000
   })
+  },
+
+  // ========== 限时促销倒计时 ==========
+
+  // 初始化促销信息
+  initPromotion() {
+    const now = new Date()
+    const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+    const promoEndTime = endTime.getTime()
+
+    // 根据商品分类随机选择促销标签
+    const labels = ['限时折扣', '今日特价', '闪购特惠']
+    const promoLabel = labels[Math.floor(Math.random() * labels.length)]
+
+    this.setData({
+      promoEndTime,
+      isPromoActive: true,
+      promoLabel
+    })
+  },
+
+  // 启动倒计时
+  startCountdown() {
+    this._updateCountdown()
+    this._promoTimer = setInterval(() => {
+      if (!this._updateCountdown()) {
+        clearInterval(this._promoTimer)
+        this._promoTimer = null
+      }
+    }, 1000)
+  },
+
+  // 更新倒计时显示，返回 false 表示已结束
+  _updateCountdown() {
+    const now = Date.now()
+    const remaining = this.data.promoEndTime - now
+
+    if (remaining <= 0) {
+      this.setData({ isPromoActive: false, promoCountdown: '00:00:00' })
+      return false
+    }
+
+    const hours = Math.floor(remaining / 3600000)
+    const minutes = Math.floor((remaining % 3600000) / 60000)
+    const seconds = Math.floor((remaining % 60000) / 1000)
+
+    const hh = String(hours).padStart(2, '0')
+    const mm = String(minutes).padStart(2, '0')
+    const ss = String(seconds).padStart(2, '0')
+
+    this.setData({ promoCountdown: `${hh}:${mm}:${ss}` })
+    return true
   },
 
   // 字体大小变化回调
