@@ -38,6 +38,12 @@ Page({
   usePoints: true,        // 是否使用积分
   maxPointsDeduct: 0,     // 最大可抵扣金额
 
+  // 满减优惠
+  fullReductionDiscount: 0,
+  fullReductionLabel: '',
+  nextThreshold: 0,
+  nextDiscount: 0,
+
   // 用户偏好
   fontSize: 'normal',
 
@@ -248,27 +254,61 @@ Page({
       couponDiscount = this.data.selectedCoupon.value || 0
   }
 
-  // 积分抵扣计算：原价 → 优惠券 → 积分抵扣 → 实付
-  const afterCoupon = goodsPrice + shippingFee - couponDiscount
+  // 满减计算：原价 → 优惠券 → 满减 → 积分抵扣 → 实付
+  const afterCoupon = goodsPrice - couponDiscount
+  let fullReductionDiscount = 0
+  let fullReductionLabel = ''
+  let nextThreshold = 0
+  let nextDiscount = 0
+
+  const fullReductionList = (storeConfig.marketing && storeConfig.marketing.promotions && storeConfig.marketing.promotions.fullReduction) || []
+  if (fullReductionList.length > 0) {
+      // 按门槛从高到低排序，找到满足条件的最大优惠
+      const sorted = [...fullReductionList].sort((a, b) => b.threshold - a.threshold)
+      for (const rule of sorted) {
+        if (afterCoupon >= rule.threshold) {
+          fullReductionDiscount = rule.discount
+          fullReductionLabel = rule.label
+          break
+        }
+      }
+
+      // 计算下一档满减
+      const sortedAsc = [...fullReductionList].sort((a, b) => a.threshold - b.threshold)
+      for (const rule of sortedAsc) {
+        if (afterCoupon < rule.threshold) {
+          nextThreshold = Math.round((rule.threshold - afterCoupon) * 100) / 100
+          nextDiscount = rule.discount
+          break
+        }
+      }
+  }
+
+  // 积分抵扣计算：原价 → 优惠券 → 满减 → 积分抵扣 → 实付
+  const afterReduction = goodsPrice + shippingFee - couponDiscount - fullReductionDiscount
   let pointsDeductAmount = 0
   let maxPointsDeduct = 0
 
   if (this.data.usePoints && this.data.pointsBalance > 0) {
       // 调用 points-manager 的 calculateDeductible，传入优惠后金额
-      const result = pointsManager.calculateDeductible(0.2, afterCoupon)
+      const result = pointsManager.calculateDeductible(0.2, afterReduction)
       maxPointsDeduct = result.deductAmount
       // 积分抵扣不能使实付低于 0.01 元
-      pointsDeductAmount = Math.min(maxPointsDeduct, Math.max(0, afterCoupon - 0.01))
+      pointsDeductAmount = Math.min(maxPointsDeduct, Math.max(0, afterReduction - 0.01))
       pointsDeductAmount = Math.round(pointsDeductAmount * 100) / 100
   }
 
-  const totalPrice = Math.max(0.01, afterCoupon - pointsDeductAmount)
+  const totalPrice = Math.max(0.01, afterReduction - pointsDeductAmount)
 
   this.setData({
       couponDiscount: couponDiscount.toFixed(2),
+      fullReductionDiscount: fullReductionDiscount,
+      fullReductionLabel: fullReductionLabel,
+      nextThreshold: nextThreshold,
+      nextDiscount: nextDiscount,
       pointsDeductAmount: pointsDeductAmount,
       maxPointsDeduct: maxPointsDeduct,
-      totalPrice: (afterCoupon - pointsDeductAmount <= 0 ? 0.01 : totalPrice).toFixed(2)
+      totalPrice: (afterReduction - pointsDeductAmount <= 0 ? 0.01 : totalPrice).toFixed(2)
   })
   },
 
@@ -445,6 +485,8 @@ Page({
     freightPrice: this.data.shippingFee,
     couponDiscount: this.data.couponDiscount,
     couponPrice: this.data.couponDiscount,
+    fullReductionDiscount: this.data.fullReductionDiscount,
+    fullReductionLabel: this.data.fullReductionLabel,
     pointsDeductAmount: this.data.pointsDeductAmount,
     usePoints: this.data.usePoints,
     totalPrice: this.data.totalPrice,

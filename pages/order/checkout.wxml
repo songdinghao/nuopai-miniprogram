@@ -110,6 +110,16 @@
       </view>
     </view>
 
+    <!-- 满减优惠 -->
+    <view class="full-reduction-bar" wx:if="{{fullReductionLabel}}">
+      <text class="fr-icon">🏷️</text>
+      <text class="fr-text">{{fullReductionLabel}}</text>
+      <text class="fr-save">已减¥{{fullReductionDiscount}}</text>
+    </view>
+    <view class="next-threshold-bar" wx:if="{{nextThreshold > 0}}">
+      <text>再买¥{{nextThreshold}}可减¥{{nextDiscount}}</text>
+    </view>
+
     <!-- 积分抵扣 -->
     <view class="points-section" wx:if="{{pointsBalance > 0}}">
       <view class="points-header">
@@ -154,6 +164,11 @@
       <view wx:if="{{couponDiscount > 0}}" class="discount price-item">
         <text class="price-label">优惠券</text>
         <text class="price-value">-¥{{couponDiscount}}</text>
+      </view>
+
+      <view wx:if="{{fullReductionDiscount > 0}}" class="discount price-item">
+        <text class="price-label">满减优惠</text>
+        <text class="price-value">-¥{{fullReductionDiscount}}</text>
       </view>
 
       <view wx:if="{{pointsDeductAmount > 0}}" class="discount price-item">

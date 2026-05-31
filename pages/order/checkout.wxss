@@ -608,6 +608,49 @@
   background-color: var(--color-primary-active);
 }
 
+/* ===== 满减优惠 ===== */
+.full-reduction-bar {
+  background-color: #FFF8E1;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.fr-icon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.fr-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.fr-save {
+  font-size: 26rpx;
+  color: #FF4444;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.next-threshold-bar {
+  background-color: #E8F5E9;
+  border-radius: 8rpx;
+  padding: 12rpx 16rpx;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.next-threshold-bar text {
+  font-size: 24rpx;
+  color: #2D8C7A;
+}
+
 /* ===== 字体适配 ===== */
 .font-large .product-name {
   font-size: 32rpx;

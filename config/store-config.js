@@ -311,6 +311,15 @@ module.exports = {
 
   // 营销活动配置
   marketing: {
+  // 满减活动
+  promotions: {
+      fullReduction: [
+        { id: 'fr299', threshold: 299, discount: 30, label: '满299减30' },
+        { id: 'fr499', threshold: 499, discount: 50, label: '满499减50' },
+        { id: 'fr699', threshold: 699, discount: 80, label: '满699减80' }
+      ]
+  },
+
   // 优惠券
   coupons: {
       enabled: true,
