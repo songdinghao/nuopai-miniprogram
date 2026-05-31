@@ -176,10 +176,10 @@
 
 <!-- 收藏列表 -->
 <view class="collection-section">
-  <view class="section-header" bindtap="onFavoritesTap">
-    <text class="section-title">❤️ 我的收藏</text>
-    <view wx:if="{{collectionCount > 6}}" class="section-more">
-      <text class="more-text">查看全部 ({{collectionCount}})</text>
+  <view class="section-header">
+    <text class="section-title" bindtap="onFavoritesTap">❤️ 我的收藏</text>
+    <view class="section-more" bindtap="onViewAllCollections">
+      <text class="more-text">查看全部 {{collectionCount > 0 ? '(' + collectionCount + ')' : ''}}</text>
       <text class="more-icon">›</text>
     </view>
   </view>

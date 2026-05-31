@@ -1,0 +1,47 @@
+<!-- pages/user/collection/collection.wxml - 收藏列表页面 -->
+<view class="collection-page">
+  <!-- 空状态 -->
+  <view wx:if="{{!loading && isEmpty}}" class="empty-wrap">
+    <view class="empty-icon">💝</view>
+    <text class="empty-title">还没有收藏商品</text>
+    <text class="empty-desc">去逛逛吧，发现心仪好物</text>
+    <view class="empty-btn" bindtap="onGoHome">去逛逛</view>
+  </view>
+
+  <!-- 收藏列表 -->
+  <block wx:if="{{!loading && !isEmpty}}">
+    <view class="collection-header">
+      <text class="collection-count">共 {{collectionList.length}} 件收藏</text>
+      <view class="clear-btn" bindtap="onClearCollections">
+        <text class="clear-text">清空</text>
+      </view>
+    </view>
+
+    <view class="collection-list">
+      <view wx:for="{{collectionList}}" wx:key="id" class="collection-item-wrap">
+        <view
+          class="collection-item"
+          style="transform: translateX(-{{item.offset}}rpx);"
+          bindtouchstart="onTouchStart"
+          bindtouchmove="onTouchMove"
+          bindtouchend="onTouchEnd"
+          data-index="{{index}}"
+          data-id="{{item.id}}"
+          bindtap="onItemTap"
+        >
+          <image class="item-image" mode="aspectFill" src="{{item.image}}" />
+          <view class="item-info">
+            <text class="item-name">{{item.name}}</text>
+            <view class="item-bottom">
+              <text class="item-price">¥{{item.price}}</text>
+              <text class="item-time">{{item.timeText}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="delete-btn" catchtap="onDeleteItem" data-id="{{item.id}}">
+          <text class="delete-btn-text">取消收藏</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

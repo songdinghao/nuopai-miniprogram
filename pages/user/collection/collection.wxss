@@ -1,0 +1,150 @@
+/* pages/user/collection/collection.wxss */
+.collection-page {
+  min-height: 100vh;
+  background-color: #F8F8F8;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 空状态 */
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 100rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #999999;
+  margin-bottom: 40rpx;
+}
+
+.empty-btn {
+  padding: 20rpx 60rpx;
+  background: linear-gradient(135deg, #2D8C7A, #3AA99E);
+  color: #ffffff;
+  font-size: 28rpx;
+  border-radius: 44rpx;
+  font-weight: 500;
+}
+
+/* 头部 */
+.collection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+}
+
+.collection-count {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.clear-btn {
+  padding: 10rpx 24rpx;
+}
+
+.clear-text {
+  font-size: 26rpx;
+  color: #e64340;
+}
+
+/* 列表 */
+.collection-list {
+  padding: 0 24rpx;
+}
+
+.collection-item-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.collection-item {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 20rpx;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s ease;
+}
+
+.item-image {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  background-color: #F5F5F5;
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 160rpx;
+}
+
+.item-name {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 12rpx;
+}
+
+.item-price {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2D8C7A;
+}
+
+.item-time {
+  font-size: 22rpx;
+  color: #cccccc;
+}
+
+/* 删除按钮（隐藏在右侧） */
+.delete-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FF4D4F;
+  z-index: 0;
+}
+
+.delete-btn-text {
+  font-size: 28rpx;
+  color: #ffffff;
+  font-weight: 500;
+}

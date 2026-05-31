@@ -301,13 +301,11 @@ Page({
   app.trackEvent('user_coupon_click')
   },
 
-  // 点击我的收藏 - 页面内已展示收藏列表
+  // 点击我的收藏
   onFavoritesTap() {
 
-  // 收藏已在页面下方展示，滚动到收藏区域
-  wx.pageScrollTo({
-      selector: '.collection-section',
-      duration: 300
+  wx.navigateTo({
+      url: '/pages/user/collection/collection'
   })
 
   app.trackEvent('user_favorites_click')
@@ -785,8 +783,9 @@ Page({
 
   // 查看全部收藏
   onViewAllCollections() {
-    // 收藏展示在用户页面内（已展示完整列表），此处可扩展为独立页面
-    wx.showToast({ title: '已加载全部收藏', icon: 'none' })
+    wx.navigateTo({
+      url: '/pages/user/collection/collection'
+    })
   },
 
   // ========== 签到功能 ==========
