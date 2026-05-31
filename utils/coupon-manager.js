@@ -534,6 +534,164 @@ function claimCouponFromServer(couponId) {
   })
 }
 
+//=========== ==== ==== = 首单优惠 & 复购券 = ========== ==== ==== =
+
+/**
+  * 检查用户是否为首单用户
+  * @param {string} [userId] - 用户ID（暂用本地存储判断）
+  * @returns {boolean} true 表示首单用户（尚未完成过订单）
+  */
+function isFirstOrder(userId) {
+  try {
+    const orderCount = wx.getStorageSync('user_order_count') || 0
+    return orderCount <= 0
+  } catch (e) {
+    console.warn('[coupon-manager] 检查首单状态失败', e)
+    return false
+  }
+}
+
+/**
+  * 发放首单优惠券（首单完成后自动调用）
+  * @returns {{success: boolean, message: string, coupon: Object|null}}
+  */
+function claimFirstOrderCoupon() {
+  try {
+    // 检查是否已发放过
+    const hasClaimed = wx.getStorageSync('has_claimed_first_order_coupon')
+    if (hasClaimed) {
+      return { success: false, message: '首单优惠券已发放', coupon: null }
+    }
+
+    // 从配置读取首单券定义
+    const storeConfig = require('../config/store-config.js')
+    const couponDef = storeConfig.marketing.coupons.firstOrder
+
+    // 创建优惠券
+    const now = new Date()
+    const endDate = new Date(now.getTime() + couponDef.validDays * 86400000)
+    const newCoupon = {
+      id: 'first_order_' + Date.now(),
+      name: couponDef.name,
+      type: 'full-reduction',
+      value: couponDef.amount,
+      condition: couponDef.minAmount,
+      conditionText: '满' + couponDef.minAmount + '元可用',
+      description: '首单专属优惠',
+      startTime: now.toISOString().slice(0, 10),
+      endTime: endDate.toISOString().slice(0, 10),
+      status: 'unused',
+      usedTime: '',
+      category: null
+    }
+
+    // 保存优惠券
+    const userCoupons = initCoupons()
+    userCoupons.push(newCoupon)
+    saveCouponsToStorage(userCoupons)
+
+    // 标记已发放
+    wx.setStorageSync('has_claimed_first_order_coupon', true)
+
+    // 记录新发优惠券提醒（供首页弹窗读取）
+    wx.setStorageSync('new_coupon_notice', {
+      name: couponDef.name,
+      amount: couponDef.amount,
+      time: Date.now()
+    })
+
+    return { success: true, message: '首单优惠券发放成功', coupon: newCoupon }
+  } catch (e) {
+    console.warn('[coupon-manager] 发放首单优惠券失败', e)
+    return { success: false, message: '发放失败', coupon: null }
+  }
+}
+
+/**
+  * 发放复购券（第二单完成后自动调用）
+  * @returns {{success: boolean, message: string, coupon: Object|null}}
+  */
+function claimRepurchaseCoupon() {
+  try {
+    // 检查是否已发放过
+    const hasClaimed = wx.getStorageSync('has_claimed_repurchase_coupon')
+    if (hasClaimed) {
+      return { success: false, message: '复购券已发放', coupon: null }
+    }
+
+    // 从配置读取复购券定义
+    const storeConfig = require('../config/store-config.js')
+    const couponDef = storeConfig.marketing.coupons.repurchase
+
+    // 创建优惠券
+    const now = new Date()
+    const endDate = new Date(now.getTime() + couponDef.validDays * 86400000)
+    const newCoupon = {
+      id: 'repurchase_' + Date.now(),
+      name: couponDef.name,
+      type: 'full-reduction',
+      value: couponDef.amount,
+      condition: couponDef.minAmount,
+      conditionText: '满' + couponDef.minAmount + '元可用',
+      description: '回头客专享优惠',
+      startTime: now.toISOString().slice(0, 10),
+      endTime: endDate.toISOString().slice(0, 10),
+      status: 'unused',
+      usedTime: '',
+      category: null
+    }
+
+    // 保存优惠券
+    const userCoupons = initCoupons()
+    userCoupons.push(newCoupon)
+    saveCouponsToStorage(userCoupons)
+
+    // 标记已发放
+    wx.setStorageSync('has_claimed_repurchase_coupon', true)
+
+    // 记录新发优惠券提醒（供首页弹窗读取）
+    wx.setStorageSync('new_coupon_notice', {
+      name: couponDef.name,
+      amount: couponDef.amount,
+      time: Date.now()
+    })
+
+    return { success: true, message: '复购券发放成功', coupon: newCoupon }
+  } catch (e) {
+    console.warn('[coupon-manager] 发放复购券失败', e)
+    return { success: false, message: '发放失败', coupon: null }
+  }
+}
+
+/**
+  * 检查并发放优惠券（订单完成后统一调用）
+  * 根据 user_order_count 自动判断应发放哪种券
+  * @returns {{firstOrder: Object|null, repurchase: Object|null}}
+  */
+function checkAndDistributeCoupons() {
+  const result = { firstOrder: null, repurchase: null }
+
+  try {
+    const orderCount = wx.getStorageSync('user_order_count') || 0
+
+    // 第一单完成后发放首单券
+    if (orderCount === 1) {
+      const r = claimFirstOrderCoupon()
+      if (r.success) result.firstOrder = r.coupon
+    }
+
+    // 第二单完成后发放复购券
+    if (orderCount === 2) {
+      const r = claimRepurchaseCoupon()
+      if (r.success) result.repurchase = r.coupon
+    }
+  } catch (e) {
+    console.warn('[coupon-manager] 检查发放优惠券失败', e)
+  }
+
+  return result
+}
+
 module.exports = {
   // 核心函数
   getCoupons,
@@ -550,5 +708,11 @@ module.exports = {
 
   // API预留
   fetchCouponsFromServer,
-  claimCouponFromServer
+  claimCouponFromServer,
+
+  // 首单优惠 & 复购券
+  isFirstOrder,
+  claimFirstOrderCoupon,
+  claimRepurchaseCoupon,
+  checkAndDistributeCoupons
 }

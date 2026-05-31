@@ -565,6 +565,24 @@ Page({
       // 埋点：购买成功
       analytics.trackPurchase(orderId, this.data.totalPrice, this.data.orderItems)
 
+      // 更新用户订单计数 & 检查优惠券发放条件
+      try {
+        const prevCount = wx.getStorageSync('user_order_count') || 0
+        const newCount = prevCount + 1
+        wx.setStorageSync('user_order_count', newCount)
+
+        // 根据订单数量自动发放优惠券
+        const couponResult = couponManager.checkAndDistributeCoupons()
+        if (couponResult.firstOrder) {
+          app.trackEvent('coupon_distributed', { type: 'first_order', amount: couponResult.firstOrder.value })
+        }
+        if (couponResult.repurchase) {
+          app.trackEvent('coupon_distributed', { type: 'repurchase', amount: couponResult.repurchase.value })
+        }
+      } catch (e) {
+        console.warn('[checkout] 更新订单计数/发放优惠券失败', e)
+      }
+
       // 跳转到订单详情页
       setTimeout(() =>{
     wx.redirectTo({

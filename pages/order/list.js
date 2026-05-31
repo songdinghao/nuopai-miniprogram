@@ -1,5 +1,6 @@
 // pages/order/list.js - 订单列表页面
 const app = getApp()
+const couponManager = require('../../utils/coupon-manager.js')
 
 Page({
   data: {
@@ -82,10 +83,42 @@ Page({
     }
 
     this.setData({ orderList, loading: false, loadError: false })
+
+    // 订单加载后检查是否有新发优惠券通知
+    this.checkNewCouponNotice()
   } catch (e) {
     console.warn('加载订单列表失败', e)
     this.setData({ orderList: [], loading: false, loadError: true })
   }
+  },
+
+  // 检查新发优惠券通知（首单/复购券发放后弹窗提醒）
+  checkNewCouponNotice() {
+    try {
+      const notice = wx.getStorageSync('new_coupon_notice')
+      if (!notice || !notice.name) return
+
+      // 避免重复弹窗：同一个 notice 只弹一次
+      if (this._lastCouponNoticeTime === notice.time) return
+      this._lastCouponNoticeTime = notice.time
+
+      wx.showModal({
+        title: '🎉 恭喜获得优惠券',
+        content: `您已获得「${notice.name}」（${notice.amount}元），快去使用吧！`,
+        confirmText: '去使用',
+        cancelText: '稍后查看',
+        confirmColor: '#2D8C7A',
+        success: (res) => {
+          // 清除通知标记
+          wx.removeStorageSync('new_coupon_notice')
+          if (res.confirm) {
+            wx.navigateTo({ url: '/subpackages/user/coupon/coupon' })
+          }
+        }
+      })
+    } catch (e) {
+      console.warn('[order-list] 检查优惠券通知失败', e)
+    }
   },
 
   // 重试加载列表

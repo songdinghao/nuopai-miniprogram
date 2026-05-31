@@ -344,7 +344,9 @@ module.exports = {
       types: [
     { id: 'new_user', name: '新人券', amount: 20, minAmount: 100, validDays: 30 },
     { id: 'birthday', name: '生日券', amount: 50, minAmount: 200, validDays: 7 }
-      ]
+      ],
+      firstOrder: { id: 'first_order', name: '首单立减', amount: 15, minAmount: 99, validDays: 7 },
+      repurchase: { id: 'repurchase', name: '回头客专享', amount: 20, minAmount: 150, validDays: 15 }
   },
 
   // 积分
