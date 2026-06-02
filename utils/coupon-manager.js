@@ -325,6 +325,9 @@ function updateCouponStatuses(coupons) {
   return updated
 }
 
+//=========== ==== ==== = 防刷常量 = ========== ==== ==== =
+const COOLDOWN_KEY = 'coupon_claim_cooldown'
+
 //=========== ==== ==== = 核心函数 = ========== ==== ==== =
 
 /**
@@ -468,10 +471,26 @@ function getAvailableCount(cartAmount, category) {
   * @returns {{success: boolean, message: string}}
   */
 function claimCoupon(couponId) {
+  // TODO: 上线后防刷逻辑应在服务端实现（userId + couponId 唯一约束）
+
   // 查找可领取的优惠券定义
   const template = CLAIMABLE_COUPONS.find(c =>c.id ===couponId)
   if (!template) {
   return { success: false, message: '优惠券不存在' }
+  }
+
+  // 防刷检查：同一 couponId 24小时内不可重复领取
+  try {
+    const cooldownMap = wx.getStorageSync(COOLDOWN_KEY) || {}
+    const lastClaimTime = cooldownMap[couponId] || 0
+    const now = Date.now()
+    const COOLDOWN_MS = 24 * 60 * 60 * 1000 // 24小时
+    if (now - lastClaimTime < COOLDOWN_MS) {
+      const remainHours = Math.ceil((COOLDOWN_MS - (now - lastClaimTime)) / 3600000)
+      return { success: false, message: `领取过于频繁，请${remainHours}小时后再试` }
+    }
+  } catch (e) {
+    console.warn('[coupon-manager] 读取领券冷却数据失败', e)
   }
 
   // 检查是否已领取同类券
@@ -502,6 +521,15 @@ function claimCoupon(couponId) {
   // 保存
   userCoupons.push(newCoupon)
   saveCouponsToStorage(userCoupons)
+
+  // 记录领券冷却时间
+  try {
+    const cooldownMap = wx.getStorageSync(COOLDOWN_KEY) || {}
+    cooldownMap[couponId] = Date.now()
+    wx.setStorageSync(COOLDOWN_KEY, cooldownMap)
+  } catch (e) {
+    console.warn('[coupon-manager] 保存领券冷却数据失败', e)
+  }
 
   return { success: true, message: '领取成功', coupon: newCoupon }
 }
