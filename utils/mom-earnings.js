@@ -9,7 +9,7 @@ const subscribeMsg = require('./subscribe-message.js')
 // localStorage 存储键名
 const STORAGE_KEYS = {
   EARNINGS: 'mom_earnings_list',
-  WITHDRAWALS: 'mom_withdrawals_list',
+  WITHDRAWALS: 'mom_withdraw_records',  // 与 mom-withdraw.js 保持一致
   EXCHANGES: 'mom_exchanges_list',
   USER_MOM_DATA: 'mom_user_data'
 }
