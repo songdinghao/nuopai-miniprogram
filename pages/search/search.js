@@ -273,6 +273,10 @@ Page({
   // 保存搜索历史
   this.saveToSearchHistory(keyword)
 
+  // 生成请求序列号，防止慢请求覆盖新请求的结果
+  const seq = (this._searchSeq || 0) + 1
+  this._searchSeq = seq
+
   // 显示搜索状态（loading 保持直到 API 返回）
   this.setData({
       searching: true,
@@ -317,6 +321,9 @@ Page({
     const total = matchedProducts.length
     const products = matchedProducts.slice(0, this.data.pageSize)
 
+    // 检查序列号：如果本地填充期间有新请求发起，跳过本次 setData
+    if (seq !== this._searchSeq) return
+
     this.setData({
       searching: false,
       loading: false,
@@ -333,6 +340,9 @@ Page({
 
   // 异步API搜索，返回后统一用 API 数据覆盖本地结果，保证数据权威性
   api.product.searchProducts(keyword, 1, this.data.pageSize).then(result => {
+    // 丢弃过期响应：如果发起后又有新搜索，直接丢弃本次回调
+    if (seq !== this._searchSeq) return
+
     if (result.error) {
       // API 报错但本地已有结果则保留，否则显示错误
       if (!this.data.searchResults || this.data.searchResults.length === 0) {
@@ -369,6 +379,8 @@ Page({
       })
     }
   }).catch(() => {
+    // 丢弃过期响应
+    if (seq !== this._searchSeq) return
     // API 请求失败，若本地已有结果则保留
     if (!this.data.searchResults || this.data.searchResults.length === 0) {
       this.setData({
