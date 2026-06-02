@@ -226,6 +226,7 @@ Page({
   })
   this.setData({ isLogging: true })
 
+  // TODO: 上线后替换为 wx.login + 后端 code2session 真实登录流程
   // 模拟微信登录
   setTimeout(() =>{
       this.doLogin({
@@ -261,6 +262,7 @@ Page({
   })
   this.setData({ isLogging: true })
 
+  // TODO: 上线后替换为后端短信验证码校验 + 手机号登录API
   // 模拟手机号登录
   setTimeout(() =>{
       this.doLogin({

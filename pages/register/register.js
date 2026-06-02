@@ -137,6 +137,7 @@ Page({
 
   this.setData({ loading: true })
 
+  // TODO: 上线后替换为后端注册API（含短信验证码校验 + 用户创建）
   // 模拟注册请求
   setTimeout(() =>{
       this.setData({ loading: false, step: 'success' })
