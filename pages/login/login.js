@@ -268,12 +268,14 @@ Page({
   doLogin(userInfo) {
   // 保存用户信息
   wx.setStorageSync('userInfo', userInfo)
+  // TODO: 上线前必须替换为后端签发的 JWT token，当前实现可被伪造
   wx.setStorageSync('token', 'token_' + Date.now())
   wx.setStorageSync('isLogin', true)
 
   // 更新全局状态
   app.globalData.userInfo = userInfo
   app.globalData.isLogin = true
+  // TODO: 上线前必须替换为后端签发的 JWT token，当前实现可被伪造
   app.globalData.token = 'token_' + Date.now()
 
   // 触发登录状态变化事件
