@@ -1,4 +1,5 @@
 // pages/user/address/address.js - 收货地址管理页面
+// TODO: 上线后地址数据应同步到服务端，本地仅作缓存
 const app = getApp()
 
 Page({
@@ -151,6 +152,7 @@ Page({
   },
 
   // 更新地址单个字段
+  // TODO: 保存成功后应调用API同步到服务端
   updateAddressField(id, key, value) {
   let addressList = this.data.addressList
   const idx = addressList.findIndex(item => item.id == id)
@@ -198,6 +200,7 @@ Page({
   },
 
   // 执行删除地址
+  // TODO: 删除成功后应调用API同步到服务端
   doDeleteAddress(id) {
   let addressList = this.data.addressList
   const deleteIndex = addressList.findIndex(item =>item.id ===id)
@@ -275,6 +278,7 @@ Page({
   },
 
   // 从微信地址添加
+  // TODO: 保存成功后应调用API同步到服务端
   addAddressFromWechat(addressInfo) {
   const addressList = this.data.addressList
 
