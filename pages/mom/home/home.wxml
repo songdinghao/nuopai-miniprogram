@@ -71,12 +71,30 @@
         </view>
       </view>
 
-      <!-- 用户等级和邀请码 -->
-      <view class="user-level-section">
-        <view class="level-badge {{momLevel}}">
-          <text>{{momLevel === 'newbie' ? '🌱 新手体验官' : '⭐ 资深体验官'}}</text>
+      <!-- 等级卡片 -->
+      <view class="level-card">
+        <view class="level-card-header">
+          <view class="level-badge {{momLevel}}">
+            <text>{{levelEmoji}} {{levelName}}</text>
+          </view>
+          <text class="level-label" wx:if="{{currentLevel}}">{{currentLevel.label}}</text>
         </view>
-        <text wx:if="{{momLevel === 'newbie'}}" class="level-desc">新手期还有 {{newbieDaysLeft}} 天</text>
+        <view wx:if="{{nextLevel}}" class="level-progress-section">
+          <view class="level-progress-bar">
+            <view class="level-progress-fill" style="width: {{progress}}%"></view>
+          </view>
+          <view class="level-progress-text">
+            <text>距{{nextLevel.name}}还需 {{nextLevel.minOrders - (currentLevel.minOrders || 0)}} 单（当前 {{progress}}%）</text>
+          </view>
+        </view>
+        <view wx:if="{{!nextLevel}}" class="level-max-text">
+          <text>🎉 已达最高等级！</text>
+        </view>
+        <text wx:if="{{momLevel === 'newbie'}}" class="level-desc">新手期还有 {{newbieDaysLeft}} 天，首单享15%佣金</text>
+      </view>
+
+      <!-- 邀请码 -->
+      <view class="invite-code-section">
         <text class="invite-code">邀请码：{{inviteCode}}</text>
       </view>
     </view>

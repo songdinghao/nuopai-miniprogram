@@ -1,6 +1,7 @@
 // pages/mom/home/home.js - 兼职妈妈首页逻辑
 const app = getApp()
 const momNotification = require('../../../utils/mom-notification.js')
+const momProgram = require('../../../utils/mom-program.js')
 
 Page({
   data: {
@@ -13,6 +14,12 @@ Page({
   momLevelLabel: '新手体验官',
   newbieDaysLeft: 30,
   inviteCode: 'NP****',
+  // 等级信息
+  currentLevel: null,
+  nextLevel: null,
+  progress: 0,
+  levelName: '新手妈妈',
+  levelEmoji: '🌱',
   // 月度数据
   monthlyShareCount: 0,
   monthlyOrders: 0,
@@ -117,6 +124,46 @@ Page({
       totalEarnings: (momData.totalEarnings || 0).toFixed(2),
       pendingEarnings: (momData.pendingEarnings || 0).toFixed(2),
       settledEarnings: (momData.settledEarnings || 0).toFixed(2)
+  })
+
+  // 计算等级信息
+  this.calculateLevelInfo(momData)
+  },
+
+  // 计算等级展示信息
+  calculateLevelInfo(momData) {
+  const currentLevelKey = momData.momLevel || 'newbie'
+  const currentLevel = momProgram.MOM_LEVELS[currentLevelKey]
+  const totalOrders = momData.totalOrders || 0
+  const levelOrder = momProgram.LEVEL_ORDER
+
+  // 找到下一等级
+  const currentIndex = levelOrder.indexOf(currentLevelKey)
+  let nextLevel = null
+  let progress = 100
+
+  if (currentIndex < levelOrder.length - 1) {
+      nextLevel = momProgram.MOM_LEVELS[levelOrder[currentIndex + 1]]
+      const nextLevelKey = levelOrder[currentIndex + 1]
+      const currentMin = currentLevel.minOrders
+      const nextMin = nextLevel.minOrders
+      const range = nextMin - currentMin
+      progress = range > 0 ? Math.min(100, Math.round(((totalOrders - currentMin) / range) * 100)) : 100
+  }
+
+  // 等级 emoji 映射
+  const levelEmojiMap = {
+      newbie: '🌱', silver: '🥈', gold: '🥇', diamond: '💎', crown: '👑'
+  }
+
+  this.setData({
+      currentLevel: currentLevel,
+      nextLevel: nextLevel,
+      progress: progress,
+      levelName: currentLevel ? currentLevel.name : '新手妈妈',
+      levelEmoji: levelEmojiMap[currentLevelKey] || '🌱',
+      momLevel: currentLevelKey,
+      momLevelLabel: currentLevel ? currentLevel.name : '新手体验官'
   })
   },
 

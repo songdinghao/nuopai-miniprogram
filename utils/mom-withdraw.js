@@ -167,56 +167,116 @@ function getWithdrawStats() {
 }
 
 /**
-  * 收益兑换商品
-  * @param {string} earningId - 收益ID（从指定收益扣除）
+  * 收益兑换商品（支持"收益+现金"混合支付）
+  * @param {string|Object} earningOrPayment - 兼容旧版: earningId字符串，新版: { useEarnings, payCash } 对象
   * @param {string|Object} product - 商品ID或商品对象
   * @returns {Object} { success, order, error }
   */
-function exchangeToProduct(earningId, product) {
-  const earnings = wx.getStorageSync('mom_earnings') || []
-  const earning = earnings.find(e =>e.id ===earningId)
-
-  if (!earning) {
-  return { success: false, error: '收益记录不存在' }
-  }
-
-  if (earning.status !== momProgram.EARNING_STATUS.SETTLED) {
-  return { success: false, error: '收益未到账，暂不可兑换' }
-  }
-
-  const productInfo = typeof product ==='string'
+function exchangeToProduct(earningOrPayment, product) {
+  const productInfo = typeof product === 'string'
   ? { id: product, name: '商品', price: 0 }
   : product
 
-  if (!productInfo.price || earning.amount < productInfo.price) {
-  return { success: false, error: '收益余额不足，无法兑换该商品' }
+  if (!productInfo.price) {
+  return { success: false, error: '商品价格信息有误' }
   }
 
   const userData = _getUserData()
   const momData = userData.momData
+  const settledEarnings = momData.settledEarnings || 0
+  const costEarnings = productInfo.price
+
+  // 判断支付模式：新版混合支付 或 旧版 earningId
+  let earningsToUse = 0
+  let cashToPay = 0
+  let earningId = null
+
+  if (typeof earningOrPayment === 'object' && earningOrPayment !== null) {
+    // 新版: { useEarnings, payCash }
+    earningsToUse = earningOrPayment.useEarnings || 0
+    cashToPay = earningOrPayment.payCash || 0
+  } else {
+    // 旧版兼容: earningId 字符串
+    earningId = earningOrPayment
+  }
+
+  if (earningId) {
+    // 旧版逻辑：从指定收益扣除
+    const earnings = wx.getStorageSync('mom_earnings') || []
+    const earning = earnings.find(e => e.id === earningId)
+
+    if (!earning) {
+      return { success: false, error: '收益记录不存在' }
+    }
+    if (earning.status !== momProgram.EARNING_STATUS.SETTLED) {
+      return { success: false, error: '收益未到账，暂不可兑换' }
+    }
+    if (earning.amount < costEarnings) {
+      return { success: false, error: '收益余额不足，无法兑换该商品' }
+    }
+
+    // 扣除收益
+    momData.settledEarnings = Math.round(((momData.settledEarnings || 0) - costEarnings) * 100) / 100
+    momData.totalEarnings = Math.round(((momData.totalEarnings || 0) - costEarnings) * 100) / 100
+
+    // 标记该收益已使用
+    earning.status = momProgram.EARNING_STATUS.CANCELLED
+    earning.exchangedTo = 'product'
+    earning.exchangeInfo = { productId: productInfo.id, productName: productInfo.name, price: productInfo.price }
+    wx.setStorageSync('mom_earnings', earnings)
+    _saveUserData(userData)
+
+    const order = {
+      id: `ex_p_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      type: 'exchange_product',
+      earningId: earningId,
+      productId: productInfo.id,
+      productName: productInfo.name,
+      price: productInfo.price,
+      costEarnings: costEarnings,
+      costCash: 0,
+      status: 'completed',
+      createdAt: new Date().toISOString()
+    }
+    return { success: true, order }
+  }
+
+  // 新版混合支付逻辑
+  // 如果收益足够覆盖，纯收益兑换
+  if (settledEarnings >= costEarnings) {
+    earningsToUse = costEarnings
+    cashToPay = 0
+  } else {
+    // 收益不足，差额用现金补足
+    earningsToUse = settledEarnings
+    cashToPay = costEarnings - settledEarnings
+  }
+
+  // 校验收益余额
+  if (earningsToUse > settledEarnings) {
+    return { success: false, error: '收益余额不足' }
+  }
 
   // 扣除收益
-  const deductAmount = productInfo.price
-  momData.settledEarnings = Math.round(((momData.settledEarnings || 0) - deductAmount) * 100) / 100
-  momData.totalEarnings = Math.round(((momData.totalEarnings || 0) - deductAmount) * 100) / 100
+  if (earningsToUse > 0) {
+    momData.settledEarnings = Math.round((settledEarnings - earningsToUse) * 100) / 100
+    momData.totalEarnings = Math.round(((momData.totalEarnings || 0) - earningsToUse) * 100) / 100
+  }
 
-  // 标记该收益已使用
-  earning.status = momProgram.EARNING_STATUS.CANCELLED
-  earning.exchangedTo = 'product'
-  earning.exchangeInfo = { productId: productInfo.id, productName: productInfo.name, price: productInfo.price }
-  wx.setStorageSync('mom_earnings', earnings)
   _saveUserData(userData)
 
   // 生成兑换订单
   const order = {
-  id: `ex_p_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-  type: 'exchange_product',
-  earningId: earningId,
-  productId: productInfo.id,
-  productName: productInfo.name,
-  price: productInfo.price,
-  status: 'completed',
-  createdAt: new Date().toISOString()
+    id: `ex_p_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    type: 'exchange_product',
+    productId: productInfo.id,
+    productName: productInfo.name,
+    price: productInfo.price,
+    costEarnings: earningsToUse,
+    costCash: cashToPay,
+    paymentMode: cashToPay > 0 ? 'hybrid' : 'earnings_only',
+    status: cashToPay > 0 ? 'pending_cash_payment' : 'completed',
+    createdAt: new Date().toISOString()
   }
 
   return { success: true, order }
