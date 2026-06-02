@@ -432,7 +432,7 @@ module.exports = {
 
   // 测试环境
   staging: {
-      apiBaseUrl: 'https://wechat.zzjgsw.com/api',
+      apiBaseUrl: 'https://staging.wechat.zzjgsw.com/api',
       debug: true,
       logLevel: 'info'
   },
