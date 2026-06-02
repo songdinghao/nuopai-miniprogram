@@ -1,0 +1,32 @@
+# 依赖
+node_modules/
+minitest/
+
+# 系统文件
+.DS_Store
+._.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+
+# 日志
+*.log
+npm-debug.log*
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 环境配置（敏感信息）
+.env
+.env.local
+.env.*.local
+
+# 微信开发者工具
+.project.config.private.json
+
+# 工作流文件
+.workbuddy/
