@@ -40,11 +40,11 @@ const REWARD_RULES = {
   */
 function generateInviteCode(userId) {
   if (!userId) return ''
-  // 使用简单的编码方式：将用户ID进行 base64 编码后取前8位
-  const raw = userId + '_' + Date.now().toString(36)
-  const code = wx.base64 ? wx.base64.encode(raw).slice(0, 8).toUpperCase() : 
-  Array.from(raw).reduce((acc, c) =>acc + c.charCodeAt(0).toString(36), '').slice(0, 8).toUpperCase()
-  return code || ('NUOPAI' + Math.random().toString(36).slice(2, 6).toUpperCase())
+  // 使用 crypto.randomBytes 防止碰撞（与 mom-program.js 保持一致）
+  const crypto = require('crypto')
+  const userPart = userId.slice(-4).toUpperCase()
+  const randomPart = crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, 8)
+  return userPart + randomPart
 }
 
 /**
