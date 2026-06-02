@@ -885,6 +885,7 @@ Page({
   },
 
   // 加载更多商品
+  // TODO: 上线后替换为API分页请求
   loadMoreProducts() {
   if (!this.data.hasMore || this.data.loading) {
       return
@@ -912,16 +913,24 @@ Page({
       // 添加到热销商品列表
       const updatedHotProducts = [...this.data.hotProducts, ...newProducts]
 
+      // 基于本地产品数据总数判断是否还有更多
+      let totalProducts = 0
+      try {
+        totalProducts = productsData.getAllProducts().length
+      } catch (e) {
+        totalProducts = 30
+      }
+
       this.setData({
     hotProducts: updatedHotProducts,
     loading: false,
     page: this.data.page + 1,
-    hasMore: this.data.page < 5 // 模拟只有5页数据
+    hasMore: updatedHotProducts.length < totalProducts
       })
 
       // 追踪加载更多事件
-      app.trackEvent('load_more', { 
-    page: 'index', 
+      app.trackEvent('load_more', {
+    page: 'index',
     page_num: this.data.page,
     product_count: newProducts.length
       })
