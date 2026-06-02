@@ -792,7 +792,8 @@ Page({
       attrOptions.flowerMatch.forEach(flower =>{
     attrOptions.packaging.forEach(pack =>{
           const totalPrice = basePrice + vase.priceDelta + flower.priceDelta + pack.priceDelta
-          const stock = Math.floor(Math.random() * 50) + 10 // 10 - 59的库存
+          // TODO: 上线后从API获取真实库存
+          const stock = (productInfo.stock != null && productInfo.stock > 0) ? productInfo.stock : 50
 
           skuList.push({
       id: `${productInfo.id}_${vase.value}_${flower.value}_${pack.value}`,
