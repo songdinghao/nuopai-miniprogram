@@ -1,6 +1,7 @@
 // pages/mom/activate/activate.js - 兼职妈妈体验官开通页
 const app = getApp()
 const momProgram = require('../../../utils/mom-program.js')
+const subscribeMsg = require('../../../utils/subscribe-message.js')
 
 Page({
   data: {
@@ -36,6 +37,9 @@ Page({
       wx.setStorageSync('momData', momData)
 
       this.setData({ activating: false })
+
+      // 异步请求订阅消息授权（不阻塞开通流程）
+      subscribeMsg.requestAllAuth().catch(() => {})
 
       // 跳转到兼职妈妈首页，并显示开通成功提示
       wx.redirectTo({

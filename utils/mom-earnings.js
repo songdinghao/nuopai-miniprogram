@@ -4,6 +4,7 @@
   */
 
 const momProgram = require('./mom-program.js')
+const subscribeMsg = require('./subscribe-message.js')
 
 // localStorage 存储键名
 const STORAGE_KEYS = {
@@ -84,6 +85,29 @@ function addEarning(type, orderInfo) {
   saveEarningsList(list)
   saveMomUserData(userData)
 
+  // 好友下单时构建通知数据，存入待推送队列
+  // TODO: 后端应消费 pending_notifications 队列调用微信API发送订阅消息
+  if (type === momProgram.EARNING_TYPE.SHARE && orderInfo.orderId) {
+    try {
+      let pendingNotifications = wx.getStorageSync('pending_notifications') || []
+      if (!Array.isArray(pendingNotifications)) pendingNotifications = []
+      const notificationData = subscribeMsg.buildFriendOrderData(
+        orderInfo.orderId,
+        orderInfo.productType || '商城订单',
+        orderInfo.orderAmount || 0,
+        record.amount
+      )
+      pendingNotifications.push({
+        ...notificationData,
+        _createdAt: new Date().toISOString(),
+        _status: 'pending'
+      })
+      wx.setStorageSync('pending_notifications', pendingNotifications)
+    } catch (e) {
+      console.error('[mom-earnings] 保存好友下单通知失败:', e)
+    }
+  }
+
   return record
 }
 
@@ -142,6 +166,15 @@ function autoCheckSettlements() {
   const now = momProgram.getCurrentTime()
   let settledCount = 0
 
+  // 读取现有待推送通知队列
+  let pendingNotifications = []
+  try {
+    pendingNotifications = wx.getStorageSync('pending_notifications') || []
+    if (!Array.isArray(pendingNotifications)) pendingNotifications = []
+  } catch (e) {
+    pendingNotifications = []
+  }
+
   const updatedList = list.map(record =>{
   if (record.status !== momProgram.EARNING_STATUS.PENDING) return record
   if (!record.settleDate) return record
@@ -151,6 +184,17 @@ function autoCheckSettlements() {
       const updated = momProgram.settleEarning(userData, record)
       if (updated) {
     settledCount++
+
+    // 构建收益结算通知数据，存入待推送队列
+    // TODO: 后端应消费 pending_notifications 队列调用微信API发送订阅消息
+    const totalBalance = (userData.momData && userData.momData.settledEarnings) || 0
+    const notificationData = subscribeMsg.buildEarningSettledData(updated.amount, totalBalance)
+    pendingNotifications.push({
+      ...notificationData,
+      _createdAt: new Date().toISOString(),
+      _status: 'pending'
+    })
+
     return updated
       }
   }
@@ -160,6 +204,12 @@ function autoCheckSettlements() {
   if (settledCount > 0) {
   saveEarningsList(updatedList)
   saveMomUserData(userData)
+  // 保存待推送通知队列
+  try {
+    wx.setStorageSync('pending_notifications', pendingNotifications)
+  } catch (e) {
+    console.error('[mom-earnings] 保存待推送通知队列失败:', e)
+  }
   }
 
   return settledCount

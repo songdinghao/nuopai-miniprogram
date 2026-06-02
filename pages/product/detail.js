@@ -4,6 +4,7 @@ const storeConfig = require('../../config/store-config.js')
 const groupBuy = require('../../utils/group-buy.js')
 const api = require('../../utils/api.js')
 const productsData = require('../../data/products.js')
+const subscribeMsg = require('../../utils/subscribe-message.js')
 
 Page({
   data: {
@@ -180,8 +181,11 @@ Page({
       shareInfo.path +=`&inviter=${this.data.userInfo.id}`
   }
 
+  // 分享时请求订阅消息授权（异步，不阻塞分享流程）
+  subscribeMsg.requestShareAuth().catch(() => {})
+
   // 追踪分享事件
-  app.trackEvent('product_share', { 
+  app.trackEvent('product_share', {
       product_id: this.data.productId,
       product_name: this.data.productInfo?.name
   })

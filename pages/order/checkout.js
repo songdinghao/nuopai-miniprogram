@@ -5,6 +5,7 @@ const groupBuy = require('../../utils/group-buy.js')
 const couponManager = require('../../utils/coupon-manager.js')
 const pointsManager = require('../../utils/points-manager.js')
 const analytics = require('../../utils/analytics.js')
+const subscribeMsg = require('../../utils/subscribe-message.js')
 
 Page({
   data: {
@@ -564,6 +565,9 @@ Page({
 
       // 埋点：购买成功
       analytics.trackPurchase(orderId, this.data.totalPrice, this.data.orderItems)
+
+      // 异步请求发货通知授权（不阻塞下单流程）
+      subscribeMsg.requestOrderAuth().catch(() => {})
 
       // 更新用户订单计数 & 检查优惠券发放条件
       try {

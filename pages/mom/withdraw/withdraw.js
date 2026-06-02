@@ -1,4 +1,5 @@
 const app = getApp()
+const subscribeMsg = require('../../../utils/subscribe-message.js')
 
 Page({
   data: {
@@ -123,10 +124,12 @@ Page({
 
         if (res.data.code === 0) {
           wx.showToast({ title: '提现申请成功', icon: 'success' })
-          this.setData({ 
+          this.setData({
             withdrawAmount: '',
-            isLoading: false 
+            isLoading: false
           })
+          // 异步请求提现通知授权（不阻塞提现流程）
+          subscribeMsg.requestWithdrawAuth().catch(() => {})
           // 刷新页面
           this.loadData()
         } else {
