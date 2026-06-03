@@ -14,6 +14,9 @@ App({
   try {
       app.globalData.currentPage = 'launch'
 
+      // 必须尽早注册全局未处理 Promise 拦截器，防止后续初始化异步泄露
+      this.setupGlobalErrorHandlers()
+
       this.initModules()
 
       // 初始化埋点系统
@@ -30,10 +33,6 @@ App({
 
       // 初始化隐私授权（P0审核要求）
       this.initPrivacyAuthorization()
-
-      // 全局捕获未处理的Promise拒绝，防止基础库内部Error: timeout异常
-      // ⚠️ 必须在所有异步操作（trackEvent等）之前注册，否则Error: timeout会泄露到控制台
-      this.setupGlobalErrorHandlers()
 
       // 注册缓存定期清理定时器
       this.registerCacheCleanupTimer()
@@ -226,40 +225,80 @@ App({
   // 降级方案：优先使用新API，仅在极旧版本使用wx.getSystemInfoSync
   fallbackGetSystemInfo() {
   try {
-      // 尝试新API同步获取（基础库 3.0.0+）
+      // 尝试新API同步/异步获取（基础库 3.0.0+）
       if (typeof wx.getDeviceInfo ==='function' && typeof wx.getAppBaseInfo ==='function') {
     try {
-          const device = wx.getDeviceInfo()
-          const appBase = wx.getAppBaseInfo()
-          if (device && appBase) {
-      const info = {
+          const deviceOrPromise = wx.getDeviceInfo()
+          const appBaseOrPromise = wx.getAppBaseInfo()
+
+          // 如果返回 Promise，则使用 then 处理
+          if (deviceOrPromise && typeof deviceOrPromise.then === 'function') {
+      Promise.all([deviceOrPromise, appBaseOrPromise]).then(([device, appBase]) => {
+            if (device && appBase) {
+        const info = {
+                version: appBase.version || '',
+                SDKVersion: appBase.SDKVersion || '',
+                model: device.model || '',
+                platform: device.platform || ''
+        }
+        if (typeof app !== 'undefined' && app && app.globalData) {
+                app.globalData.deviceInfo = info
+        }
+        // 版本检查
+        if (this.compareVersion(info.SDKVersion, '2.10.0') < 0) {
+      wx.showModal({
+            title: '温馨提示',
+            content: '您的微信版本较低，部分新功能可能无法使用。建议升级到最新版本。',
+            confirmText: '去升级',
+            cancelText: '暂不升级',
+            success: (res) =>{
+        if (res.confirm) {
+                wx.navigateToMiniProgram({
+          appId: 'wx...',
+          path: 'pages/update/update'
+                })
+        }
+            }
+      })
+        }
+            }
+      }).catch(e => {
+            console.warn('新API降级失败: ', e)
+      })
+      } else {
+      // 兼容同步返回的情况
+      const device = deviceOrPromise
+      const appBase = appBaseOrPromise
+      if (device && appBase) {
+        const info = {
               version: appBase.version || '',
               SDKVersion: appBase.SDKVersion || '',
               model: device.model || '',
               platform: device.platform || ''
-      }
-      if (typeof app !== 'undefined' && app && app.globalData) {
+        }
+        if (typeof app !== 'undefined' && app && app.globalData) {
               app.globalData.deviceInfo = info
+        }
+        // 版本检查
+        if (this.compareVersion(info.SDKVersion, '2.10.0') < 0) {
+      wx.showModal({
+            title: '温馨提示',
+            content: '您的微信版本较低，部分新功能可能无法使用。建议升级到最新版本。',
+            confirmText: '去升级',
+            cancelText: '暂不升级',
+            success: (res) =>{
+        if (res.confirm) {
+                wx.navigateToMiniProgram({
+          appId: 'wx...',
+          path: 'pages/update/update'
+                })
+        }
+            }
+      })
+        }
+        return
       }
-      // 版本检查
-      if (this.compareVersion(info.SDKVersion, '2.10.0') < 0) {
-    wx.showModal({
-          title: '温馨提示',
-          content: '您的微信版本较低，部分新功能可能无法使用。为了更好的体验，建议升级到最新版本。',
-          confirmText: '去升级',
-          cancelText: '暂不升级',
-          success: (res) =>{
-      if (res.confirm) {
-              wx.navigateToMiniProgram({
-        appId: 'wx...',
-        path: 'pages/update/update'
-              })
       }
-          }
-    })
-      }
-      return
-          }
     } catch (e) {
           console.warn('新API降级失败: ', e)
     }
@@ -302,6 +341,11 @@ App({
 
       // 设置语音识别参数（针对中老年用户优化）
       this.voiceRecorderManager = wx.getRecorderManager()
+
+      // 将实例暴露到 globalData，以便页面/其他模块访问
+      if (app && app.globalData) {
+        app.globalData.voiceRecorderManager = this.voiceRecorderManager
+      }
 
       this.voiceRecorderManager.onStart(() =>{
       })
@@ -404,21 +448,13 @@ App({
     // 添加默认header
     options.header = { ...defaultHeaders, ...options.header }
 
-    // 添加设备信息（优先使用新API，兼容极旧版本）
-    let deviceModel = '', deviceSystem = '', devicePlatform = '', deviceVersion = ''
-    try {
-      if (typeof wx.getDeviceInfo === 'function' && typeof wx.getAppBaseInfo === 'function') {
-        const deviceInfo = wx.getDeviceInfo()
-        const appBaseInfo = wx.getAppBaseInfo()
-        deviceModel = deviceInfo.model || ''
-        devicePlatform = deviceInfo.platform || ''
-        deviceVersion = appBaseInfo.version || ''
-        deviceSystem = appBaseInfo.SDKVersion || ''
-      }
-      // 如果新API未提供足够信息，不做额外降级（字段已足够标识设备）
-    } catch (e) {
-      // 获取失败时静默处理，不影响请求继续
-    }
+    // 优先使用已缓存的设备信息，避免在拦截器中调用异步 API 导致同步问题
+    const deviceInfo = app?.globalData?.deviceInfo || {}
+    const deviceModel = deviceInfo.model || ''
+    const devicePlatform = deviceInfo.platform || ''
+    const deviceVersion = deviceInfo.version || ''
+    const deviceSystem = deviceInfo.SDKVersion || ''
+
     options.header['X-Device-Info'] = JSON.stringify({
           model: deviceModel,
           system: deviceSystem,
@@ -426,11 +462,18 @@ App({
           version: deviceVersion
     })
 
-    // 添加时间戳防止缓存
-    if (options.url.indexOf('?') ===-1) {
-          options.url +='?_t=' + Date.now()
-    } else {
-          options.url +='&_t=' + Date.now()
+    // 添加时间戳防止缓存，避免重复添加
+    try {
+      const urlStr = String(options.url || '')
+      if (!/_t=/.test(urlStr)) {
+        if (urlStr.indexOf('?') === -1) {
+          options.url = urlStr + '?_t=' + Date.now()
+        } else {
+          options.url = urlStr + '&_t=' + Date.now()
+        }
+      }
+    } catch (e) {
+      // 忽略 URL 拼接异常
     }
 
     return options
@@ -459,12 +502,15 @@ App({
       duration: 2000
           })
 
-          // 跳转到登录页
+          // 跳转到登录页（使用 redirectTo，调用方应处理 tab 页场景）
           setTimeout(() =>{
       wx.redirectTo({
               url: '/pages/login/login'
       })
           }, 1500)
+
+          // 返回失败，阻止后续使用旧的响应数据
+          return Promise.reject({ code: 401, message: 'Unauthorized' })
     }
 
     return res
@@ -1014,7 +1060,7 @@ App({
       timestamp: Date.now(),
       userId: app.globalData.userInfo?.id || 'anonymous',
       sessionId: app.globalData.sessionId,
-      page: getCurrentPages().pop()?.route || ''
+      page: (function(){ const pages = getCurrentPages(); return pages.length > 0 ? pages[pages.length - 1].route : '' })()
   }
 
   // 存入本地队列
@@ -1185,8 +1231,8 @@ App({
 
   // 版本比较工具
   compareVersion(v1, v2) {
-  const v1parts = v1.split('.').map(Number)
-  const v2parts = v2.split('.').map(Number)
+  const v1parts = (String(v1 || '')).split('.').map(x => parseInt(x, 10) || 0)
+  const v2parts = (String(v2 || '')).split('.').map(x => parseInt(x, 10) || 0)
 
   for (let i = 0; i < Math.max(v1parts.length, v2parts.length); i++) {
       const v1part = v1parts[i] || 0
